@@ -149,22 +149,22 @@ export function Buster({ currentUser, isAuthenticated }: BusterProps) {
                   </div>
 
                   {/* Price Information */}
-                  <div className="flex-1">
-                    <div className="text-3xl font-bold text-white font-mono mb-2">
+                  <div className="flex-1 min-w-0 overflow-hidden">
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white font-mono mb-2 truncate">
                       {isLoading ? (
                         <span className="text-gray-400">Loading...</span>
                       ) : (
                         `$${tokenData.usdPrice}`
                       )}
                     </div>
-                    <div className="text-lg text-gray-300 font-mono mb-1">
+                    <div className="text-sm sm:text-base lg:text-lg text-gray-300 font-mono mb-1 truncate">
                       {isLoading ? (
                         <span className="text-gray-400">Loading...</span>
                       ) : (
                         `◆${tokenData.ethPrice}`
                       )}
                     </div>
-                    <div className="text-sm text-gray-400 font-mono">
+                    <div className="text-xs sm:text-sm text-gray-400 font-mono truncate">
                       {isLoading ? (
                         <span className="text-gray-400">Loading...</span>
                       ) : (
