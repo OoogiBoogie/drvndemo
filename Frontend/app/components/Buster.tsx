@@ -133,11 +133,11 @@ export function Buster({ currentUser, isAuthenticated }: BusterProps) {
           <div className="lg:col-span-1 space-y-4">
             {/* Token Identification and Price */}
             <Card className="bg-gray-900/50 border border-purple-500/20 backdrop-blur-sm">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  {/* Token Icon - Larger and more prominent */}
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col items-center text-center gap-3">
+                  {/* Token Icon - Centered */}
                   <div className="flex-shrink-0">
-                    <div className="w-20 h-20 rounded-full bg-[#000000]">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#000000]">
                       <Image
                         src={DRVN_TOKENS.BSTR.image || ""}
                         alt="BSTR Token"
@@ -148,23 +148,23 @@ export function Buster({ currentUser, isAuthenticated }: BusterProps) {
                     </div>
                   </div>
 
-                  {/* Price Information */}
-                  <div className="flex-1 min-w-0 overflow-hidden">
-                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white font-mono mb-2 truncate">
+                  {/* Price Information - Full width, centered */}
+                  <div className="w-full">
+                    <div className="text-xl sm:text-2xl font-bold text-white font-mono mb-1">
                       {isLoading ? (
                         <span className="text-gray-400">Loading...</span>
                       ) : (
                         `$${tokenData.usdPrice}`
                       )}
                     </div>
-                    <div className="text-sm sm:text-base lg:text-lg text-gray-300 font-mono mb-1 truncate">
+                    <div className="text-sm sm:text-base text-gray-300 font-mono mb-1">
                       {isLoading ? (
                         <span className="text-gray-400">Loading...</span>
                       ) : (
                         `◆${tokenData.ethPrice}`
                       )}
                     </div>
-                    <div className="text-xs sm:text-sm text-gray-400 font-mono truncate">
+                    <div className="text-xs sm:text-sm text-gray-400 font-mono">
                       {isLoading ? (
                         <span className="text-gray-400">Loading...</span>
                       ) : (
