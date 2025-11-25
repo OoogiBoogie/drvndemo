@@ -1,11 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Allow cross-origin requests from ngrok during development
+  // Disable host check for Replit proxy
+  // Allow cross-origin requests from ngrok and Replit
   allowedDevOrigins: [
     'drvn.ngrok.dev',
     'drvn.ngrok.io',
     'localhost:3000',
-    '127.0.0.1:3000'
+    'localhost:5000',
+    '127.0.0.1:3000',
+    '127.0.0.1:5000',
+    '0.0.0.0:5000'
   ],
   // Silence warnings
   webpack: (config) => {
