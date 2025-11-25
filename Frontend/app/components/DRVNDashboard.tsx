@@ -978,6 +978,7 @@ export function DRVNDashboard() {
             <Garage
               currentUser={currentUser}
               isAuthenticated={isAuthenticated}
+              onNavigate={setActivePage}
             />
           </div>
         );

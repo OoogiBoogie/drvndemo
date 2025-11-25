@@ -4,6 +4,7 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 
 interface SocialLinks {
+    farcaster?: string;
     base?: string;
     x?: string;
     instagram?: string;
@@ -20,6 +21,7 @@ interface SocialLinksEditorProps {
 }
 
 const SOCIAL_PLATFORMS = [
+    { id: "farcaster", label: "Farcaster", placeholder: "@username" },
     { id: "base", label: "Base Profile", placeholder: "base.org/username" },
     { id: "x", label: "X (Twitter)", placeholder: "@username" },
     { id: "instagram", label: "Instagram", placeholder: "@username" },

@@ -39,6 +39,7 @@ interface User {
   walletAddress: string;
   bio?: string;
   socialLinks?: {
+    farcaster?: string;
     base?: string;
     x?: string;
     instagram?: string;
@@ -115,6 +116,7 @@ export function Settings({
 
   // Social links state
   const [socialLinks, setSocialLinks] = useState({
+    farcaster: "",
     base: "",
     x: "",
     instagram: "",
@@ -184,6 +186,7 @@ export function Settings({
 
         // Set social links
         setSocialLinks(editableUser.socialLinks || {
+          farcaster: "",
           base: "",
           x: "",
           instagram: "",
@@ -216,14 +219,15 @@ export function Settings({
         profileImage: currentUser.profileImage || "",
       });
 
-      setSocialLinks(currentUser.socialLinks || {
-        base: "",
-        x: "",
-        instagram: "",
-        facebook: "",
-        youtube: "",
-        tiktok: "",
-        linkedin: "",
+      setSocialLinks({
+        farcaster: currentUser.socialLinks?.farcaster || "",
+        base: currentUser.socialLinks?.base || "",
+        x: currentUser.socialLinks?.x || "",
+        instagram: currentUser.socialLinks?.instagram || "",
+        facebook: currentUser.socialLinks?.facebook || "",
+        youtube: currentUser.socialLinks?.youtube || "",
+        tiktok: currentUser.socialLinks?.tiktok || "",
+        linkedin: currentUser.socialLinks?.linkedin || "",
       });
 
       setNotificationPreferences(currentUser.preferences?.notifications || {
@@ -424,14 +428,15 @@ export function Settings({
         profileImage: currentUser.profileImage || "",
       });
 
-      setSocialLinks(currentUser.socialLinks || {
-        base: "",
-        x: "",
-        instagram: "",
-        facebook: "",
-        youtube: "",
-        tiktok: "",
-        linkedin: "",
+      setSocialLinks({
+        farcaster: currentUser.socialLinks?.farcaster || "",
+        base: currentUser.socialLinks?.base || "",
+        x: currentUser.socialLinks?.x || "",
+        instagram: currentUser.socialLinks?.instagram || "",
+        facebook: currentUser.socialLinks?.facebook || "",
+        youtube: currentUser.socialLinks?.youtube || "",
+        tiktok: currentUser.socialLinks?.tiktok || "",
+        linkedin: currentUser.socialLinks?.linkedin || "",
       });
 
       setNotificationPreferences(currentUser.preferences?.notifications || {

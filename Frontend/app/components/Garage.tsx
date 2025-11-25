@@ -56,9 +56,10 @@ interface GarageProps {
   currentUser: any;
   isAuthenticated: boolean;
   profileWalletAddress?: string; // Optional: for viewing other users' profiles
+  onNavigate?: (page: string) => void; // For navigating within the dashboard
 }
 
-export function Garage({ currentUser, isAuthenticated, profileWalletAddress }: GarageProps) {
+export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onNavigate }: GarageProps) {
   const router = useRouter();
   const { address, isConnected } = useAccount();
   const [showSwapModal, setShowSwapModal] = useState(false);
@@ -165,7 +166,11 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress }: G
 
   // Handlers
   const handleEditProfile = () => {
-    router.push("/settings");
+    if (onNavigate) {
+      onNavigate("settings");
+    } else {
+      router.push("/settings");
+    }
   };
 
   const handleRegisterVehicle = () => {
