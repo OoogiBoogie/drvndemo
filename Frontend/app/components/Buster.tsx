@@ -128,12 +128,11 @@ export function Buster({ currentUser, isAuthenticated }: BusterProps) {
         />
 
         {/* Token Information Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
           {/* Left Column - Token Info and Price */}
-          <div className="lg:col-span-1 space-y-4">
-            {/* Token Identification and Price */}
-            <Card className="bg-gray-900/50 border border-purple-500/20 backdrop-blur-sm">
-              <CardContent className="p-4 sm:p-6">
+          <div className="lg:col-span-1">
+            <Card className="bg-gray-900/50 border border-purple-500/20 backdrop-blur-sm h-full">
+              <CardContent className="p-4 sm:p-6 h-full flex flex-col justify-between">
                 <div className="flex flex-col items-center text-center gap-3">
                   {/* Token Icon - Centered */}
                   <div className="flex-shrink-0">
@@ -173,42 +172,40 @@ export function Buster({ currentUser, isAuthenticated }: BusterProps) {
                     </div>
                   </div>
                 </div>
+
+                {/* Action Buttons - Inside card at bottom */}
+                <div className="grid grid-cols-2 gap-3 mt-4">
+                  <Button
+                    className="bg-[#00daa2] hover:bg-[#00b894] text-black font-mono py-2"
+                    size="sm"
+                    onClick={() => {
+                      setSwapType("buy");
+                      setShowSwapModal(true);
+                    }}
+                  >
+                    Buy
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="border-[#00daa2] text-[#00daa2] hover:bg-[#00daa2] hover:text-black font-mono py-2"
+                    size="sm"
+                    onClick={() => {
+                      setSwapType("sell");
+                      setShowSwapModal(true);
+                    }}
+                  >
+                    Sell
+                  </Button>
+                </div>
               </CardContent>
             </Card>
-
-            {/* Action Buttons */}
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  className="bg-[#00daa2] hover:bg-[#00b894] text-black font-mono py-2"
-                  size="sm"
-                  onClick={() => {
-                    setSwapType("buy");
-                    setShowSwapModal(true);
-                  }}
-                >
-                  Buy
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-[#00daa2] text-[#00daa2] hover:bg-[#00daa2] hover:text-black font-mono py-2"
-                  size="sm"
-                  onClick={() => {
-                    setSwapType("sell");
-                    setShowSwapModal(true);
-                  }}
-                >
-                  Sell
-                </Button>
-              </div>
-            </div>
           </div>
 
           {/* Right Column - Market Data */}
           <div className="lg:col-span-2">
-            <Card className="bg-gray-900/50 border border-purple-500/20 backdrop-blur-sm">
-              <CardContent className="p-6">
-                <div className="grid grid-cols-2 gap-6">
+            <Card className="bg-gray-900/50 border border-purple-500/20 backdrop-blur-sm h-full">
+              <CardContent className="p-6 h-full flex items-center">
+                <div className="grid grid-cols-2 gap-6 w-full">
                   {/* Left Column - Market Cap & Volume */}
                   <div className="space-y-6">
                     {/* Market Cap */}
