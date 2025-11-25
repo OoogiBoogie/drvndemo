@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "HOSTNAME=0.0.0.0 next dev -H 0.0.0.0 -p 5000",
+    "dev": "HOSTNAME=0.0.0.0 next dev --turbopack -H 0.0.0.0 -p 5000",
     "build": "next build",
     "start": "HOSTNAME=0.0.0.0 next start -H 0.0.0.0 -p 5000",
     "lint": "eslint .",

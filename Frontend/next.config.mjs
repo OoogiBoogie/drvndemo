@@ -18,18 +18,27 @@ const nextConfig = {
     '*.pike.replit.dev',
   ],
   
-  // Silence warnings
+  // External packages for server components (works with both webpack and turbopack)
+  serverExternalPackages: ["pino-pretty", "lokijs", "encoding"],
+  
+  // Turbopack configuration
+  turbopack: {
+    resolveAlias: {
+      fs: { browser: './empty-module.js' },
+      path: { browser: './empty-module.js' },
+      os: { browser: './empty-module.js' },
+    },
+  },
+  
+  // Webpack fallback (only used when not using Turbopack)
   webpack: (config) => {
     config.externals.push("pino-pretty", "lokijs", "encoding");
-    
-    // Exclude Hardhat and contract files from webpack compilation
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
       path: false,
       os: false,
     };
-    
     return config;
   },
   // Configure allowed image domains
