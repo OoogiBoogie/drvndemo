@@ -46,6 +46,12 @@ import { ProgressiveActionButton } from "./ProgressiveActionButton";
 import { ConnectButton } from "./web3/ConnectButton";
 import TotalKeysMinted from "./web3/TotalKeysMinted";
 import { HeroHeader } from "./ui/hero-header";
+import { ContentFeed } from "./social/ContentFeed";
+import { CreatePostButton } from "./social/CreatePostButton";
+import { CreatePostModal } from "./modals/CreatePostModal";
+import { SocialPost, PlatformConnection, CrossPostSettings } from "./social/types";
+import { MOCK_SOCIAL_POSTS } from "./social/mockPosts";
+import { Globe, Check, Plus, Zap, Users, Shield, ExternalLink, Sparkles, Trophy } from "lucide-react";
 
 export function DRVNDashboard() {
   const { address } = useAccount();
@@ -58,6 +64,20 @@ export function DRVNDashboard() {
   const [activePage, setActivePage] = useState("dashboard");
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  // Social Hub state
+  const [showCreatePostModal, setShowCreatePostModal] = useState(false);
+  const [feedPosts, setFeedPosts] = useState<SocialPost[]>(() => [...MOCK_SOCIAL_POSTS]);
+  const [platformConnections, setPlatformConnections] = useState<PlatformConnection[]>([
+    { platform: "farcaster", connected: false },
+    { platform: "base", connected: true, username: "0x1234...5678" },
+    { platform: "x", connected: false },
+  ]);
+  const [crossPostSettings, setCrossPostSettings] = useState<CrossPostSettings>({
+    farcaster: false,
+    base: true,
+    x: false,
+  });
 
   // Initialize Farcaster SDK
   useFarcasterSDK();
@@ -77,6 +97,60 @@ export function DRVNDashboard() {
   // Optimized onboarding
   const { canAccessProtectedFeature, isLoading: isContextLoading } =
     useOptimizedOnboarding();
+
+  // Social Hub handlers
+  const handleCreatePost = () => {
+    setShowCreatePostModal(true);
+  };
+
+  const handlePostCreated = (post: SocialPost, settings: CrossPostSettings) => {
+    setCrossPostSettings(settings);
+    setFeedPosts((prev) => [post, ...prev]);
+  };
+
+  const handleConnectPlatform = (platform: "farcaster" | "base" | "x") => {
+    setPlatformConnections(prev => 
+      prev.map(p => 
+        p.platform === platform 
+          ? { ...p, connected: true, username: platform === "farcaster" ? "@drvn_user" : platform === "x" ? "@drvn_vhcls" : "0xABC...123" }
+          : p
+      )
+    );
+    setCrossPostSettings(prev => ({ ...prev, [platform]: true }));
+  };
+
+  const connectedPlatformsCount = platformConnections.filter(p => p.connected).length;
+
+  const mockSocialUser = {
+    id: currentUser?._id || "demo-user-id",
+    name: currentUser?.username || "Ava Accelerator",
+    username: currentUser?.username || "ava_drvn",
+    avatar: currentUser?.profileImage || "https://i.pravatar.cc/150?img=11",
+  };
+
+  const mockRegisteredVehicles = [
+    {
+      id: "1",
+      nickname: "Black Widow",
+      make: "Porsche",
+      model: "911 GT3 RS",
+    },
+  ];
+
+  const availableSponsors = [
+    {
+      id: "rb-1",
+      name: "Red Bull Racing",
+      logo: "https://avatars.githubusercontent.com/u/108554348?s=200&v=4",
+      url: "/sponsors/1",
+    },
+    {
+      id: "base-cameras",
+      name: "Base Cameras",
+      logo: "https://avatars.githubusercontent.com/u/108554348?s=200&v=4",
+      url: "https://base.org",
+    },
+  ];
 
   // Auto-show signup modal if user doesn't exist
   useEffect(() => {
@@ -234,7 +308,6 @@ export function DRVNDashboard() {
       label: "Social",
       id: "social",
       isGreen: true,
-      url: "/social",
     },
     {
       icon: SettingsIcon,
@@ -685,28 +758,203 @@ export function DRVNDashboard() {
         );
 
       case "social":
+        const platformInfo: Record<string, { name: string; icon: string; description: string; benefits: string[] }> = {
+          farcaster: {
+            name: "Farcaster",
+            icon: "🟣",
+            description: "Cast to the decentralized social network",
+            benefits: ["Reach Farcaster community", "Earn channel rewards", "Build reputation"],
+          },
+          base: {
+            name: "Base",
+            icon: "🔵",
+            description: "Native onchain social on Base",
+            benefits: ["Onchain attestations", "Mini app integration", "Base ecosystem"],
+          },
+          x: {
+            name: "X (Twitter)",
+            icon: "✕",
+            description: "Cross-post to your X audience",
+            benefits: ["Wider reach", "Build following", "Drive traffic"],
+          },
+        };
         return (
           <div className="space-y-6">
             <HeroHeader
-              title="Social Feed"
-              subtitle="Share builds, shout out sponsors, and keep Base updated"
+              title="Social Hub"
+              subtitle="Share builds across Farcaster, Base & X from one place"
               backgroundImage="/Cars/GarageV12.jpg"
             />
-            <div className="bg-gray-900 rounded-lg p-6 border border-gray-700">
-              <h3 className="text-[#00daa2] text-lg font-mono font-bold mb-3">
-                Connect with the DRVN community
-              </h3>
-              <p className="text-gray-300 font-sans mb-4">
-                Share your builds, tag vehicles, and connect with sponsors. Your posts will sync across Base and Farcaster.
-              </p>
-              <Button
-                variant="outline"
-                className="border-[#00daa2] text-[#00daa2] hover:bg-[#00daa2] hover:text-black font-mono"
-                onClick={() => router.push("/social")}
-              >
-                Open Social Feed
-              </Button>
+
+            {/* Platform Connections */}
+            <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900 to-black p-5">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-[#00daa2]/20 flex items-center justify-center">
+                  <Globe className="w-5 h-5 text-[#00daa2]" />
+                </div>
+                <div>
+                  <h3 className="text-white font-bold">Connected Platforms</h3>
+                  <p className="text-xs text-zinc-400">Link your accounts to cross-post everywhere</p>
+                </div>
+              </div>
+              <div className="grid gap-3">
+                {platformConnections.map((conn) => {
+                  const info = platformInfo[conn.platform];
+                  return (
+                    <div 
+                      key={conn.platform}
+                      className={`rounded-xl border p-4 transition-all ${
+                        conn.connected 
+                          ? "border-[#00daa2]/30 bg-[#00daa2]/5" 
+                          : "border-white/10 bg-white/5 hover:border-white/20"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">{info.icon}</span>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-white font-semibold">{info.name}</span>
+                              {conn.connected && (
+                                <span className="flex items-center gap-1 text-xs text-[#00daa2] bg-[#00daa2]/20 px-2 py-0.5 rounded-full">
+                                  <Check className="w-3 h-3" /> Connected
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-zinc-400">
+                              {conn.connected ? conn.username : info.description}
+                            </p>
+                          </div>
+                        </div>
+                        {conn.connected ? (
+                          <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
+                            <ExternalLink className="w-4 h-4" />
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            onClick={() => handleConnectPlatform(conn.platform)}
+                            className="bg-white/10 hover:bg-white/20 text-white border-0"
+                          >
+                            <Plus className="w-4 h-4 mr-1" />
+                            Connect
+                          </Button>
+                        )}
+                      </div>
+                      {!conn.connected && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {info.benefits.map((benefit, i) => (
+                            <span key={i} className="text-[10px] text-zinc-500 bg-zinc-800 px-2 py-1 rounded-full">
+                              {benefit}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
+
+            {/* Quick Composer */}
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <button
+                onClick={handleCreatePost}
+                className="w-full flex items-center gap-4 text-left hover:opacity-80 transition-opacity"
+              >
+                <div className="w-12 h-12 rounded-full bg-[#00daa2]/10 text-[#00daa2] flex items-center justify-center">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-white font-semibold">Create a Post</p>
+                  <p className="text-sm text-zinc-400">Tag vehicles, mention sponsors, share everywhere</p>
+                </div>
+                <Zap className="w-5 h-5 text-[#00daa2]" />
+              </button>
+              {platformConnections.filter(p => p.connected).length > 0 && (
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <p className="text-xs text-zinc-500 mb-2">Cross-post to:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {platformConnections.filter(p => p.connected).map((platform) => (
+                      <button
+                        key={platform.platform}
+                        onClick={() => setCrossPostSettings(prev => ({ ...prev, [platform.platform]: !prev[platform.platform] }))}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                          crossPostSettings[platform.platform]
+                            ? "bg-[#00daa2]/20 text-[#00daa2] border border-[#00daa2]/40"
+                            : "bg-zinc-800 text-zinc-400 border border-zinc-700 hover:border-zinc-600"
+                        }`}
+                      >
+                        <span>{platformInfo[platform.platform]?.icon}</span>
+                        <span className="capitalize">{platform.platform}</span>
+                        {crossPostSettings[platform.platform] && <Check className="w-3 h-3" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="rounded-xl bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/20 p-4 text-center">
+                <Users className="w-5 h-5 text-purple-400 mx-auto mb-2" />
+                <p className="text-xl font-bold text-white">{connectedPlatformsCount}</p>
+                <p className="text-[10px] uppercase tracking-wider text-zinc-500">Platforms</p>
+              </div>
+              <div className="rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20 p-4 text-center">
+                <Zap className="w-5 h-5 text-blue-400 mx-auto mb-2" />
+                <p className="text-xl font-bold text-white">{feedPosts.length}</p>
+                <p className="text-[10px] uppercase tracking-wider text-zinc-500">Posts</p>
+              </div>
+              <div className="rounded-xl bg-gradient-to-br from-[#00daa2]/10 to-[#00daa2]/5 border border-[#00daa2]/20 p-4 text-center">
+                <Shield className="w-5 h-5 text-[#00daa2] mx-auto mb-2" />
+                <p className="text-xl font-bold text-white">100%</p>
+                <p className="text-[10px] uppercase tracking-wider text-zinc-500">On-chain</p>
+              </div>
+            </div>
+
+            {/* Sponsor Spotlight */}
+            <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-black via-[#0b0b0b] to-[#050505] p-4 flex items-center gap-4">
+              <div className="relative w-16 h-16 flex-shrink-0 rounded-xl bg-zinc-800 flex items-center justify-center">
+                <Image
+                  src="https://avatars.githubusercontent.com/u/108554348?s=200&v=4"
+                  alt="Sponsor"
+                  width={40}
+                  height={40}
+                  className="rounded-lg"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs uppercase tracking-[0.3em] text-zinc-500 mb-1">Sponsor Spotlight</p>
+                <p className="text-white font-semibold truncate">Red Bull Racing × Black Widow</p>
+                <p className="text-sm text-zinc-400 truncate">Slot #03 minted. Claim perks and upload content.</p>
+                <div className="flex items-center gap-3 text-xs text-zinc-500 mt-2">
+                  <span className="flex items-center gap-1"><Trophy className="w-3 h-3" /> Titanium</span>
+                  <span className="flex items-center gap-1"><Car className="w-3 h-3" /> GT3 RS</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Content Feed */}
+            <ContentFeed posts={feedPosts} showAllFilters={true} />
+
+            {/* Create Post Modal */}
+            <CreatePostModal
+              isOpen={showCreatePostModal}
+              onClose={() => setShowCreatePostModal(false)}
+              userId={mockSocialUser.id}
+              registeredVehicles={mockRegisteredVehicles}
+              currentUser={{
+                name: mockSocialUser.name,
+                username: mockSocialUser.username,
+                avatar: mockSocialUser.avatar,
+              }}
+              sponsors={availableSponsors}
+              onPostCreated={handlePostCreated}
+              connectedPlatforms={platformConnections.filter(p => p.connected).map(p => p.platform)}
+              initialCrossPostSettings={crossPostSettings}
+            />
           </div>
         );
 
@@ -930,12 +1178,7 @@ export function DRVNDashboard() {
                                   return;
                                 }
                               }
-                              // Navigate directly if item has a url
-                              if (item.url) {
-                                router.push(item.url);
-                              } else {
-                                setActivePage(item.id);
-                              }
+                              setActivePage(item.id);
                             }}
                           >
                             <item.icon className="h-5 w-5 flex-shrink-0" />
@@ -976,12 +1219,7 @@ export function DRVNDashboard() {
                               return;
                             }
                           }
-                          // Navigate directly if item has a url
-                          if (item.url) {
-                            router.push(item.url);
-                          } else {
-                            setActivePage(item.id);
-                          }
+                          setActivePage(item.id);
                         }}
                       >
                         <item.icon className="h-5 w-5 flex-shrink-0" />
@@ -1118,8 +1356,6 @@ export function DRVNDashboard() {
                     onClick={() => {
                       if (item.externalUrl) {
                         handleExternalLink(item.externalUrl);
-                      } else if (item.url) {
-                        router.push(item.url);
                       } else {
                         // Use progressive disclosure for protected features
                         if (item.requiresAuth) {
@@ -1166,8 +1402,6 @@ export function DRVNDashboard() {
                     onClick={() => {
                       if (item.externalUrl) {
                         handleExternalLink(item.externalUrl);
-                      } else if (item.url) {
-                        router.push(item.url);
                       } else {
                         setActivePage(item.id);
                       }
