@@ -6,9 +6,16 @@ const nextConfig = {
   
   // Allow all Replit dev origins to prevent chunk loading errors
   allowedDevOrigins: [
-    'https://*.replit.dev',
-    'https://*.riker.replit.dev',
-    'https://*.id.repl.co',
+    '*.replit.dev',
+    '*.riker.replit.dev', 
+    '*.id.repl.co',
+    '*.repl.co',
+    '*.picard.replit.dev',
+    '*.kirk.replit.dev',
+    '*.janeway.replit.dev',
+    '*.sisko.replit.dev',
+    '*.archer.replit.dev',
+    '*.pike.replit.dev',
   ],
   
   // Silence warnings
