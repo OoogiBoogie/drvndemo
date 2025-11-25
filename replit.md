@@ -116,6 +116,17 @@ The application supports multiple access methods:
 
 ## Recent Changes
 
+### November 25, 2025 - Edit Profile Navigation & Farcaster Social Links
+- **Fixed Edit Profile button navigation**:
+  - Added `onNavigate` prop to Garage component for in-dashboard navigation
+  - Edit Profile button now uses `setActivePage("settings")` instead of `router.push("/settings")`
+  - Stays within the dashboard context without full page reload
+- **Added Farcaster to social links editing**:
+  - Added farcaster field to `SocialLinksEditor` component
+  - Updated `SOCIAL_PLATFORMS` array to include Farcaster as first option
+  - Added farcaster to Settings `socialLinks` state and User interface
+  - All social link initializations now include farcaster with proper defaults
+
 ### November 25, 2025 - Garage Page Redesigned as Public Profile
 - **Implemented public/private section separation**:
   - Dynamic `isOwner` detection comparing connected wallet address with profile wallet address
