@@ -116,6 +116,20 @@ The application supports multiple access methods:
 
 ## Recent Changes
 
+### November 25, 2025 - Social Feed Navigation & Type Fixes
+- **Added Social Feed tab** to navigation menu between Buster Club and Settings
+  - Uses MessageSquare icon from lucide-react
+  - Inherits green styling consistent with other main navigation items
+  - Integrated into dashboard's activePage system with "Open Social Feed" button
+- **Fixed TypeScript errors in Garage.tsx**
+  - Added RwaHolding interface for proper typing
+  - Typed rwaHoldings array to eliminate implicit any usage
+- **Updated next.config.mjs** to add external image domains:
+  - Wikipedia (upload.wikimedia.org)
+  - Pravatar (i.pravatar.cc)
+  - Unsplash (images.unsplash.com)
+  - GitHub avatars (avatars.githubusercontent.com)
+
 ### November 25, 2025 - Replit Setup
 - Installed Node.js 22 module
 - Installed frontend dependencies (npm install)
