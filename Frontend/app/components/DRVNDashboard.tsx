@@ -234,6 +234,7 @@ export function DRVNDashboard() {
       label: "Social",
       id: "social",
       isGreen: true,
+      url: "/social",
     },
     {
       icon: SettingsIcon,
@@ -929,7 +930,12 @@ export function DRVNDashboard() {
                                   return;
                                 }
                               }
-                              setActivePage(item.id);
+                              // Navigate directly if item has a url
+                              if (item.url) {
+                                router.push(item.url);
+                              } else {
+                                setActivePage(item.id);
+                              }
                             }}
                           >
                             <item.icon className="h-5 w-5 flex-shrink-0" />
@@ -970,7 +976,12 @@ export function DRVNDashboard() {
                               return;
                             }
                           }
-                          setActivePage(item.id);
+                          // Navigate directly if item has a url
+                          if (item.url) {
+                            router.push(item.url);
+                          } else {
+                            setActivePage(item.id);
+                          }
                         }}
                       >
                         <item.icon className="h-5 w-5 flex-shrink-0" />
@@ -1107,6 +1118,8 @@ export function DRVNDashboard() {
                     onClick={() => {
                       if (item.externalUrl) {
                         handleExternalLink(item.externalUrl);
+                      } else if (item.url) {
+                        router.push(item.url);
                       } else {
                         // Use progressive disclosure for protected features
                         if (item.requiresAuth) {
@@ -1153,6 +1166,8 @@ export function DRVNDashboard() {
                     onClick={() => {
                       if (item.externalUrl) {
                         handleExternalLink(item.externalUrl);
+                      } else if (item.url) {
+                        router.push(item.url);
                       } else {
                         setActivePage(item.id);
                       }
