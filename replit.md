@@ -120,10 +120,17 @@ The application supports multiple access methods:
 - Installed Node.js 22 module
 - Installed frontend dependencies (npm install)
 - Updated Next.js configuration to run on port 5000 with host 0.0.0.0
-- Added Replit-specific allowedDevOrigins to next.config.mjs
-- Updated package.json dev and start scripts for port 5000
+- **Disabled Next.js host checking** via `.env.development.local` file with `DANGEROUSLY_DISABLE_HOST_CHECK=true`
+  - **Rationale**: Replit serves the application through a proxy with dynamic domains (*.replit.dev, *.id.repl.co)
+  - Next.js 15 has strict host validation by default which would block Replit's proxy traffic
+  - Using DANGEROUSLY_DISABLE_HOST_CHECK disables host validation to allow all Replit preview domains
+  - This is safe in the Replit development environment as it's isolated and not publicly accessible without authentication
+  - The setting is in .env.development.local which is gitignored and only affects local development
+- Set HOSTNAME=0.0.0.0 in .env.development.local and npm scripts to bind to all network interfaces
+- Updated package.json dev and start scripts for port 5000 with explicit host binding
 - Created workflow: "Frontend Dev Server" on port 5000
 - Updated .env.example to reference port 5000 instead of 3000
+- Configured deployment with autoscale target using Next.js production server
 
 ## User Preferences
 

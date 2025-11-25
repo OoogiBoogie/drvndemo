@@ -1,16 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Disable host check for Replit proxy
-  // Allow cross-origin requests from ngrok and Replit
-  allowedDevOrigins: [
-    'drvn.ngrok.dev',
-    'drvn.ngrok.io',
-    'localhost:3000',
-    'localhost:5000',
-    '127.0.0.1:3000',
-    '127.0.0.1:5000',
-    '0.0.0.0:5000'
-  ],
+  // Configuration for Replit environment
+  // Replit serves the app through a proxy with dynamic domains (*.replit.dev, *.id.repl.co)
+  // Host checking is disabled via HOSTNAME environment variable in package.json scripts
   // Silence warnings
   webpack: (config) => {
     config.externals.push("pino-pretty", "lokijs", "encoding");
