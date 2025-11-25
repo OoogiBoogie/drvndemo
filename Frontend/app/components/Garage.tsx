@@ -29,11 +29,16 @@ import type { VehicleRegistrationResult } from "@/hooks/useVehicleLifecycle";
  * Garage Component (Public Profile)
  *
  * This component displays the user's public profile and garage with:
- * - User Profile Card (Bio, Socials, Stats)
- * - Vehicle Collection stats (RWA shares)
- * - VHCL Registry (Registered Vehicles)
- * - Digital Collectibles (Ecosystem NFTs)
- * - Assets Vault (Wallet Balance - Owner Only)
+ * 
+ * PUBLIC SECTIONS (visible to everyone):
+ * - User Profile Card (PFP, username, display name, bio, follower count, follow button, social links, edit profile button)
+ * - Swipeable Garage Graphic (RWA vehicles they hold shares in)
+ * - VHCL Collection (RWA stats, USD value, 24hr performance, car list)
+ * - VHCL Registry (Registered vehicles, registration info, register button)
+ * - Digital Collectibles (Ecosystem NFTs or available collections)
+ * 
+ * PRIVATE SECTIONS (visible only to profile owner):
+ * - Assets Vault (Wallet balance)
  */
 interface RwaHolding {
   id: string;
@@ -50,9 +55,10 @@ interface RwaHolding {
 interface GarageProps {
   currentUser: any;
   isAuthenticated: boolean;
+  profileWalletAddress?: string; // Optional: for viewing other users' profiles
 }
 
-export function Garage({ currentUser, isAuthenticated }: GarageProps) {
+export function Garage({ currentUser, isAuthenticated, profileWalletAddress }: GarageProps) {
   const router = useRouter();
   const { address, isConnected } = useAccount();
   const [showSwapModal, setShowSwapModal] = useState(false);
@@ -63,7 +69,19 @@ export function Garage({ currentUser, isAuthenticated }: GarageProps) {
   const [touchEndX, setTouchEndX] = useState<number | null>(null);
 
   // Determine if the viewer is the owner of the profile
-  const isOwner = true; // defaulting to true for the main Garage view
+  // The profile address should come from props (for viewing other users) or from the currentUser
+  // IMPORTANT: Do NOT fall back to viewer's address, as that would incorrectly grant ownership
+  const profileAddress = profileWalletAddress || currentUser?.walletAddress;
+  
+  // Only consider isOwner = true if:
+  // 1. We have a valid profile address to compare against
+  // 2. The viewer is connected with a wallet
+  // 3. The connected wallet matches the profile wallet
+  // If no profile address is available, default to true (viewing own profile in main garage view)
+  const isOwner = !profileAddress 
+    ? true // Default to owner view when no profile address is specified (main garage view)
+    : (isConnected && address && profileAddress && 
+       address.toLowerCase() === profileAddress.toLowerCase());
 
   const rwaHoldings: RwaHolding[] = currentUser?.rwaHoldings || [
     {
@@ -125,17 +143,21 @@ export function Garage({ currentUser, isAuthenticated }: GarageProps) {
   ]);
 
   // Mock user profile for demo
+  // Use the profile address being viewed, or the connected address for own profile
+  const displayWalletAddress = profileAddress || address || "0x0000000000000000000000000000000000000000";
+  
   const mockUserProfile = {
     _id: "demo-user-id",
     username: currentUser?.username || "drvn_enthusiast",
     displayName: currentUser?.displayName || "DRVN Enthusiast",
     bio: currentUser?.bio || "Passionate about cars and Web3 🏎️",
     profileImage: currentUser?.profileImage || "https://github.com/shadcn.png",
-    walletAddress: address || "0x0000000000000000000000000000000000000000",
+    walletAddress: displayWalletAddress,
     socialLinks: currentUser?.socialLinks || {
-      base: "base.org/drvn",
-      x: "@drvn_platform",
-      instagram: "@drvn",
+      farcaster: "https://warpcast.com/drvn",
+      base: "https://base.org/drvn",
+      x: "https://x.com/drvn_platform",
+      instagram: "https://instagram.com/drvn",
     },
     followerCount: currentUser?.followerCount || 1234,
     followingCount: currentUser?.followingCount || 567,
@@ -264,6 +286,10 @@ export function Garage({ currentUser, isAuthenticated }: GarageProps) {
     <div className="min-h-screen bg-gray-950 p-4 md:p-6">
       <div className="max-w-6xl mx-auto space-y-6">
 
+        {/* =========================================== */}
+        {/* PUBLIC PROFILE SECTION - Visible to Everyone */}
+        {/* =========================================== */}
+
         {/* Module 1: User Profile Card */}
         <UserProfileCard
           user={mockUserProfile}
@@ -388,9 +414,9 @@ export function Garage({ currentUser, isAuthenticated }: GarageProps) {
         )}
 
         {/* Module 3: VHCL Collection (RWA Shares) */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Vehicle Collection */}
-          <div className="lg:col-span-2">
+        <div className={`grid grid-cols-1 ${isOwner ? 'lg:grid-cols-3' : ''} gap-6`}>
+          {/* Left Column - Vehicle Collection (Full width when not owner) */}
+          <div className={isOwner ? "lg:col-span-2" : ""}>
             <Card className="bg-gradient-to-br from-gray-900 to-black border border-gray-700 backdrop-blur-sm h-full">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-6">
@@ -507,10 +533,16 @@ export function Garage({ currentUser, isAuthenticated }: GarageProps) {
             </Card>
           </div>
 
-          {/* Right Column - Assets Vault (Owner Only) */}
+          {/* Right Column - Assets Vault (Owner Only - PRIVATE) */}
           {isOwner && (
             <div className="lg:col-span-1">
-              <Card className="bg-gradient-to-br from-gray-900 to-black border border-gray-700 backdrop-blur-sm h-full">
+              <Card className="bg-gradient-to-br from-gray-900 to-black border border-gray-700 backdrop-blur-sm h-full relative overflow-hidden">
+                {/* Private Badge */}
+                <div className="absolute top-3 right-3 z-10">
+                  <span className="bg-purple-500/20 text-purple-400 text-xs px-2 py-1 rounded-full font-mono border border-purple-500/30">
+                    Private
+                  </span>
+                </div>
                 <CardContent className="p-6">
                   <h2 className="text-2xl font-bold text-white font-mono mb-6">
                     Assets Vault
@@ -624,7 +656,10 @@ export function Garage({ currentUser, isAuthenticated }: GarageProps) {
         />
 
         {/* Module 5: Digital Collectibles (Updated) */}
-        <DigitalCollectibles />
+        <DigitalCollectibles 
+          profileAddress={profileAddress}
+          isOwner={isOwner}
+        />
       </div>
 
       {/* Swap Modal - Placed outside main container for full viewport coverage */}

@@ -116,6 +116,25 @@ The application supports multiple access methods:
 
 ## Recent Changes
 
+### November 25, 2025 - Garage Page Redesigned as Public Profile
+- **Implemented public/private section separation**:
+  - Dynamic `isOwner` detection comparing connected wallet address with profile wallet address
+  - Added `profileWalletAddress` prop to support viewing other users' profiles
+  - **Public sections** (visible to everyone): User Profile Card, Swipeable Garage Graphic, VHCL Collection, VHCL Registry, Digital Collectibles
+  - **Private sections** (visible only to profile owner): Assets Vault with "Private" badge
+- **Enhanced UserProfileCard**:
+  - Added Farcaster social link support in SocialLinks interface
+  - Social links now include: farcaster, base, x, instagram, facebook, youtube, tiktok, linkedin
+  - Proper URL formatting for all social links
+- **Updated DigitalCollectibles component**:
+  - Added `profileAddress` and `isOwner` props for public profile viewing
+  - Dynamic messaging based on profile ownership
+  - "Collections to purchase" recommendations only shown to profile owners
+- **VHCL Collection layout improvements**:
+  - Full-width layout for non-owners (since they don't see Assets Vault)
+  - Grid layout with Assets Vault for owners
+- **RegisterVehicleModal** already integrated for vehicle registration flow
+
 ### November 25, 2025 - Amplified DRVN Culture Page
 - **Complete redesign of DRVN Culture section** as a full content hub:
   - Hero header with updated tagline "Your gateway to automotive culture, IRL and onchain"

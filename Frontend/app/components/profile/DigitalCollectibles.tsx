@@ -3,7 +3,7 @@
 import { useAccount, useReadContract } from "wagmi";
 import { formatUnits } from "viem";
 import { Card, CardContent } from "@/app/components/ui/card";
-import { Key } from "lucide-react";
+import { Key, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import deployedContracts from "@/contracts/deployedContracts";
 
@@ -18,8 +18,18 @@ type RewardConfig = [
     boolean, // strict
 ];
 
-export function DigitalCollectibles() {
-    const { address, isConnected } = useAccount();
+interface DigitalCollectiblesProps {
+    profileAddress?: string; // Optional: for viewing other users' profiles
+    isOwner?: boolean; // Whether the current viewer owns this profile
+}
+
+export function DigitalCollectibles({ profileAddress, isOwner = true }: DigitalCollectiblesProps) {
+    const { address: connectedAddress, isConnected } = useAccount();
+    
+    // For public profile viewing, use the profile's address
+    // Only fall back to connected wallet if this is the owner's view (no profileAddress specified)
+    // This ensures we show the correct user's NFTs, not the viewer's
+    const address = profileAddress || (isOwner ? connectedAddress : undefined);
 
     // Contract addresses for the three collections
     const steelConfig = deployedContracts[8453].SteelBuster;
@@ -185,18 +195,21 @@ export function DigitalCollectibles() {
         },
     ];
 
-    if (!isConnected) {
+    // Only show "connect wallet" message if viewing own profile and not connected
+    // For public profiles (when profileAddress is provided), we can still show NFTs
+    if (!address) {
         return (
             <Card className="bg-gradient-to-br from-gray-900 to-black border border-gray-700 backdrop-blur-sm">
                 <CardContent className="p-6">
                     <div className="text-center text-gray-400 font-mono">
                         <Key className="w-12 h-12 mx-auto mb-4 text-gray-600" />
-                        <p>Signin / Sign Up + Connect your wallet to view your NFT keys</p>
+                        <p>Connect your wallet to view NFT keys</p>
                     </div>
                 </CardContent>
             </Card>
         );
     }
+
 
     if (ownedCollections.length === 0) {
         return (
@@ -207,34 +220,39 @@ export function DigitalCollectibles() {
                             Digital Collectibles
                         </h2>
                         <p className="text-sm text-gray-400 font-sans">
-                            You don’t own any DRVN ecosystem NFTs yet. Explore the collections below to start building your profile.
+                            {isOwner 
+                                ? "You don't own any DRVN ecosystem NFTs yet. Explore the collections below to start building your profile."
+                                : "This user doesn't own any DRVN ecosystem NFTs yet."
+                            }
                         </p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {recommendedCollections.map((collection) => (
-                            <div
-                                key={collection.name}
-                                className="p-4 rounded-xl border border-white/10 bg-black/30 flex flex-col justify-between"
-                            >
-                                <div>
-                                    <h3 className="text-white font-semibold font-mono text-lg">
-                                        {collection.name}
-                                    </h3>
-                                    <p className="text-sm text-gray-400 font-sans mt-2">
-                                        {collection.description}
-                                    </p>
-                                </div>
-                                <a
-                                    href={collection.link}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="text-[#00daa2] font-mono text-sm mt-4 inline-flex items-center gap-2 hover:text-green-300"
+                    {isOwner && (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {recommendedCollections.map((collection) => (
+                                <div
+                                    key={collection.name}
+                                    className="p-4 rounded-xl border border-white/10 bg-black/30 flex flex-col justify-between"
                                 >
-                                    View Collection →
-                                </a>
-                            </div>
-                        ))}
-                    </div>
+                                    <div>
+                                        <h3 className="text-white font-semibold font-mono text-lg">
+                                            {collection.name}
+                                        </h3>
+                                        <p className="text-sm text-gray-400 font-sans mt-2">
+                                            {collection.description}
+                                        </p>
+                                    </div>
+                                    <a
+                                        href={collection.link}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-[#00daa2] font-mono text-sm mt-4 inline-flex items-center gap-2 hover:text-green-300"
+                                    >
+                                        View Collection <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         );

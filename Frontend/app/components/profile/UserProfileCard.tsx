@@ -17,6 +17,7 @@ import { Edit, UserPlus, UserMinus } from "lucide-react";
 import { useState } from "react";
 
 interface SocialLinks {
+    farcaster?: string;
     base?: string;
     x?: string;
     instagram?: string;
@@ -150,9 +151,16 @@ export function UserProfileCard({
                             <div className="h-4 w-[1px] bg-zinc-700 hidden md:block" />
 
                             <div className="flex gap-3">
-                                {user.socialLinks?.base && (
-                                    <a href={user.socialLinks.base} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-[#0052FF] transition-colors">
+                                {user.socialLinks?.farcaster && (
+                                    <a href={user.socialLinks.farcaster} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-[#8A63D2] transition-colors" title="Farcaster">
                                         <SiFarcaster className="w-5 h-5" />
+                                    </a>
+                                )}
+                                {user.socialLinks?.base && (
+                                    <a href={user.socialLinks.base} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-[#0052FF] transition-colors" title="Base">
+                                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                            <circle cx="12" cy="12" r="10" />
+                                        </svg>
                                     </a>
                                 )}
                                 {user.socialLinks?.x && (
