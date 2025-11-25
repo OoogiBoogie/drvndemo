@@ -192,6 +192,22 @@ yarn test
 yarn test:watch
 ```
 
+## ✅ Spec Verification Checklist
+
+Complete the manual checks below before running the full test suite. Each item maps the spec requirement to the code responsible for it plus the quickest way to validate the behaviour in the app.
+
+| Area | Requirement | Key Implementation | How to Verify |
+| --- | --- | --- | --- |
+| Navigation | Garage and Buster tabs render inline (no pop-out, no gated auth) | `app/components/DRVNDashboard.tsx` | Run `yarn dev`, open `/garage`, and click **Garage** and **Buster Club** in the sidebar; confirm both update inline without routing away or prompting auth. |
+| Garage Modules | Module order, swipeable holdings, registry CTA, collectibles, vault | `app/components/Garage.tsx`, `app/components/profile/*` | On `/garage` confirm profile card, holdings carousel, collection stats, registry grid with modal, collectibles, and owner vault render in the client-specified order. |
+| Registered Vehicle | Rich vehicle view (gallery, stats, checklist, sponsor grid, token details, vehicle feed) | `app/vehicles/[id]/page.tsx`, `app/components/vehicle/*`, `hooks/useVehicleLifecycle.ts` | Visit `/vehicles/1`, scroll through gallery, stat grids, checklist, sponsorship module, token panel, and vehicle-filtered feed; ensure upgrade/sponsor buttons open their respective modals. |
+| Sponsor Experience | Sponsor hero, tiers, promo links, gallery, manage modal fallback | `app/sponsors/[id]/page.tsx`, `app/components/sponsor/SponsorProfile.tsx`, `app/components/modals/ManageSponsorshipModal.tsx` | Visit `/sponsors/1`, verify hero metrics, promo links, gallery. Trigger **Manage** to edit branding; closing modal should immediately reflect new mock data. |
+| Social Feed & Posting | Filtered feed, vehicle/sponsor tagging, quick composer, spotlight | `app/social/page.tsx`, `app/components/social/ContentFeed.tsx`, `app/components/social/PostCard.tsx`, `app/components/modals/CreatePostModal.tsx` | On `/social` toggle filters, open **Cast** FAB to create a post with vehicle + sponsor tags; upon success the new post should prepend in the feed using mock fallback. |
+| Registration → Monetization → Sponsorship | VIN decode fallback, registry mint mock, vehicle upgrade lifecycle, sponsor mint/manage | `app/components/modals/RegisterVehicleModal.tsx`, `UpgradeVehicleModal.tsx`, `BuySponsorshipModal.tsx`, `ManageSponsorshipModal.tsx`, `hooks/useVehicleLifecycle.ts`, `app/components/Garage.tsx`, `app/vehicles/[id]/page.tsx` | 1) From `/garage`, launch **Register VHCL** and step through VIN decode and mint; the new car appears in the registry. 2) On `/vehicles/1`, run **Monetize Vehicle** and accept the mock upgrade; checklist + token sections update. 3) Mint a sponsor slot via **Sponsor Vehicle**; progress bar increments and slot avatar fills. 4) Adjust branding via **Manage Sponsorship** to confirm edits stick locally when the API is unreachable. |
+| Settings Page | Profile fields (displayName, email, bio), social links (7 platforms), notification preferences, theme switcher, wallet management, newsletter signup | `app/settings/page.tsx`, `app/components/Settings.tsx`, `app/components/settings/SocialLinksEditor.tsx`, `NotificationToggles.tsx`, `ThemeSelector.tsx`, `app/components/modals/WalletManagementModal.tsx`, `lib/models/User.ts` | On `/settings` toggle edit mode and verify displayName, email, first/last name, bio fields are editable. In edit mode, verify social links section appears with 7 platform inputs (base, x, instagram, facebook, youtube, tiktok, linkedin). Toggle notification preferences (Post Mentions, Sponsorship Updates, Vehicle Activity) and theme selector (Auto/Light/Dark). Click **Manage Wallets** to open wallet management modal. Enter email in newsletter section and click Subscribe to test mock subscription. |
+
+Once every row is confirmed, run `yarn lint && yarn type-check && yarn test` (or the full test plan requested by the client) to ensure regressions don't slip in.
+
 ## 🚀 Vercel Deployment Guide
 
 ### Prerequisites

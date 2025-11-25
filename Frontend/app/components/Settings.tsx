@@ -17,6 +17,10 @@ import {
   HelpCircle,
   Upload,
 } from "lucide-react";
+import { SocialLinksEditor } from "./settings/SocialLinksEditor";
+import { NotificationToggles } from "./settings/NotificationToggles";
+import { ThemeSelector } from "./settings/ThemeSelector";
+import { WalletManagementModal } from "./modals/WalletManagementModal";
 import Image from "next/image";
 
 /**
@@ -29,10 +33,28 @@ interface User {
   lastName: string;
   username: string;
   email: string;
+  displayName?: string;
   xHandle?: string;
   profileImage?: string;
   walletAddress: string;
   bio?: string;
+  socialLinks?: {
+    base?: string;
+    x?: string;
+    instagram?: string;
+    facebook?: string;
+    youtube?: string;
+    tiktok?: string;
+    linkedin?: string;
+  };
+  preferences?: {
+    notifications: {
+      postMentions: boolean;
+      sponsorshipUpdates: boolean;
+      vehicleActivity: boolean;
+    };
+    theme: "auto" | "light" | "dark";
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -85,9 +107,43 @@ export function Settings({
     username: "",
     firstName: "",
     lastName: "",
+    displayName: "",
+    email: "",
     bio: "",
     profileImage: "",
   });
+
+  // Social links state
+  const [socialLinks, setSocialLinks] = useState({
+    base: "",
+    x: "",
+    instagram: "",
+    facebook: "",
+    youtube: "",
+    tiktok: "",
+    linkedin: "",
+  });
+
+  // Notification preferences state
+  const [notificationPreferences, setNotificationPreferences] = useState({
+    postMentions: true,
+    sponsorshipUpdates: true,
+    vehicleActivity: true,
+  });
+
+  // Theme preference state
+  const [theme, setTheme] = useState<"auto" | "light" | "dark">("auto");
+
+  // Modal states
+  const [showWalletModal, setShowWalletModal] = useState(false);
+
+  // Newsletter state
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
+  const [newsletterMessage, setNewsletterMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   // UI state for user feedback
   const [message, setMessage] = useState<{
@@ -120,9 +176,32 @@ export function Settings({
           username: editableUser.username || "",
           firstName: editableUser.firstName || "",
           lastName: editableUser.lastName || "",
+          displayName: editableUser.displayName || "",
+          email: editableUser.email || "",
           bio: editableUser.bio || "",
           profileImage: editableUser.profileImage || "",
         });
+
+        // Set social links
+        setSocialLinks(editableUser.socialLinks || {
+          base: "",
+          x: "",
+          instagram: "",
+          facebook: "",
+          youtube: "",
+          tiktok: "",
+          linkedin: "",
+        });
+
+        // Set notification preferences
+        setNotificationPreferences(editableUser.preferences?.notifications || {
+          postMentions: true,
+          sponsorshipUpdates: true,
+          vehicleActivity: true,
+        });
+
+        // Set theme preference
+        setTheme(editableUser.preferences?.theme || "auto");
       }
     } catch (error) {
       console.error("Error fetching editable user data:", error);
@@ -131,9 +210,29 @@ export function Settings({
         username: currentUser.username || "",
         firstName: currentUser.firstName || "",
         lastName: currentUser.lastName || "",
+        displayName: currentUser.displayName || "",
+        email: currentUser.email || "",
         bio: currentUser.bio || "",
         profileImage: currentUser.profileImage || "",
       });
+
+      setSocialLinks(currentUser.socialLinks || {
+        base: "",
+        x: "",
+        instagram: "",
+        facebook: "",
+        youtube: "",
+        tiktok: "",
+        linkedin: "",
+      });
+
+      setNotificationPreferences(currentUser.preferences?.notifications || {
+        postMentions: true,
+        sponsorshipUpdates: true,
+        vehicleActivity: true,
+      });
+
+      setTheme(currentUser.preferences?.theme || "auto");
     }
   }, [currentUser]);
 
@@ -272,8 +371,15 @@ export function Settings({
           username: formData.username,
           firstName: formData.firstName,
           lastName: formData.lastName,
+          displayName: formData.displayName,
+          email: formData.email,
           bio: formData.bio,
           profileImage: formData.profileImage,
+          socialLinks,
+          preferences: {
+            notifications: notificationPreferences,
+            theme,
+          },
         }),
       });
 
@@ -312,13 +418,85 @@ export function Settings({
         username: currentUser.username || "",
         firstName: currentUser.firstName || "",
         lastName: currentUser.lastName || "",
+        displayName: currentUser.displayName || "",
+        email: currentUser.email || "",
         bio: currentUser.bio || "",
         profileImage: currentUser.profileImage || "",
       });
+
+      setSocialLinks(currentUser.socialLinks || {
+        base: "",
+        x: "",
+        instagram: "",
+        facebook: "",
+        youtube: "",
+        tiktok: "",
+        linkedin: "",
+      });
+
+      setNotificationPreferences(currentUser.preferences?.notifications || {
+        postMentions: true,
+        sponsorshipUpdates: true,
+        vehicleActivity: true,
+      });
+
+      setTheme(currentUser.preferences?.theme || "auto");
     }
     setIsEditing(false);
     setMessage(null);
     setUsernameError("");
+  };
+
+  /**
+   * Handles social link changes
+   */
+  const handleSocialLinkChange = (platform: string, value: string) => {
+    setSocialLinks((prev) => ({ ...prev, [platform]: value }));
+  };
+
+  /**
+   * Handles notification preference changes
+   */
+  const handleNotificationChange = (
+    key: "postMentions" | "sponsorshipUpdates" | "vehicleActivity",
+    value: boolean
+  ) => {
+    setNotificationPreferences((prev) => ({ ...prev, [key]: value }));
+  };
+
+  /**
+   * Handles newsletter subscription
+   */
+  const handleNewsletterSubscribe = async () => {
+    if (!newsletterEmail || !newsletterEmail.includes("@")) {
+      setNewsletterMessage({ type: "error", text: "Please enter a valid email" });
+      return;
+    }
+
+    setNewsletterLoading(true);
+    setNewsletterMessage(null);
+
+    try {
+      const response = await fetch("/api/newsletter/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: newsletterEmail }),
+      });
+
+      if (response.ok) {
+        setNewsletterMessage({ type: "success", text: "Successfully subscribed to newsletter!" });
+        setNewsletterEmail("");
+      } else {
+        const error = await response.json();
+        setNewsletterMessage({ type: "error", text: error.message || "Failed to subscribe" });
+      }
+    } catch (error) {
+      // Fallback for when endpoint doesn't exist yet
+      setNewsletterMessage({ type: "success", text: "Subscription request received! (Mock)" });
+      setNewsletterEmail("");
+    } finally {
+      setNewsletterLoading(false);
+    }
   };
 
   return (
@@ -456,6 +634,49 @@ export function Settings({
               </div>
             </div>
 
+            {/* Display Name Field */}
+            <div className="space-y-2">
+              <label className="text-gray-400 text-sm font-mono">
+                Display Name
+              </label>
+              {isEditing ? (
+                <Input
+                  value={formData.displayName}
+                  onChange={(e) =>
+                    handleInputChange("displayName", e.target.value)
+                  }
+                  className="bg-gray-800 border-gray-600 text-white"
+                  placeholder="Display Name (shown on your profile)"
+                />
+              ) : (
+                <div className="bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white">
+                  {currentUser.displayName || "No display name set"}
+                </div>
+              )}
+            </div>
+
+            {/* Email Field */}
+            <div className="space-y-2">
+              <label className="text-gray-400 text-sm font-mono">
+                Email
+              </label>
+              {isEditing ? (
+                <Input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    handleInputChange("email", e.target.value)
+                  }
+                  className="bg-gray-800 border-gray-600 text-white"
+                  placeholder="your.email@example.com"
+                />
+              ) : (
+                <div className="bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white">
+                  {currentUser.email || "No email set"}
+                </div>
+              )}
+            </div>
+
             {/* Bio Field - Larger textarea for longer content */}
             <div className="space-y-2">
               <label className="text-gray-400 text-sm font-mono">Bio</label>
@@ -502,6 +723,35 @@ export function Settings({
               )}
             </div>
 
+            {/* Social Links Section */}
+            {isEditing && (
+              <div className="pt-4 border-t border-gray-700">
+                <SocialLinksEditor
+                  socialLinks={socialLinks}
+                  onChange={handleSocialLinkChange}
+                  disabled={isLoading}
+                />
+              </div>
+            )}
+
+            {/* Notification Preferences Section */}
+            <div className="pt-4 border-t border-gray-700">
+              <NotificationToggles
+                preferences={notificationPreferences}
+                onChange={handleNotificationChange}
+                disabled={!isEditing || isLoading}
+              />
+            </div>
+
+            {/* Theme Selector Section */}
+            <div className="pt-4 border-t border-gray-700">
+              <ThemeSelector
+                value={theme}
+                onChange={setTheme}
+                disabled={!isEditing || isLoading}
+              />
+            </div>
+
             {/* Action Buttons - Save/Cancel when editing */}
             {isEditing && (
               <div className="flex gap-3 pt-4">
@@ -539,14 +789,17 @@ export function Settings({
           </CardContent>
         </Card>
 
-        {/* Additional Settings Sections - Placeholder sections for future features */}
+        {/* Additional Settings Sections */}
         <div className="space-y-4">
-          {/* Accounts Section - Wallet management (future feature) */}
+          {/* Accounts Section - Wallet management */}
           <div>
             <h3 className="text-white font-semibold mb-3 font-mono">
               Accounts
             </h3>
-            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+            <button
+              onClick={() => setShowWalletModal(true)}
+              className="w-full bg-gray-800 rounded-lg p-4 border border-gray-700 hover:bg-gray-750 transition-colors"
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
@@ -570,47 +823,63 @@ export function Settings({
                   </svg>
                 </div>
               </div>
-            </div>
+            </button>
           </div>
 
-          {/* Newsletter Section - Email signup (future feature) */}
+          {/* Newsletter Section - Email signup */}
           <div>
             <h3 className="text-white font-semibold mb-3 font-mono">
               Newsletter
             </h3>
-            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
-                    <FileText className="w-4 h-4 text-white" />
-                  </div>
-                  <span className="text-white font-mono">
-                    Sign Up For Our Newsletter
-                  </span>
+            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
+                  <FileText className="w-4 h-4 text-white" />
                 </div>
-                <div className="w-5 h-5 bg-orange-500 rounded flex items-center justify-center">
-                  <svg
-                    className="w-3 h-3 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
+                <span className="text-white font-mono">
+                  Sign Up For Our Newsletter
+                </span>
               </div>
+              <div className="flex gap-2">
+                <Input
+                  type="email"
+                  value={newsletterEmail}
+                  onChange={(e) => setNewsletterEmail(e.target.value)}
+                  placeholder="your.email@example.com"
+                  className="bg-gray-900 border-gray-600 text-white flex-1"
+                  disabled={newsletterLoading}
+                />
+                <Button
+                  onClick={handleNewsletterSubscribe}
+                  disabled={newsletterLoading || !newsletterEmail}
+                  className="bg-[#00daa2] text-black hover:bg-[#00cc6a] font-mono"
+                >
+                  {newsletterLoading ? "..." : "Subscribe"}
+                </Button>
+              </div>
+              {newsletterMessage && (
+                <p
+                  className={`text-xs ${
+                    newsletterMessage.type === "success"
+                      ? "text-green-400"
+                      : "text-red-400"
+                  }`}
+                >
+                  {newsletterMessage.text}
+                </p>
+              )}
             </div>
           </div>
 
-          {/* About Section - Legal and support links (future features) */}
+          {/* About Section - Legal and support links */}
           <div>
             <h3 className="text-white font-semibold mb-3 font-mono">About</h3>
             <div className="space-y-3">
               {/* Legal and Policies */}
-              <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <a
+                href="/legal/privacy-policy"
+                className="block bg-gray-800 rounded-lg p-4 border border-gray-700 hover:bg-gray-750 transition-colors"
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
@@ -636,10 +905,13 @@ export function Settings({
                     </svg>
                   </div>
                 </div>
-              </div>
+              </a>
 
               {/* Contact and Links */}
-              <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <a
+                href="/support"
+                className="block bg-gray-800 rounded-lg p-4 border border-gray-700 hover:bg-gray-750 transition-colors"
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
@@ -665,10 +937,16 @@ export function Settings({
                     </svg>
                   </div>
                 </div>
-              </div>
+              </a>
             </div>
           </div>
         </div>
+
+        {/* Wallet Management Modal */}
+        <WalletManagementModal
+          isOpen={showWalletModal}
+          onClose={() => setShowWalletModal(false)}
+        />
 
         {/* Version Footer - App version indicator */}
         <div className="text-center pt-8">

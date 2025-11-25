@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { MarketplaceCard, marketplaceItems } from "./ui/marketplace-card";
 import { TopStoriesSection } from "./ui/top-stories-section";
@@ -46,6 +48,7 @@ import { HeroHeader } from "./ui/hero-header";
 
 export function DRVNDashboard() {
   const { address } = useAccount();
+  const router = useRouter();
   const [showNotification, setShowNotification] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -218,14 +221,12 @@ export function DRVNDashboard() {
       label: "Garage",
       id: "garage",
       isGreen: true,
-      requiresAuth: true,
     },
     {
       icon: Coins,
       label: "Buster Club",
       id: "buster-club",
       isGreen: true,
-      requiresAuth: true,
     },
     {
       icon: SettingsIcon,
@@ -268,11 +269,8 @@ export function DRVNDashboard() {
     // Use progressive disclosure instead of blocking access
     const canAccessPage = (page: string) => {
       switch (page) {
-        case "garage":
         case "settings":
           return canAccessProtectedFeature("garage");
-        case "buster-club":
-          return canAccessProtectedFeature("trading");
         default:
           return true;
       }
@@ -709,9 +707,8 @@ export function DRVNDashboard() {
       <div className="flex h-screen">
         {/* Desktop Sidebar */}
         <div
-          className={`relative bg-gray-950 border-r border-[#8351a1] transition-all duration-300 hidden md:block ${
-            sidebarCollapsed ? "w-16" : "w-64"
-          }`}
+          className={`relative bg-gray-950 border-r border-[#8351a1] transition-all duration-300 hidden md:block ${sidebarCollapsed ? "w-16" : "w-64"
+            }`}
         >
           {/* Collapse Arrow */}
           <button
@@ -720,9 +717,8 @@ export function DRVNDashboard() {
             title={sidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
             <ChevronLeft
-              className={`transition-transform duration-300 ${
-                sidebarCollapsed ? "rotate-180" : ""
-              }`}
+              className={`transition-transform duration-300 ${sidebarCollapsed ? "rotate-180" : ""
+                }`}
             />
           </button>
 
@@ -731,9 +727,8 @@ export function DRVNDashboard() {
             <div className={`${sidebarCollapsed ? "p-2" : "p-6"}`}>
               {/* Logo Section */}
               <div
-                className={`transition-all duration-300 ${
-                  sidebarCollapsed ? "flex justify-center mt-20" : "mb-6"
-                }`}
+                className={`transition-all duration-300 ${sidebarCollapsed ? "flex justify-center mt-20" : "mb-6"
+                  }`}
               >
                 {sidebarCollapsed ? (
                   <Tooltip>
@@ -768,9 +763,8 @@ export function DRVNDashboard() {
 
               {/* Sign Up/Login Button or User Profile */}
               <div
-                className={`mb-6 transition-all duration-300 ${
-                  sidebarCollapsed ? "flex justify-center mt-6" : ""
-                }`}
+                className={`mb-6 transition-all duration-300 ${sidebarCollapsed ? "flex justify-center mt-6" : ""
+                  }`}
               >
                 {address && isAuthenticated && currentUser ? (
                   // User Profile - Show when signed in and authenticated
@@ -832,35 +826,35 @@ export function DRVNDashboard() {
                     </div>
                   )
                 ) : // Sign Up/Login Button - Show when not signed in or not authenticated
-                sidebarCollapsed ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="border-[#00daa2] text-[#00daa2] hover:bg-[#00daa2] hover:text-black bg-transparent"
-                        onClick={handleAuthClick}
-                        title="Sign Up/Login"
+                  sidebarCollapsed ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="border-[#00daa2] text-[#00daa2] hover:bg-[#00daa2] hover:text-black bg-transparent"
+                          onClick={handleAuthClick}
+                          title="Sign Up/Login"
+                        >
+                          <UserPlus className="h-5 w-5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="right"
+                        className="bg-black border-gray-700 text-[#00daa2] font-mono"
                       >
-                        <UserPlus className="h-5 w-5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent
-                      side="right"
-                      className="bg-black border-gray-700 text-[#00daa2] font-mono"
+                        Sign Up/Login
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      className="border-[#00daa2] text-white hover:bg-[#00daa2] hover:text-black bg-transparent w-full font-mono font-semibold"
+                      onClick={handleAuthClick}
                     >
-                      Sign Up/Login
-                    </TooltipContent>
-                  </Tooltip>
-                ) : (
-                  <Button
-                    variant="outline"
-                    className="border-[#00daa2] text-white hover:bg-[#00daa2] hover:text-black bg-transparent w-full font-mono font-semibold"
-                    onClick={handleAuthClick}
-                  >
-                    SIGN UP/LOGIN
-                  </Button>
-                )}
+                      SIGN UP/LOGIN
+                    </Button>
+                  )}
               </div>
 
               {/* Navigation Items */}
@@ -878,11 +872,10 @@ export function DRVNDashboard() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className={`flex items-center gap-3 px-3 py-3 rounded-md transition-colors font-mono font-semibold justify-center ${
-                              activePage === item.id
-                                ? "text-[#00daa2] bg-gray-800"
-                                : "text-[#00daa2] hover:bg-gray-800"
-                            }`}
+                            className={`flex items-center gap-3 px-3 py-3 rounded-md transition-colors font-mono font-semibold justify-center ${activePage === item.id
+                              ? "text-[#00daa2] bg-gray-800"
+                              : "text-[#00daa2] hover:bg-gray-800"
+                              }`}
                             onClick={() => {
                               // Use progressive disclosure for protected features
                               if (item.requiresAuth) {
@@ -891,9 +884,7 @@ export function DRVNDashboard() {
                                   | "garage"
                                   | "trading"
                                   | "social" = "garage";
-                                if (item.id === "buster-club") {
-                                  featureType = "trading";
-                                } else if (
+                                if (
                                   item.id === "settings" ||
                                   item.id === "garage"
                                 ) {
@@ -922,11 +913,10 @@ export function DRVNDashboard() {
                       <Button
                         key={item.label}
                         variant="ghost"
-                        className={`flex items-center gap-3 px-3 py-3 rounded-md transition-colors font-mono font-semibold w-full text-left justify-start ${
-                          activePage === item.id
-                            ? "text-[#00daa2] bg-gray-800"
-                            : "text-[#00daa2] hover:bg-gray-800"
-                        }`}
+                        className={`flex items-center gap-3 px-3 py-3 rounded-md transition-colors font-mono font-semibold w-full text-left justify-start ${activePage === item.id
+                          ? "text-[#00daa2] bg-gray-800"
+                          : "text-[#00daa2] hover:bg-gray-800"
+                          }`}
                         onClick={() => {
                           // Use progressive disclosure for protected features
                           if (item.requiresAuth) {
@@ -935,9 +925,7 @@ export function DRVNDashboard() {
                               | "garage"
                               | "trading"
                               | "social" = "garage";
-                            if (item.id === "buster-club") {
-                              featureType = "trading";
-                            } else if (
+                            if (
                               item.id === "settings" ||
                               item.id === "garage"
                             ) {
@@ -1020,9 +1008,8 @@ export function DRVNDashboard() {
         {/* Mobile Sidebar */}
         <div
           data-mobile-sidebar
-          className={`fixed inset-y-0 left-0 z-[50] w-64 bg-gray-950 border-r border-[#8351a1] transform transition-transform duration-300 md:hidden ${
-            mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+          className={`fixed inset-y-0 left-0 z-[50] w-64 bg-gray-950 border-r border-[#8351a1] transform transition-transform duration-300 md:hidden ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
         >
           {/* Mobile Sidebar Content */}
           <div className="p-6">
@@ -1080,11 +1067,10 @@ export function DRVNDashboard() {
                   <Button
                     key={item.label}
                     variant="ghost"
-                    className={`flex items-center gap-3 px-3 py-3 rounded-md transition-colors font-mono font-semibold w-full text-left justify-start ${
-                      activePage === item.id
-                        ? "text-[#00daa2] bg-gray-800"
-                        : "text-[#00daa2] hover:bg-gray-800"
-                    }`}
+                    className={`flex items-center gap-3 px-3 py-3 rounded-md transition-colors font-mono font-semibold w-full text-left justify-start ${activePage === item.id
+                      ? "text-[#00daa2] bg-gray-800"
+                      : "text-[#00daa2] hover:bg-gray-800"
+                      }`}
                     onClick={() => {
                       if (item.externalUrl) {
                         handleExternalLink(item.externalUrl);

@@ -43,11 +43,52 @@ const UserSchema = new mongoose.Schema({
     default: "", // User bio/description
     maxlength: [500, "Bio must be less than 500 characters"],
   },
+  displayName: {
+    type: String,
+    trim: true,
+  },
+  socialLinks: {
+    base: { type: String, trim: true },
+    x: { type: String, trim: true },
+    instagram: { type: String, trim: true },
+    facebook: { type: String, trim: true },
+    youtube: { type: String, trim: true },
+    tiktok: { type: String, trim: true },
+    linkedin: { type: String, trim: true },
+  },
+  followers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  }],
+  following: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  }],
+  followerCount: {
+    type: Number,
+    default: 0,
+  },
+  followingCount: {
+    type: Number,
+    default: 0,
+  },
   walletAddress: {
     type: String,
     required: [true, "Wallet address is required"],
     unique: true,
     lowercase: true,
+  },
+  preferences: {
+    notifications: {
+      postMentions: { type: Boolean, default: true },
+      sponsorshipUpdates: { type: Boolean, default: true },
+      vehicleActivity: { type: Boolean, default: true },
+    },
+    theme: {
+      type: String,
+      enum: ["auto", "light", "dark"],
+      default: "auto",
+    },
   },
   createdAt: {
     type: Date,
