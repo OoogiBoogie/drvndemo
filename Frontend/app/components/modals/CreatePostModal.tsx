@@ -4,9 +4,9 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
 import { Textarea } from "@/app/components/ui/textarea";
-import { Loader2, CheckCircle, AlertCircle, Image as ImageIcon, Tag, Handshake } from "lucide-react";
+import { Loader2, CheckCircle, AlertCircle, Image as ImageIcon, Tag, Handshake, Check, Send, Globe } from "lucide-react";
 import Image from "next/image";
-import { SocialPost } from "@/app/components/social/types";
+import { SocialPost, CrossPostSettings, SocialPlatform } from "@/app/components/social/types";
 
 interface CreatePostModalProps {
     isOpen: boolean;
@@ -19,7 +19,9 @@ interface CreatePostModalProps {
         avatar: string;
     };
     sponsors?: Array<{ id: string; name: string; logo?: string; url?: string }>;
-    onPostCreated?: (post: SocialPost) => void;
+    onPostCreated?: (post: SocialPost, crossPostTo: CrossPostSettings) => void;
+    connectedPlatforms?: SocialPlatform[];
+    initialCrossPostSettings?: CrossPostSettings;
 }
 
 export function CreatePostModal({
@@ -30,6 +32,8 @@ export function CreatePostModal({
     currentUser,
     sponsors = [],
     onPostCreated,
+    connectedPlatforms = [],
+    initialCrossPostSettings,
 }: CreatePostModalProps) {
     const [content, setContent] = useState("");
     const [images, setImages] = useState<File[]>([]);
@@ -40,6 +44,19 @@ export function CreatePostModal({
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
+    const [crossPostTo, setCrossPostTo] = useState<CrossPostSettings>(
+        initialCrossPostSettings || {
+            farcaster: connectedPlatforms.includes("farcaster"),
+            base: connectedPlatforms.includes("base"),
+            x: connectedPlatforms.includes("x"),
+        }
+    );
+
+    const platformInfo: Record<SocialPlatform, { icon: string; name: string; color: string }> = {
+        farcaster: { icon: "🟣", name: "Farcaster", color: "purple" },
+        base: { icon: "🔵", name: "Base", color: "blue" },
+        x: { icon: "✕", name: "X", color: "gray" },
+    };
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -113,6 +130,10 @@ export function CreatePostModal({
                 ? ipfsUrls[0].replace("ipfs://", "https://ipfs.io/ipfs/")
                 : undefined;
 
+        const selectedPlatforms = (Object.entries(crossPostTo) as [SocialPlatform, boolean][])
+            .filter(([, enabled]) => enabled)
+            .map(([platform]) => platform);
+
         const newPost: SocialPost = {
             id: `local-${Date.now()}`,
             author: currentUser,
@@ -137,9 +158,10 @@ export function CreatePostModal({
                 }
                 : undefined,
             source: "in-app",
+            crossPostedTo: selectedPlatforms.length > 0 ? selectedPlatforms : undefined,
         };
 
-        onPostCreated?.(newPost);
+        onPostCreated?.(newPost, crossPostTo);
 
         setSuccess(true);
         setTimeout(() => {
@@ -347,6 +369,51 @@ export function CreatePostModal({
                                     Tag Sponsor
                                 </Button>
                             )}
+                        </div>
+
+                        {/* Cross-Post Platforms */}
+                        <div className="rounded-xl bg-zinc-800/50 p-4 space-y-3">
+                            <div className="flex items-center gap-2">
+                                <Globe className="w-4 h-4 text-primary" />
+                                <span className="text-sm font-medium text-white">Post to platforms</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => {}}
+                                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium bg-primary/20 text-primary border border-primary/40"
+                                >
+                                    <span>🚗</span>
+                                    <span>DRVN</span>
+                                    <Check className="w-3.5 h-3.5" />
+                                </button>
+                                {(["farcaster", "base", "x"] as SocialPlatform[]).map((platform) => {
+                                    const info = platformInfo[platform];
+                                    const isEnabled = crossPostTo[platform];
+                                    return (
+                                        <button
+                                            key={platform}
+                                            type="button"
+                                            onClick={() => setCrossPostTo(prev => ({
+                                                ...prev,
+                                                [platform]: !prev[platform]
+                                            }))}
+                                            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                                                isEnabled
+                                                    ? "bg-white/10 text-white border border-white/20"
+                                                    : "bg-zinc-900 text-zinc-500 border border-zinc-700 hover:border-zinc-600"
+                                            }`}
+                                        >
+                                            <span>{info.icon}</span>
+                                            <span>{info.name}</span>
+                                            {isEnabled && <Check className="w-3.5 h-3.5" />}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                            <p className="text-xs text-zinc-500">
+                                Select platforms to cross-post your content
+                            </p>
                         </div>
 
                         {error && (

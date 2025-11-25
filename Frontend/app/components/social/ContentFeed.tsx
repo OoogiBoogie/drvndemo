@@ -2,38 +2,43 @@
 
 import { useMemo, useState } from "react";
 import { PostCard } from "./PostCard";
-import { SocialPost } from "./types";
+import { SocialPost, SocialPostSource } from "./types";
 import { MOCK_SOCIAL_POSTS } from "./mockPosts";
 
-type FeedFilterId = "in-app" | "farcaster" | "all";
+type FeedFilterId = SocialPostSource | "all";
 
 interface ContentFeedProps {
     vehicleId?: string;
     title?: string;
     posts?: SocialPost[];
+    showAllFilters?: boolean;
 }
 
-const FILTERS: Array<{ id: FeedFilterId; label: string }> = [
-    { id: "in-app", label: "In-App" },
-    { id: "farcaster", label: "Farcaster" },
+const FILTERS: Array<{ id: FeedFilterId; label: string; icon?: string }> = [
     { id: "all", label: "All" },
+    { id: "in-app", label: "DRVN", icon: "🚗" },
+    { id: "farcaster", label: "Farcaster", icon: "🟣" },
+    { id: "base", label: "Base", icon: "🔵" },
+    { id: "x", label: "X", icon: "✕" },
 ];
 
-export function ContentFeed({ vehicleId, title = "Latest Activity", posts }: ContentFeedProps) {
-    const [activeFilter, setActiveFilter] = useState<FeedFilterId>("in-app");
+export function ContentFeed({ vehicleId, title = "Latest Activity", posts, showAllFilters = true }: ContentFeedProps) {
+    const [activeFilter, setActiveFilter] = useState<FeedFilterId>("all");
 
     const feedPosts = posts ?? MOCK_SOCIAL_POSTS;
 
     const counts = useMemo(() => {
         return feedPosts.reduce(
             (acc, post) => {
-                acc[post.source] += 1;
+                acc[post.source] = (acc[post.source] || 0) + 1;
                 acc.all += 1;
                 return acc;
             },
-            { "in-app": 0, farcaster: 0, all: 0 } as Record<FeedFilterId, number>,
+            { "in-app": 0, farcaster: 0, base: 0, x: 0, all: 0 } as Record<FeedFilterId, number>,
         );
     }, [feedPosts]);
+
+    const visibleFilters = showAllFilters ? FILTERS : FILTERS.filter(f => f.id === "all" || counts[f.id] > 0);
 
     const filteredPosts = feedPosts.filter((post) => {
         const matchesVehicle = vehicleId ? post.vehicleTag?.id === vehicleId : true;
@@ -53,19 +58,20 @@ export function ContentFeed({ vehicleId, title = "Latest Activity", posts }: Con
                     </p>
                 </div>
                 {!vehicleId && (
-                    <div className="flex items-center gap-2">
-                        {FILTERS.map((filter) => (
+                    <div className="flex items-center gap-2 flex-wrap">
+                        {visibleFilters.map((filter) => (
                             <button
                                 key={filter.id}
                                 onClick={() => setActiveFilter(filter.id)}
-                                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors border ${
+                                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors border flex items-center gap-1.5 ${
                                     activeFilter === filter.id
                                         ? "bg-primary/20 text-primary border-primary/40"
                                         : "bg-white/5 text-white/70 border-white/10 hover:bg-white/10"
                                 }`}
                             >
+                                {filter.icon && <span>{filter.icon}</span>}
                                 {filter.label}
-                                <span className="ml-1 text-[10px] text-white/60">
+                                <span className="text-[10px] text-white/60">
                                     {counts[filter.id]}
                                 </span>
                             </button>

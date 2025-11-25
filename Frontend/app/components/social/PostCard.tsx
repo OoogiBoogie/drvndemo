@@ -4,16 +4,25 @@ import { Card, CardContent } from "@/app/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
-import { Heart, MessageCircle, Repeat, Share, Car } from "lucide-react";
+import { Heart, MessageCircle, Repeat, Share, Car, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { SocialPost } from "./types";
+import { SocialPost, SocialPlatform } from "./types";
 
 interface PostCardProps {
     post: SocialPost;
 }
 
+const platformConfig: Record<SocialPost["source"], { icon: string; label: string; color: string }> = {
+    "in-app": { icon: "🚗", label: "DRVN", color: "bg-primary/20 text-primary border-primary/40" },
+    farcaster: { icon: "🟣", label: "Farcaster", color: "bg-purple-500/20 text-purple-400 border-purple-500/40" },
+    base: { icon: "🔵", label: "Base", color: "bg-blue-500/20 text-blue-400 border-blue-500/40" },
+    x: { icon: "✕", label: "X", color: "bg-zinc-500/20 text-zinc-300 border-zinc-500/40" },
+};
+
 export function PostCard({ post }: PostCardProps) {
+    const sourceConfig = platformConfig[post.source];
+
     return (
         <Card className="bg-black/40 border-white/10 backdrop-blur-md mb-4">
             <CardContent className="p-4">
@@ -28,10 +37,38 @@ export function PostCard({ post }: PostCardProps) {
                             <span className="font-bold text-white">{post.author.name}</span>
                             <span className="text-zinc-500 text-sm">@{post.author.username}</span>
                             <span className="text-zinc-600 text-xs">• {post.timestamp}</span>
-                            <Badge className={`text-[10px] uppercase tracking-wide ${post.source === "in-app" ? "bg-primary/20 text-primary border-primary/40" : "bg-white/10 text-white border-white/20"}`}>
-                                {post.source === "in-app" ? "In-App" : "Farcaster"}
+                            <Badge className={`text-[10px] flex items-center gap-1 ${sourceConfig.color}`}>
+                                <span>{sourceConfig.icon}</span>
+                                {sourceConfig.label}
                             </Badge>
+                            {post.externalUrl && (
+                                <a 
+                                    href={post.externalUrl} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-zinc-500 hover:text-primary transition-colors"
+                                >
+                                    <ExternalLink className="w-3.5 h-3.5" />
+                                </a>
+                            )}
                         </div>
+                        
+                        {post.crossPostedTo && post.crossPostedTo.length > 0 && (
+                            <div className="flex items-center gap-1.5 mb-2">
+                                <span className="text-[10px] text-zinc-500">Also on:</span>
+                                {post.crossPostedTo.map((platform) => {
+                                    const config = platformConfig[platform];
+                                    return (
+                                        <span 
+                                            key={platform}
+                                            className="text-xs bg-zinc-800 rounded-full px-2 py-0.5"
+                                        >
+                                            {config.icon}
+                                        </span>
+                                    );
+                                })}
+                            </div>
+                        )}
 
                         <p className="text-zinc-200 text-sm mb-3 whitespace-pre-wrap">
                             {post.content}

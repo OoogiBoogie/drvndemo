@@ -116,6 +116,29 @@ The application supports multiple access methods:
 
 ## Recent Changes
 
+### November 25, 2025 - Enhanced Social Hub with Multi-Platform Integration
+- **Completely redesigned Social page** (`/social`) as a Social Hub:
+  - Hero header with "Social Hub" branding and car garage background
+  - Platform connection cards for Farcaster, Base, and X (Twitter)
+  - Each platform shows connection status, benefits, and connect buttons
+  - Stats bar showing platforms connected, post count, and on-chain status
+- **Multi-platform feed filtering**:
+  - Extended `SocialPostSource` type to include: in-app, farcaster, base, x
+  - Added platform badges with icons (🚗 DRVN, 🟣 Farcaster, 🔵 Base, ✕ X)
+  - Feed filters show platform icons and post counts
+- **Cross-posting functionality**:
+  - Added `CrossPostSettings` and `PlatformConnection` types
+  - CreatePostModal includes platform selection toggles
+  - Posts show "Also on:" badges for cross-posted content
+- **Enhanced PostCard component**:
+  - Platform-colored badges for each source
+  - External link icons for posts from external platforms
+  - Cross-posted indicators showing where else content was shared
+- **Extended social types** in `types.ts`:
+  - Added `SocialPlatform`, `PlatformConnection`, `CrossPostSettings`
+  - Extended `SocialAuthor` with fid, baseAddress, xHandle
+  - Extended `SocialPost` with crossPostedTo and externalUrl
+
 ### November 25, 2025 - Social Feed Navigation & Type Fixes
 - **Added Social Feed tab** to navigation menu between Buster Club and Settings
   - Uses MessageSquare icon from lucide-react
