@@ -317,7 +317,6 @@ export function DRVNDashboard() {
       label: "Settings",
       id: "settings",
       isGreen: true,
-      requiresAuth: true,
     },
     {
       icon: FaXTwitter,
@@ -352,12 +351,8 @@ export function DRVNDashboard() {
 
     // Use progressive disclosure instead of blocking access
     const canAccessPage = (page: string) => {
-      switch (page) {
-        case "settings":
-          return canAccessProtectedFeature("garage");
-        default:
-          return true;
-      }
+      // All pages are accessible - settings will show appropriate UI based on auth state
+      return true;
     };
 
     // Show progressive disclosure for protected pages
@@ -1398,28 +1393,7 @@ export function DRVNDashboard() {
                               ? "text-[#00daa2] bg-gray-800"
                               : "text-[#00daa2] hover:bg-gray-800"
                               }`}
-                            onClick={() => {
-                              // Use progressive disclosure for protected features
-                              if (item.requiresAuth) {
-                                let featureType:
-                                  | "marketplace"
-                                  | "garage"
-                                  | "trading"
-                                  | "social" = "garage";
-                                if (
-                                  item.id === "settings" ||
-                                  item.id === "garage"
-                                ) {
-                                  featureType = "garage";
-                                }
-
-                                if (!canAccessProtectedFeature(featureType)) {
-                                  // The ProgressiveActionButton will handle the prompt
-                                  return;
-                                }
-                              }
-                              setActivePage(item.id);
-                            }}
+                            onClick={() => setActivePage(item.id)}
                           >
                             <item.icon className="h-5 w-5 flex-shrink-0" />
                           </Button>
@@ -1439,28 +1413,7 @@ export function DRVNDashboard() {
                           ? "text-[#00daa2] bg-gray-800"
                           : "text-[#00daa2] hover:bg-gray-800"
                           }`}
-                        onClick={() => {
-                          // Use progressive disclosure for protected features
-                          if (item.requiresAuth) {
-                            let featureType:
-                              | "marketplace"
-                              | "garage"
-                              | "trading"
-                              | "social" = "garage";
-                            if (
-                              item.id === "settings" ||
-                              item.id === "garage"
-                            ) {
-                              featureType = "garage";
-                            }
-
-                            if (!canAccessProtectedFeature(featureType)) {
-                              // The ProgressiveActionButton will handle the prompt
-                              return;
-                            }
-                          }
-                          setActivePage(item.id);
-                        }}
+                        onClick={() => setActivePage(item.id)}
                       >
                         <item.icon className="h-5 w-5 flex-shrink-0" />
                         <span className="ml-0">{item.label}</span>
@@ -1597,27 +1550,6 @@ export function DRVNDashboard() {
                       if (item.externalUrl) {
                         handleExternalLink(item.externalUrl);
                       } else {
-                        // Use progressive disclosure for protected features
-                        if (item.requiresAuth) {
-                          let featureType:
-                            | "marketplace"
-                            | "garage"
-                            | "trading"
-                            | "social" = "garage";
-                          if (item.id === "buster-club") {
-                            featureType = "trading";
-                          } else if (
-                            item.id === "settings" ||
-                            item.id === "garage"
-                          ) {
-                            featureType = "garage";
-                          }
-
-                          if (!canAccessProtectedFeature(featureType)) {
-                            // The ProgressiveActionButton will handle the prompt
-                            return;
-                          }
-                        }
                         setActivePage(item.id);
                       }
                       toggleMobileMenu();
