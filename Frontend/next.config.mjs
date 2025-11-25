@@ -3,6 +3,14 @@ const nextConfig = {
   // Configuration for Replit environment
   // Replit serves the app through a proxy with dynamic domains (*.replit.dev, *.id.repl.co)
   // Host checking is disabled via HOSTNAME environment variable in package.json scripts
+  
+  // Allow all Replit dev origins to prevent chunk loading errors
+  allowedDevOrigins: [
+    'https://*.replit.dev',
+    'https://*.riker.replit.dev',
+    'https://*.id.repl.co',
+  ],
+  
   // Silence warnings
   webpack: (config) => {
     config.externals.push("pino-pretty", "lokijs", "encoding");
