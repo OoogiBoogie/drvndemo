@@ -116,6 +116,25 @@ The application supports multiple access methods:
 
 ## Recent Changes
 
+### November 25, 2025 - Amplified DRVN Culture Page
+- **Complete redesign of DRVN Culture section** as a full content hub:
+  - Hero header with updated tagline "Your gateway to automotive culture, IRL and onchain"
+  - **Category filter tabs**: All Content, Trending, Podcasts, Videos, Motorsport, JDM
+  - **Featured Content section** with the existing Top Stories carousel
+  - **Stats bar** showing Episodes (24), Total Views (156K), Creators (12), Premium Series (3)
+  - **Latest Episodes grid** with thumbnail cards showing:
+    - Episode title, host, duration, date
+    - Play button overlay and NEW badges for recent content
+  - **Browse by Category grid** with 8 category tiles:
+    - Podcasts, Videos, Motorsport, JDM Culture, Euro Scene, American Muscle, Onchain, IRL Events
+    - Each with item counts and gradient backgrounds
+  - **Coming Soon section** for DRVN Originals:
+    - Teaser for exclusive documentaries and behind-the-scenes content
+    - Get Notified and Learn More buttons
+  - **Featured Creators spotlight** showing 4 creator profiles:
+    - Avatar, name, handle, and follower counts
+- Consistent navigation behavior: DRVN Culture now renders within dashboard like Garage/Social/Buster Club
+
 ### November 25, 2025 - Enhanced Social Hub with Multi-Platform Integration
 - **Completely redesigned Social page** (`/social`) as a Social Hub:
   - Hero header with "Social Hub" branding and car garage background

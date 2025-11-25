@@ -13,12 +13,15 @@ import {
   ChevronRight,
   UserPlus,
   Menu,
-  // TrendingUp,
+  TrendingUp,
   Settings as SettingsIcon,
   Coins,
   Car,
   Tag,
   MessageSquare,
+  Play,
+  Clock,
+  Bell,
 } from "lucide-react";
 import { FaXTwitter } from "react-icons/fa6";
 import { BsSpeedometer2 } from "react-icons/bs";
@@ -596,19 +599,256 @@ export function DRVNDashboard() {
 
       case "culture":
         return (
-          <div className="space-y-6">
+          <div className="space-y-8">
+            {/* Hero Header */}
             <HeroHeader
               title="DRVN Culture"
-              subtitle="Stay updated with the latest automotive culture and news"
+              subtitle="Your gateway to automotive culture, IRL and onchain"
               backgroundImage="/Cars/CultureHero1.jpg"
             />
-            <div className="bg-gray-900 rounded-lg p-6 border border-gray-700">
-              <h3 className="text-[#00daa2] text-lg font-mono font-bold mb-3">
-                Stay up-to-date on the latest news and content from across the
-                automotive spectrum, IRL, online, and onchain. Original content
-                coming soon.
-              </h3>
+
+            {/* Category Filter Tabs */}
+            <div className="flex flex-wrap gap-2 md:gap-3">
+              {[
+                { id: "all", label: "All Content", icon: "🔥" },
+                { id: "trending", label: "Trending", icon: "📈" },
+                { id: "podcasts", label: "Podcasts", icon: "🎙️" },
+                { id: "videos", label: "Videos", icon: "🎬" },
+                { id: "motorsport", label: "Motorsport", icon: "🏎️" },
+                { id: "jdm", label: "JDM", icon: "🇯🇵" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  className={`px-4 py-2 rounded-lg font-mono text-sm transition-all ${
+                    tab.id === "all"
+                      ? "bg-[#00daa2] text-black font-bold"
+                      : "bg-gray-800 text-gray-300 border border-gray-700 hover:border-[#00daa2] hover:text-[#00daa2]"
+                  }`}
+                >
+                  <span className="mr-1.5">{tab.icon}</span>
+                  {tab.label}
+                </button>
+              ))}
             </div>
+
+            {/* Featured Content - Main Carousel */}
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-white text-xl md:text-2xl font-bold font-mono flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-[#00daa2]" />
+                  Featured Content
+                </h2>
+                <span className="text-gray-400 text-sm font-mono">Updated daily</span>
+              </div>
+              
+              <TopStoriesSection onNavigate={setActivePage} />
+            </section>
+
+            {/* Stats Bar */}
+            <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-xl p-4 border border-gray-700">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div className="space-y-1">
+                  <div className="text-2xl md:text-3xl font-bold text-[#00daa2] font-mono">24</div>
+                  <div className="text-xs text-gray-400 font-mono uppercase">Episodes</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-2xl md:text-3xl font-bold text-white font-mono">156K</div>
+                  <div className="text-xs text-gray-400 font-mono uppercase">Total Views</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-2xl md:text-3xl font-bold text-white font-mono">12</div>
+                  <div className="text-xs text-gray-400 font-mono uppercase">Creators</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-2xl md:text-3xl font-bold text-purple-400 font-mono">3</div>
+                  <div className="text-xs text-gray-400 font-mono uppercase">Premium Series</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Latest Episodes Section */}
+            <section className="space-y-4">
+              <h2 className="text-white text-xl md:text-2xl font-bold font-mono flex items-center gap-2">
+                <Play className="h-5 w-5 text-[#00daa2]" />
+                Latest Episodes
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  {
+                    title: "MONEY SHIFT PODCAST / EP.11 - The Collector's Mindset",
+                    host: "DRVN VHCLS",
+                    duration: "45:22",
+                    date: "Yesterday",
+                    thumbnail: "/Articles/MSP10.jpg",
+                    isNew: true,
+                  },
+                  {
+                    title: "Building Your First JDM Collection",
+                    host: "RHD Guys",
+                    duration: "32:15",
+                    date: "3 days ago",
+                    thumbnail: "/Articles/rhd-guys-wagons.jpg",
+                    isNew: false,
+                  },
+                  {
+                    title: "F1 2025: What to Expect from the New Regulations",
+                    host: "Motorsport Weekly",
+                    duration: "28:45",
+                    date: "1 week ago",
+                    thumbnail: "/Articles/f1-cover-1.jpg",
+                    isNew: false,
+                  },
+                  {
+                    title: "Onchain Ownership: The Future of Car Collecting",
+                    host: "DRVN VHCLS",
+                    duration: "38:10",
+                    date: "1 week ago",
+                    thumbnail: "/Cars/CultureHero1.jpg",
+                    isNew: false,
+                  },
+                ].map((episode, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-900 rounded-xl border border-gray-700 overflow-hidden hover:border-[#00daa2] transition-all cursor-pointer group"
+                  >
+                    <div className="flex">
+                      <div className="relative w-32 h-24 md:w-40 md:h-28 flex-shrink-0">
+                        <Image
+                          src={episode.thumbnail}
+                          alt={episode.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                          <div className="bg-black/80 p-2 rounded-full">
+                            <Play className="h-4 w-4 text-white fill-white" />
+                          </div>
+                        </div>
+                        {episode.isNew && (
+                          <div className="absolute top-2 left-2 bg-[#00daa2] text-black text-xs px-2 py-0.5 rounded font-bold">
+                            NEW
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-3 flex flex-col justify-between flex-1">
+                        <div>
+                          <h4 className="text-white font-mono text-sm font-bold line-clamp-2 group-hover:text-[#00daa2] transition-colors">
+                            {episode.title}
+                          </h4>
+                          <p className="text-gray-400 text-xs mt-1">{episode.host}</p>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-gray-500">
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {episode.duration}
+                          </span>
+                          <span>{episode.date}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Content Categories Grid */}
+            <section className="space-y-4">
+              <h2 className="text-white text-xl md:text-2xl font-bold font-mono">
+                Browse by Category
+              </h2>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  { name: "Podcasts", count: 24, icon: "🎙️", color: "from-purple-500/20 to-purple-900/20" },
+                  { name: "Videos", count: 48, icon: "🎬", color: "from-blue-500/20 to-blue-900/20" },
+                  { name: "Motorsport", count: 16, icon: "🏎️", color: "from-red-500/20 to-red-900/20" },
+                  { name: "JDM Culture", count: 32, icon: "🇯🇵", color: "from-[#00daa2]/20 to-green-900/20" },
+                  { name: "Euro Scene", count: 28, icon: "🇩🇪", color: "from-yellow-500/20 to-yellow-900/20" },
+                  { name: "American Muscle", count: 20, icon: "🇺🇸", color: "from-pink-500/20 to-pink-900/20" },
+                  { name: "Onchain", count: 12, icon: "⛓️", color: "from-cyan-500/20 to-cyan-900/20" },
+                  { name: "IRL Events", count: 8, icon: "📍", color: "from-orange-500/20 to-orange-900/20" },
+                ].map((category, index) => (
+                  <div
+                    key={index}
+                    className={`bg-gradient-to-br ${category.color} rounded-xl p-4 border border-gray-700 hover:border-[#00daa2] transition-all cursor-pointer group`}
+                  >
+                    <div className="text-2xl mb-2">{category.icon}</div>
+                    <h4 className="text-white font-mono font-bold text-sm group-hover:text-[#00daa2]">
+                      {category.name}
+                    </h4>
+                    <p className="text-gray-400 text-xs mt-1">{category.count} items</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Coming Soon / Subscribe Section */}
+            <section className="bg-gradient-to-r from-[#00daa2]/10 via-gray-900 to-purple-500/10 rounded-2xl p-6 md:p-8 border border-[#00daa2]/30">
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="flex-1 text-center md:text-left">
+                  <div className="inline-flex items-center gap-2 bg-[#00daa2]/20 px-3 py-1 rounded-full text-[#00daa2] text-sm font-mono mb-3">
+                    <Sparkles className="h-4 w-4" />
+                    Coming Soon
+                  </div>
+                  <h3 className="text-white text-xl md:text-2xl font-bold font-mono mb-2">
+                    DRVN Originals
+                  </h3>
+                  <p className="text-gray-400 text-sm font-mono mb-4">
+                    Exclusive original content from the DRVN VHCLS team. Documentaries, 
+                    behind-the-scenes, and deep dives into automotive culture.
+                  </p>
+                  <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                    <Button className="bg-[#00daa2] text-black font-mono font-bold hover:bg-[#00c891]">
+                      <Bell className="h-4 w-4 mr-2" />
+                      Get Notified
+                    </Button>
+                    <Button variant="outline" className="border-gray-600 text-gray-300 font-mono hover:border-[#00daa2] hover:text-[#00daa2]">
+                      Learn More
+                    </Button>
+                  </div>
+                </div>
+                <div className="w-32 h-32 md:w-40 md:h-40 rounded-2xl bg-gradient-to-br from-[#00daa2] to-purple-500 flex items-center justify-center">
+                  <div className="text-6xl">🎬</div>
+                </div>
+              </div>
+            </section>
+
+            {/* Creators Spotlight */}
+            <section className="space-y-4">
+              <h2 className="text-white text-xl md:text-2xl font-bold font-mono flex items-center gap-2">
+                <Users className="h-5 w-5 text-[#00daa2]" />
+                Featured Creators
+              </h2>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                  { name: "Money Shift Pod", handle: "@moneyshiftpod", avatar: "https://i.pravatar.cc/150?img=1", followers: "12.4K" },
+                  { name: "RHD Guys", handle: "@rhdguys", avatar: "https://i.pravatar.cc/150?img=2", followers: "8.2K" },
+                  { name: "DRVN VHCLS", handle: "@drvnvhcls", avatar: "https://i.pravatar.cc/150?img=3", followers: "24.1K" },
+                  { name: "Track Day Tales", handle: "@trackdaytales", avatar: "https://i.pravatar.cc/150?img=4", followers: "6.8K" },
+                ].map((creator, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-900 rounded-xl p-4 border border-gray-700 hover:border-[#00daa2] transition-all cursor-pointer text-center group"
+                  >
+                    <div className="relative w-16 h-16 mx-auto mb-3">
+                      <Image
+                        src={creator.avatar}
+                        alt={creator.name}
+                        fill
+                        className="rounded-full object-cover border-2 border-gray-700 group-hover:border-[#00daa2] transition-colors"
+                      />
+                    </div>
+                    <h4 className="text-white font-mono font-bold text-sm group-hover:text-[#00daa2]">
+                      {creator.name}
+                    </h4>
+                    <p className="text-gray-500 text-xs">{creator.handle}</p>
+                    <p className="text-[#00daa2] text-xs mt-1 font-mono">{creator.followers} followers</p>
+                  </div>
+                ))}
+              </div>
+            </section>
           </div>
         );
 
