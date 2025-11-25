@@ -35,6 +35,18 @@ import type { VehicleRegistrationResult } from "@/hooks/useVehicleLifecycle";
  * - Digital Collectibles (Ecosystem NFTs)
  * - Assets Vault (Wallet Balance - Owner Only)
  */
+interface RwaHolding {
+  id: string;
+  name: string;
+  collection: string;
+  sharesOwned: number;
+  totalShares: number;
+  usdValue: number;
+  change24h: number;
+  image: string;
+  location: string;
+}
+
 interface GarageProps {
   currentUser: any;
   isAuthenticated: boolean;
@@ -53,7 +65,7 @@ export function Garage({ currentUser, isAuthenticated }: GarageProps) {
   // Determine if the viewer is the owner of the profile
   const isOwner = true; // defaulting to true for the main Garage view
 
-  const rwaHoldings = currentUser?.rwaHoldings || [
+  const rwaHoldings: RwaHolding[] = currentUser?.rwaHoldings || [
     {
       id: "rwa-gt3",
       name: "Porsche 911 GT3 RS",

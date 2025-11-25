@@ -18,6 +18,7 @@ import {
   Coins,
   Car,
   Tag,
+  MessageSquare,
 } from "lucide-react";
 import { FaXTwitter } from "react-icons/fa6";
 import { BsSpeedometer2 } from "react-icons/bs";
@@ -226,6 +227,12 @@ export function DRVNDashboard() {
       icon: Coins,
       label: "Buster Club",
       id: "buster-club",
+      isGreen: true,
+    },
+    {
+      icon: MessageSquare,
+      label: "Social",
+      id: "social",
       isGreen: true,
     },
     {
@@ -673,6 +680,32 @@ export function DRVNDashboard() {
               currentUser={currentUser}
               isAuthenticated={isAuthenticated}
             />
+          </div>
+        );
+
+      case "social":
+        return (
+          <div className="space-y-6">
+            <HeroHeader
+              title="Social Feed"
+              subtitle="Share builds, shout out sponsors, and keep Base updated"
+              backgroundImage="/Cars/GarageV12.jpg"
+            />
+            <div className="bg-gray-900 rounded-lg p-6 border border-gray-700">
+              <h3 className="text-[#00daa2] text-lg font-mono font-bold mb-3">
+                Connect with the DRVN community
+              </h3>
+              <p className="text-gray-300 font-sans mb-4">
+                Share your builds, tag vehicles, and connect with sponsors. Your posts will sync across Base and Farcaster.
+              </p>
+              <Button
+                variant="outline"
+                className="border-[#00daa2] text-[#00daa2] hover:bg-[#00daa2] hover:text-black font-mono"
+                onClick={() => router.push("/social")}
+              >
+                Open Social Feed
+              </Button>
+            </div>
           </div>
         );
 

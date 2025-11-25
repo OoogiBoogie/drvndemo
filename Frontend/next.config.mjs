@@ -17,7 +17,7 @@ const nextConfig = {
     
     return config;
   },
-  // Configure allowed image domains for IPFS
+  // Configure allowed image domains
   images: {
     remotePatterns: [
       {
@@ -25,6 +25,22 @@ const nextConfig = {
         hostname: 'drvnlabo.mypinata.cloud',
         port: '',
         pathname: '/ipfs/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
       },
     ],
   },
