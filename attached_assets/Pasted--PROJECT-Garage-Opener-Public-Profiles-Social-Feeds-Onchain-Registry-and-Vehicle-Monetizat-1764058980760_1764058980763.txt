@@ -1,0 +1,282 @@
+# PROJECT: Garage Opener
+
+# Public Profiles, Social Feeds, Onchain Registry, and Vehicle Monetization (Phase 1)
+
+Prototype v1: https://mega-build-x-psxonbase.replit.app/
+
+[Prototype V1 Feedback](https://www.notion.so/Prototype-V1-Feedback-2abfc61a9296807d97bfcfab1298ca9e?pvs=21)
+
+## Pages & Structure
+
+<aside>
+<img src="/icons/currency-coin_blue.svg" alt="/icons/currency-coin_blue.svg" width="40px" />
+
+### Garage Page - Public profile
+
+Currently, this page functions as the user’s wallet and is not publicly viewable by other users. Moving forward, it will become the public profile.
+
+**Modules: They are to be displayed in the following order**
+
+- User Profile Card: PFP, username, display name, bio, follower count, follow button, social links, edit profile button.
+    - All editable profile information can be accessed in the setting page. The “edit profile” button will link to this page. Social accounts will need to be added to the profile editor.
+- Swipeable garage graphic: Only shows the RWA vehicles of which they hold shares. (This section will not change)
+- VHCL Collection: Displays basic stats on the RWA cars owned including aggregated USD value and 24hr performance, number of cars owned, 30 day performance, and a drop down list of the cars, shares, and value they own. (This section will not change)
+- VHCL Registry: Displaying the vehicles that the user has registered, registration information and benefits, and a button to register a new vehicle. (This is a new section)
+- Digital Collectibles: Currently this module displays all Founder’s Club Keys and the qty they own. Moving forward this will only display the ecosystem NFTs they own. If none, this section will display a list of collections they can purchase, and links to where they can buy them. (This section needs updated)
+- User’s Asset Vault: (wallet balance) will only be displayed on this page for the account owner. It will be hidden for everyone else. (This section will not change)
+
+**Modal Windows:**
+
+- Register a VHCL: Opens when button is clicked on the VHCLS Registry module, and sends user down the registration flow (More details below)
+</aside>
+
+<aside>
+<img src="/icons/currency-coin_blue.svg" alt="/icons/currency-coin_blue.svg" width="40px" />
+
+### Registered VHCL page
+
+This is a new page which will be displayed when anyone clicks on a thumbnail of a registered vehicle from a user’s Garage.
+
+Modules:
+
+- Swipeable gallery: Displays all uploaded images of the car with swipe functionality and dot navigation.
+- Car Profile Card: Shows the car PFP (nft image), nickname/ticker, and sponsor preview (if upgrade is activated)
+    - Sponsor Preview will consist of a “Sponsored by” header, and up to 5 overlapping logos and a +# to indicate how many more sponsors it has, followed by “| # remaining” indicating how many spots are still available. e.g. OOOOO +4 | 5 remaining
+- Sponsorship Module: If activated this will show a 7 x 2 grid of logos and/or available sponsorship NFTs, along with a “Sponsor {{carName}}” button that activates a modal window (mode details below). This same modal will be activated if a user clicks on an available sponsorship NFT.
+- Token details: A module that displays the token ticker, price, mcap, and performance. Eventually I would like to include a chart as well.
+- Content Feed: I simple feed of posts, filtered only to show those that have been tagged as an image of the car. (more details on post tagging in the Social Feed section below)
+
+**Modal Windows:**
+
+- Sponsor {{carName}}: Modal containing details about what the sponsor will receive from the car owner, price, and a “Buy Sponsorship” button. When clicked they enter the minting process, outlined in section 4.4 below.
+</aside>
+
+<aside>
+<img src="/icons/currency-coin_blue.svg" alt="/icons/currency-coin_blue.svg" width="40px" />
+
+### Sponsor details page
+
+This page is accessed when a user clicks on the logo of a claimed sponsorship spot on a Registered VHCL page.
+
+Modules:
+
+- Sponsor logo
+- Website link & Promo link
+- Social accounts (Base, X, Instagram, Facebook, YouTube, TikTok, Linkedin)
+- Sponsor Bio
+- Photo gallery
+- Link to the NFT on OpenSea
+
+Modal Windows: 
+
+- Manage sponsorship: Only displayed for NFT holder. When clicked it will open the manage sponsorship modal outlined in section 4.4.
+</aside>
+
+<aside>
+<img src="/icons/currency-coin_blue.svg" alt="/icons/currency-coin_blue.svg" width="40px" />
+
+### Social Feed
+
+The feed page will be accessible in the navigation drawer under the “Social” tab.
+
+Only displays posts originated from inside the app. Although all posts will also be pushed to Base/Farcaster. If post originates from outside the DRVN/VHCLS app (Base/Farcater) it will not be displayed in-app.
+
+Tagging:
+
+- All posts that originate from inside the DRVN/VHLCS app will be tagged in such a way that they will be displayed in-app
+- When posting, a user with a registered VHCL will see a dropdown containing the list of cars they own, and can select one or more to tag the car. In this instance, the post will also be displayed in the social feed within the Registered VHCL page for which it was tagged.
+- When clubs and events are rolled out, this same tagging feature will be used to create curated feeds for the respective clubs and events.
+
+Modules:
+
+- Content Cards: This will inherit the same post and comment structure as Base, using the Farcaster social graph.
+- Post button: Mirroring the + button on the lower right side of the Base app social feed, this will open the post modal, or slide-up input page. This can copy the post UI from the Base app.
+</aside>
+
+---
+
+## User Flow: Registration & Monetization Upgrade
+
+<aside>
+<img src="/icons/currency-coin_blue.svg" alt="/icons/currency-coin_blue.svg" width="40px" />
+
+### **1. Registration**
+
+1.1 - User mints registry NFT ERC721+ERC6551 by taking a picture of their vin plate and submitting additional make/model/year details about the car for added LLM context. 
+
+1.2 - LLM decodes the vin plate and displays identified VIN and the vehicles factory specs, which will be included as the NFT metadata. 
+
+If the VIN is incorrectly captured the user can update it manually on this screen, and click a button to “Reload Specs”. Once correct they click “Continue” button.
+
+1.3 - Once processed, the user uploads an images of the car, selecting one to be the NFT image, and enter a list of modifications & upgrades, then pays the fee to mint the nft.
+
+1.4 - Once minted a modal notification pops up confirming success and giving them an option to share on their connected socials). After the notification is closed the Garage Page reloads and the thumbnail of the vehicle will be displayed in the “Registered VHCLS” section of the user’s garage. 
+
+1.5 - When the thumbnail is clicked it will go to the registered vehicle page. From here the user can add/remove images (stored off-chain), edit the vehicle description and mod list (which will update the NFT metadata), and choose to upgrade the vehicle for monetization.
+
+***Registration Fee: $50***
+
+</aside>
+
+<aside>
+<img src="/icons/currency-coin_blue.svg" alt="/icons/currency-coin_blue.svg" width="40px" />
+
+### **2. Upgrade**
+
+2.1 - User opts to upgrade it to a monetized vehicle via a module + button on the car page.  
+
+2.2 - They click the button and a modal window is displayed with details about the benefits, total supply, default supply reserve, and the fee (paid in USDC).
+
+2.3 - User clicks continue and a new page is displayed in the modal window where they enter their desired token ticker. Include a tooltip to communicate best naming practices for the ticker. Once entered the “Create Token” button becomes highlighted and clickable.
+
+2.4 - Once clicked the user pays the fee to upgrade, then Clanker is used to create a car token. 
+
+2.5 - Once complete a toast notification is displayed to indicate success and their vehicle details page reloads to show the new Sponsorship NFT module and their token ticker/address.
+
+2.6 - On the public view of the vehicle details page we will display the car’s ERC20 token ticker, price, and include the OCK swap button, as well as a share button to post about their registered vehicle and token. 
+
+This can be one way to post content with a frame that links back to the car where viewers can support the car account. If the car has sponsors it would be great to auto-tag them in the frame.
+
+$CRtoken Tokenomics: 
+
+- Max Supply: 1B
+- Creator Reserve: 10% | 100M
+
+***Upgrade Fee: $5 + 5% supply of their newly minted token.***
+
+</aside>
+
+<aside>
+<img src="/icons/currency-coin_blue.svg" alt="/icons/currency-coin_blue.svg" width="40px" />
+
+### **3. Sponsorship NFT Collection Creation**
+
+3.1 - From the registered vehicle details page, a sponsorship module is displayed containing info about the feature and a button to create the NFT collection.
+
+3.2 - Upon clicking, a modal window opens with more details about the feature, and 3 selectable collection options, along with the tokens needed to wrap and the fee. User selects the option and clicks “continue” button.
+
+- **Stage 1:**
+    - Wrap: 1M $CRtoken + 100K $CRtoken + 10K $BSTR | $25 USDC Upgrade Fee
+    - Mint Price: $250/nft ($3,500 - $175 royalty = $3,325 to the CRNFT owner)
+- **Stage 2:**
+    - Wrap: 5M $CRtoken + 1M $CRtoken + 50K $BSTR | $100 USDC Upgrade Fee
+    - Mint Price: $1,000/nft ($14,000 - $700 royalty = $13,300 to the CRNFT owner)
+- **Stage 3:**
+    - Wrap: 10M $CRtoken + 10M $CRtoken + 100K $BSTR | $250 USDC Upgrade Fee
+    - Mint Price: $2,500/nft ($35,000 - $1,750 royalty = $33,250 to the CRNFT owner)
+- Custom Configuration: If out of scope this can be included in the next update.
+
+3.3 - User describes what they will offer their sponsors. This page includes a list of pre-checked standard options, which can be un-checked, and a custom input builder. When “+ add offer”  button is clicked two new fields are displayed. Title & Description. The user can add as many offers as they want by continuing to click the “+ add offer” button.
+
+Standard Options:
+
+- Logo decal on car
+- Mention in posts
+- Brand promotion posts
+
+3.3 - User wraps the needed tokens and pays the mint fee to create the dRyft sponsorship NFT collection with a max supply of 14 NFTs.
+
+3.4 - Upon completion a modal notification is displayed confirming success, and prompting the user to share the newly created collection on their social account. When the modal is closed the registered vehicle page reloads displaying the active sponsorship collection module. 
+
+3.5 - Within the module there is a share button they can use to post about the collection at any time.
+
+Fees: Collection creation fee + 5% of each mint + 5% of secondary market NFT sales (once sponsorship marketplace is live)
+
+Secondary Market Royalties: Royalties enforced when purchasing NFTs in the in-app marketplace. This should be 50%, with 45% going to the CRNFT account, and 5% to project treasury. This will incentivize the seller to list the NFT for 2x the mint price to break even, thereby increasing the value of the NFT with each sale. 
+
+We may want to consider implementing marketplace restrictions at the smart contract level for those that do not enforce royalties.
+
+</aside>
+
+<aside>
+<img src="/icons/currency-coin_blue.svg" alt="/icons/currency-coin_blue.svg" width="40px" />
+
+### **4. Sponsoring a Vehicle**
+
+4.1 - Prospective sponsors can navigate to the user profile and mint an nft from the dRyft contract.
+
+4.2 - To mint, the sponsor clicks the “Sponsor {{carName}}” button, and a modal window open
+
+4.3 - Once minted the sponsor will see a “manage sponsorship” button on the registered car page, as will as when clicking on the NFT in their own collection.
+
+4.4 - When clicked a modal or slide-up page will appear. The page contains fields to:
+
+- Upload a logo
+- Add a bio
+- Enter website link
+- Enter promo link and promo text
+- Enter social links: Base, X, Instagram, Facebook, YouTube, TikTok, Linkedin
+- Submit photos (this can be a limited number to save server space)
+
+Future Feature:
+
+Business Accounts will be offered first to those who hold a sponsorship NFT first. Later, any user can unlock a Business Account in their settings. This will unlock a secondary profile to manage their business details, sponsorships, and in-app ads. 
+
+</aside>
+
+## User Flow: Social Posts
+
+<aside>
+<img src="/icons/currency-coin_blue.svg" alt="/icons/currency-coin_blue.svg" width="40px" />
+
+### 5. Publishing a Post
+
+5.1 - User navigates to Social feed page and clicks the floating + button on the lower right side of the page.  
+
+5.1.1 - Alternatively, a user can initiate a post from a Registered VHCL page. When it is accessed here the car is tagged by default.
+
+5.2 - Modal or slide-up input appears and user enters post content and media in the same manner as posting on the Base app or Farcaster. If the user has a Registered VHCL a drop down menu will appear where they can select the car they are posting about. They can do this multiple times to post about more than one car (e.g. if they are posting a picture or video with 2 of their registered vehicles.
+
+5.2.1 - If a registered vehicle is tagged it will also be displayed in the registered vehicle social feed.
+
+</aside>
+
+<aside>
+<img src="/icons/currency-coin_blue.svg" alt="/icons/currency-coin_blue.svg" width="40px" />
+
+### 6. Post Interactions (in DRVN/VHCLS feed)
+
+6.1 - Published posts with tagged registered vehicle will display the CRtoken ticker along the bottom of the post, or as a cashtag amended to the end of the post content. When clicked it will take the user to the Registered VHCL page. 
+
+6.2 - Published posts with a registered vehicle that also has sponsors will have another amendment after the content or car cashtag listing all the sponsors, in the following format:
+
+Sponsored by:
+
+Coinbase / Clanker / Num Num Boba | 11 sponsorships available
+
+Each sponsor is a clickable link that will load their sponsor page associated with the registered vehicle
+
+</aside>
+
+<aside>
+<img src="/icons/currency-coin_blue.svg" alt="/icons/currency-coin_blue.svg" width="40px" />
+
+### 7. Post Interactions (in Base/Farcaster feed)
+
+7.1 - Posts that originate from within the DRVN/VHCLS app will be displayed in Base and Farcaster with a frame. Text content is displayed natively in the post. If an image or video is included in the post this will be show within the frame. If no media is present a default DRVN/VHCLS banner will be displayed. The text at the bottom of the frame will read “View in DRVN/VHLCS”.
+
+7.2 - Published posts with tagged registered vehicle will display the CRtoken ticker along the bottom of the post. When clicked it will take the user to the Registered VHCL page within the DRVN/VHCLS app. 
+
+7.3 - Published posts with a registered vehicle and sponsorships will follow the same format as in section 6.2. When clicked it will take the user to the sponsorship page associate with the registered VHCL within the DRVN/VHCLS app.
+
+</aside>
+
+---
+
+## Club Profile (phase 2)
+
+- This feature requires the user to pay a monthly subscription to access. However, if they hold a Founder’s Club Key, this feature is free.
+    - If the subscription fee is more than 30 days past due, the organizer loses access to all features. Fees can be paid manually via treasury funds, or recurring via stripe integration.
+- Club is derived as an NFT which either grants admin access to a DAO style structure, or simply acts as a wallet for the club’s treasury.
+- Club also receives it’s own “club coin” they can use to incentivize members, and as a way for people to support the club.
+- User provides details about their car club. Location (region or decentralized), Car requirements, rules, logo (badge), membership fee, social links
+- When a club is created 5 membership NFTS are automatically minted. Organizer can gift these to the first members to get started, or sell them. Future members must apply for membership by submitting their fee and filling out a form. 2/3 quorum must be reached to admit new members. If approved the fee will go to the club treasury and a new membership NFT is minted into their wallet.
+- Club
+- Organizer can pause membership applications if they are not taking new members.
+- If the club is not accepting new members, a user who wants to leave can sell their NFT. Transfer is dependent on member vote. Sale is split 50/50 between seller and the club treasury.
+- Club Sponsorships: Functions much the same way as individual vehicle sponsorships
+- Organizer can schedule “meets”. If they do not provide a location when the meet is scheduled they can send a notification to their members in the form of a pin drop. Private meets will only go to members. Public meets will go to members and holders of their club coin.
+- Event Organizer Profile
+    - 
+- Event directly and search
+- Content Feed
