@@ -1,0 +1,178 @@
+# DRVN VHCLS Mini App - Replit Configuration
+
+## Overview
+
+DRVN VHCLS is a next-generation automotive platform that tokenizes real-world automotive assets (RWA) on the Base blockchain. This is a full-stack Web3 application featuring:
+
+- **Frontend**: Next.js 15 application with TypeScript, TailwindCSS, and OnchainKit
+- **Smart Contracts**: Hardhat development environment with Solidity contracts
+- **Blockchain**: Built on Base (Ethereum L2)
+- **Database**: MongoDB for user data, Redis for caching/notifications
+- **IPFS**: Pinata for decentralized storage
+
+## Current State
+
+The project has been configured to run in the Replit environment:
+
+- ✅ Node.js 22 installed
+- ✅ Frontend dependencies installed
+- ✅ Development server configured to run on port 5000
+- ✅ Next.js configured to allow all hosts (required for Replit proxy)
+- ✅ Workflow set up for frontend development
+
+## Project Structure
+
+```
+DRVN-MINI-APP/
+├── Frontend/              # Next.js 15 frontend application
+│   ├── app/               # Next.js App Router pages and API routes
+│   │   ├── api/           # Backend API routes
+│   │   ├── components/    # React components
+│   │   ├── cars/          # Car detail pages
+│   │   ├── garage/        # User garage
+│   │   ├── social/        # Social features
+│   │   ├── sponsors/      # Sponsorship system
+│   │   └── swap/          # Token swap interface
+│   ├── hooks/             # Custom React hooks
+│   ├── lib/               # Utilities and models
+│   ├── public/            # Static assets
+│   └── package.json       # Frontend dependencies
+│
+├── Hardhat/               # Smart contracts workspace
+│   ├── contracts/         # Solidity smart contracts
+│   ├── deploy/            # Deployment scripts
+│   ├── scripts/           # Utility scripts
+│   └── package.json       # Contract dependencies
+│
+└── mints/                 # Additional contract files
+```
+
+## Environment Variables
+
+The application requires several environment variables to function. Copy `Frontend/.env.example` to `Frontend/.env.local` and fill in the values:
+
+### Required Services:
+- **OnchainKit API Key**: Get from [portal.cdp.coinbase.com](https://portal.cdp.coinbase.com/)
+- **MongoDB**: Database connection string (contact DBRO/DRVN Labo for access)
+- **Redis**: URL and token from [console.upstash.com](https://console.upstash.com/)
+- **Pinata**: API keys from [app.pinata.cloud](https://app.pinata.cloud/)
+- **Alchemy**: API key from [alchemy.com](https://www.alchemy.com/)
+
+### Optional Services:
+- Farcaster credentials (for Farcaster Mini App support)
+
+## Development
+
+### Running the Application
+
+The frontend development server is configured to run automatically via the workflow.
+
+**Manual start:**
+```bash
+cd Frontend
+npm run dev
+```
+
+The app will be available at the Replit webview URL (port 5000).
+
+### Key Technologies
+
+- **Next.js 15**: React framework with App Router
+- **TypeScript**: Type-safe development
+- **OnchainKit**: Wallet integration for Base
+- **Wagmi/Viem**: Web3 React hooks and Ethereum library
+- **TailwindCSS**: Utility-first styling
+- **Radix UI**: Accessible component primitives
+- **TanStack Query**: Server state management
+
+### Smart Contracts (Hardhat)
+
+The Hardhat workspace contains:
+- NFT contracts (Carbon, Steel, Titanium tiers)
+- Vehicle Registry contract
+- Sponsorship NFT contract
+- Token Wrapper contract
+- BSTR Vault contract
+
+**Note**: Smart contract development is separate from the frontend. Install dependencies in the Hardhat folder with `yarn install` if needed.
+
+## Architecture Notes
+
+### Multi-Platform Support
+
+The application supports multiple access methods:
+- **Standard dApp**: Direct web access
+- **Farcaster Mini App**: Integration with Farcaster
+- **Base Mini App**: Integration with Base.dev
+
+### Key Features
+
+1. **Vehicle Tokenization**: Register and tokenize real-world cars
+2. **NFT Collections**: Exclusive car collections (Paul Walker Ferrari, R34 GT-R, etc.)
+3. **Social Features**: User profiles, posts, content feed
+4. **Sponsorship System**: Sponsor vehicles and earn rewards
+5. **Token Swap**: Exchange tokens within the platform
+6. **Wallet Authentication**: Web3-based user authentication
+
+## Recent Changes
+
+### November 25, 2025 - Replit Setup
+- Installed Node.js 22 module
+- Installed frontend dependencies (npm install)
+- Updated Next.js configuration to run on port 5000 with host 0.0.0.0
+- Added Replit-specific allowedDevOrigins to next.config.mjs
+- Updated package.json dev and start scripts for port 5000
+- Created workflow: "Frontend Dev Server" on port 5000
+- Updated .env.example to reference port 5000 instead of 3000
+
+## User Preferences
+
+None documented yet.
+
+## Known Issues
+
+- Application requires external services (MongoDB, Redis) to be fully functional
+- Environment variables need to be configured for full functionality
+- Smart contracts are separate and may need independent setup
+
+## Development Guidelines
+
+### Code Standards
+- TypeScript for all new code
+- Functional React components with hooks
+- Follow existing patterns in the codebase
+- Use Prettier for formatting
+- Run linting before commits
+
+### Commit Conventions
+- Follow Conventional Commits format
+- Branch naming: `feature/`, `fix/`, `docs/`, etc.
+- All checks must pass before PR merge
+
+### Testing
+```bash
+cd Frontend
+npm run typecheck  # TypeScript checking
+npm run lint       # ESLint
+npm run build      # Production build test
+```
+
+## Deployment
+
+The application can be deployed using Replit's deployment feature. For production:
+
+1. Set all required environment variables
+2. Run `npm run build` to verify production build
+3. Configure deployment to use `npm run start` command
+4. Ensure port 5000 is configured
+
+## Support
+
+- **Documentation**: See README.md and DEVELOPER_SETUP.md
+- **Lead Developer**: Justin Taylor (Decentral Bros LLC)
+- **Email**: development@decentralbros.tech
+- **Website**: [www.decentralbros.io](https://www.decentralbros.io)
+
+## License
+
+Apache License 2.0
