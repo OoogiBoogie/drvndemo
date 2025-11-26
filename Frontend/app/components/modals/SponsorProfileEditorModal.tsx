@@ -9,6 +9,7 @@ import Image from "next/image";
 import { useToast } from "@/app/components/ui/toast-context";
 
 interface SocialLinks {
+  base?: string;
   x?: string;
   instagram?: string;
   youtube?: string;
@@ -24,6 +25,7 @@ interface SponsorProfile {
   bio?: string;
   website?: string;
   promoLink?: string;
+  promoText?: string;
   socialLinks?: SocialLinks;
   galleryImages?: string[];
   holderAddress: string;
@@ -48,6 +50,7 @@ export function SponsorProfileEditorModal({
   const [bio, setBio] = useState(sponsor.bio || "");
   const [website, setWebsite] = useState(sponsor.website || "");
   const [promoLink, setPromoLink] = useState(sponsor.promoLink || "");
+  const [promoText, setPromoText] = useState(sponsor.promoText || "");
   const [logo, setLogo] = useState(sponsor.logo || "");
   const [socialLinks, setSocialLinks] = useState<SocialLinks>(sponsor.socialLinks || {});
   const [galleryImages, setGalleryImages] = useState<string[]>(sponsor.galleryImages || []);
@@ -82,6 +85,7 @@ export function SponsorProfileEditorModal({
       bio,
       website,
       promoLink,
+      promoText,
       logo,
       socialLinks,
       galleryImages
@@ -100,12 +104,13 @@ export function SponsorProfileEditorModal({
   };
 
   const socialPlatforms: { key: keyof SocialLinks; label: string; icon: React.ReactNode; placeholder: string; color: string }[] = [
+    { key: "base", label: "Base", icon: <Image src="/Cars/base-logo.png" alt="Base" width={16} height={16} className="w-4 h-4" />, placeholder: "base.org/username", color: "bg-blue-500" },
     { key: "x", label: "X", icon: <span className="text-sm font-bold">𝕏</span>, placeholder: "x.com/username", color: "bg-white/10" },
     { key: "instagram", label: "Instagram", icon: <Instagram className="w-4 h-4" />, placeholder: "instagram.com/username", color: "bg-gradient-to-br from-purple-500 to-pink-500" },
+    { key: "facebook", label: "Facebook", icon: <span className="text-sm font-bold">f</span>, placeholder: "facebook.com/page", color: "bg-blue-500" },
     { key: "youtube", label: "YouTube", icon: <Youtube className="w-4 h-4" />, placeholder: "youtube.com/@channel", color: "bg-red-500" },
     { key: "tiktok", label: "TikTok", icon: <span className="text-sm">♪</span>, placeholder: "tiktok.com/@username", color: "bg-black" },
     { key: "linkedin", label: "LinkedIn", icon: <span className="text-sm font-bold">in</span>, placeholder: "linkedin.com/in/username", color: "bg-blue-600" },
-    { key: "facebook", label: "Facebook", icon: <span className="text-sm font-bold">f</span>, placeholder: "facebook.com/page", color: "bg-blue-500" },
   ];
 
   return (
@@ -216,6 +221,17 @@ export function SponsorProfileEditorModal({
                 className="h-12 bg-black/40 border-white/10 text-white placeholder:text-zinc-600 focus:border-yellow-500/50"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-zinc-400 mb-2 block">Promo Text</label>
+            <Textarea
+              value={promoText}
+              onChange={(e) => setPromoText(e.target.value)}
+              placeholder="Describe your promotional offer or call to action..."
+              className="bg-black/40 border-white/10 text-white placeholder:text-zinc-600 min-h-[80px] focus:border-yellow-500/50"
+            />
+            <p className="text-xs text-zinc-500 mt-1">This text will be displayed alongside your promo link</p>
           </div>
 
           <div>
