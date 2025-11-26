@@ -23,10 +23,21 @@ import {
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { BuySponsorshipModal } from "./BuySponsorshipModal";
+import { SponsorDetailsModal } from "./SponsorDetailsModal";
 
 interface VehicleImage {
   url: string;
   isNftImage: boolean;
+}
+
+interface SponsorSocialLinks {
+  base?: string;
+  x?: string;
+  instagram?: string;
+  facebook?: string;
+  youtube?: string;
+  tiktok?: string;
+  linkedin?: string;
 }
 
 interface Sponsor {
@@ -34,6 +45,12 @@ interface Sponsor {
   logo?: string;
   name?: string;
   holderAddress: string;
+  websiteUrl?: string;
+  promoUrl?: string;
+  socialLinks?: SponsorSocialLinks;
+  bio?: string;
+  gallery?: string[];
+  openSeaUrl?: string;
 }
 
 interface RegisteredVehicle {
@@ -90,8 +107,15 @@ interface VehicleDetailModalProps {
 export function VehicleDetailModal({ isOpen, onClose, vehicle, isOwner = false }: VehicleDetailModalProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showSponsorModal, setShowSponsorModal] = useState(false);
+  const [selectedSponsor, setSelectedSponsor] = useState<Sponsor | null>(null);
+  const [showSponsorDetails, setShowSponsorDetails] = useState(false);
 
   if (!vehicle) return null;
+
+  const handleSponsorClick = (sponsor: Sponsor) => {
+    setSelectedSponsor(sponsor);
+    setShowSponsorDetails(true);
+  };
 
   // Mock tagged posts - would come from API
   const taggedPosts: TaggedPost[] = [
@@ -412,7 +436,10 @@ export function VehicleDetailModal({ isOpen, onClose, vehicle, isOwner = false }
                                 </span>
                               </button>
                             ) : (
-                              <div className="w-full h-full rounded-xl border border-white/10 bg-white/5 overflow-hidden backdrop-blur-sm shadow-lg">
+                              <button
+                                onClick={() => slot.sponsor && handleSponsorClick(slot.sponsor)}
+                                className="w-full h-full rounded-xl border border-white/10 bg-white/5 overflow-hidden backdrop-blur-sm shadow-lg hover:border-primary/50 hover:scale-105 transition-all cursor-pointer"
+                              >
                                 {slot.sponsor?.logo ? (
                                   <Image
                                     src={slot.sponsor.logo}
@@ -426,7 +453,7 @@ export function VehicleDetailModal({ isOpen, onClose, vehicle, isOwner = false }
                                     {slot.sponsor?.name?.substring(0, 2) || "SP"}
                                   </div>
                                 )}
-                              </div>
+                              </button>
                             )}
                           </div>
                         ))}
@@ -582,6 +609,17 @@ export function VehicleDetailModal({ isOpen, onClose, vehicle, isOwner = false }
           console.log("Sponsorship purchased:", result);
           setShowSponsorModal(false);
         }}
+      />
+
+      {/* Sponsor Details Modal */}
+      <SponsorDetailsModal
+        isOpen={showSponsorDetails}
+        onClose={() => {
+          setShowSponsorDetails(false);
+          setSelectedSponsor(null);
+        }}
+        sponsor={selectedSponsor}
+        vehicleName={vehicle.nickname || `${vehicle.year} ${vehicle.model}`}
       />
     </>
   );
