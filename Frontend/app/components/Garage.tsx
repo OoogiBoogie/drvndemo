@@ -743,10 +743,14 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
         />
       )}
 
-      {/* Registered Vehicle Full Page View */}
+      {/* Registered Vehicle Modal View */}
       {showRegisteredVehiclePage && selectedRegisteredVehicle && (
-        <div className="fixed inset-0 z-50 bg-gray-950 overflow-y-auto">
-          <div className="max-w-6xl mx-auto p-4 md:p-6">
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto">
+          <div 
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={handleBackFromRegisteredVehicle}
+          />
+          <div className="relative w-full max-w-6xl mx-4 my-8 bg-zinc-900/95 border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
             <RegisteredVHCLPage
               vehicleId={selectedRegisteredVehicle._id}
               vehicleData={selectedRegisteredVehicle}
