@@ -455,23 +455,30 @@ export function AssetVaultTabs({
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                {/* Tab Navigation */}
-                <div className="flex gap-1 p-1 bg-zinc-900/50 rounded-lg">
+                {/* Tab Navigation - Glass Segmented Control */}
+                <div className="inline-flex p-1.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/15 shadow-[0_0_0_1px_rgba(255,255,255,0.05)_inset,0_4px_20px_rgba(0,0,0,0.4)]">
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                            role="tab"
+                            aria-selected={activeTab === tab.id}
+                            className={`flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 border ${
                                 activeTab === tab.id
-                                    ? "bg-primary text-black"
-                                    : "text-zinc-400 hover:text-white hover:bg-white/5"
+                                    ? "bg-primary text-black border-primary/50 shadow-[0_0_20px_rgba(0,218,162,0.4)] ring-1 ring-primary/30"
+                                    : "text-zinc-300 border-transparent hover:text-white hover:bg-white/10 hover:border-white/10"
                             }`}
                         >
-                            {tab.icon}
+                            <span className={activeTab === tab.id ? "text-black" : "text-zinc-400"}>
+                                {tab.icon}
+                            </span>
                             {tab.label}
                         </button>
                     ))}
                 </div>
+
+                {/* Divider */}
+                <div className="border-b border-white/10" />
 
                 {/* Tab Content */}
                 <div className="min-h-[200px]">
