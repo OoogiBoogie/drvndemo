@@ -56,6 +56,7 @@ import { SocialPost, PlatformConnection, CrossPostSettings } from "./social/type
 import { MOCK_SOCIAL_POSTS } from "./social/mockPosts";
 import { Globe, Check, Plus, Zap, Users, Shield, ExternalLink, Sparkles, Trophy } from "lucide-react";
 import { VehicleDetailModal } from "./modals/VehicleDetailModal";
+import { MarketplaceDetailModal } from "./modals/MarketplaceDetailModal";
 import { vehicles, type Vehicle } from "@/app/data/vehicleData";
 
 export function DRVNDashboard() {
@@ -74,8 +75,8 @@ export function DRVNDashboard() {
   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
   const [feedPosts, setFeedPosts] = useState<SocialPost[]>(() => [...MOCK_SOCIAL_POSTS]);
   
-  // Marketplace Vehicle Modal state
-  const [selectedMarketplaceVehicle, setSelectedMarketplaceVehicle] = useState<Vehicle | null>(null);
+  // Marketplace Modal state - uses marketplace item type for buyer-focused info
+  const [selectedMarketplaceItem, setSelectedMarketplaceItem] = useState<typeof marketplaceItems[0] | null>(null);
   const [showMarketplaceModal, setShowMarketplaceModal] = useState(false);
   const [platformConnections, setPlatformConnections] = useState<PlatformConnection[]>([
     { platform: "farcaster", connected: false },
@@ -130,34 +131,11 @@ export function DRVNDashboard() {
 
   const connectedPlatformsCount = platformConnections.filter(p => p.connected).length;
 
-  // Explicit mapping from marketplace item IDs to vehicle IDs in vehicleData
-  const marketplaceToVehicleMap: Record<number, string> = {
-    1: "1", // Ferrari 360 Modena
-    2: "2", // Nissan GT-R R34
-    3: "3", // Honda NSX Type S
-  };
-
-  // Marketplace vehicle click handler - maps marketplace item to full vehicle data
+  // Marketplace click handler - opens buyer-focused modal with full specs
   const handleMarketplaceVehicleClick = (marketplaceId: number) => {
-    // Use explicit mapping first
-    const vehicleId = marketplaceToVehicleMap[marketplaceId];
-    let matchingVehicle: Vehicle | undefined;
-    
-    if (vehicleId) {
-      matchingVehicle = vehicles.find(v => v._id === vehicleId);
-    } else {
-      // Fallback: try to match by brand/model
-      const marketplaceItem = marketplaceItems.find(item => item.id === marketplaceId);
-      if (marketplaceItem) {
-        matchingVehicle = vehicles.find(v => 
-          v.make.toUpperCase() === marketplaceItem.brand.toUpperCase() && 
-          v.model.toLowerCase().includes(marketplaceItem.model.split(' ')[0].toLowerCase())
-        );
-      }
-    }
-    
-    if (matchingVehicle) {
-      setSelectedMarketplaceVehicle(matchingVehicle);
+    const item = marketplaceItems.find(item => item.id === marketplaceId);
+    if (item) {
+      setSelectedMarketplaceItem(item);
       setShowMarketplaceModal(true);
     }
   };
@@ -1687,15 +1665,14 @@ export function DRVNDashboard() {
         onSuccess={handleSigninSuccess}
       />
 
-      {/* Marketplace Vehicle Detail Modal */}
-      <VehicleDetailModal
+      {/* Marketplace Detail Modal - Buyer-focused with specs */}
+      <MarketplaceDetailModal
         isOpen={showMarketplaceModal}
         onClose={() => {
           setShowMarketplaceModal(false);
-          setSelectedMarketplaceVehicle(null);
+          setSelectedMarketplaceItem(null);
         }}
-        vehicle={selectedMarketplaceVehicle}
-        isOwner={false}
+        item={selectedMarketplaceItem}
       />
     </div>
   );
