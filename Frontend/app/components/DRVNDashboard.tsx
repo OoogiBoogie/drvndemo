@@ -1187,7 +1187,7 @@ export function DRVNDashboard() {
             </div>
 
             {/* Content Feed */}
-            <ContentFeed posts={feedPosts} showAllFilters={true} />
+            <ContentFeed posts={feedPosts} inAppOnly={true} />
 
             {/* Create Post Modal */}
             <CreatePostModal

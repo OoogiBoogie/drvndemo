@@ -125,7 +125,7 @@ export default function SocialFeedPage() {
 
                 <SponsorSpotlightCard />
 
-                <ContentFeed posts={feedPosts} showAllFilters={true} />
+                <ContentFeed posts={feedPosts} inAppOnly={true} />
             </div>
 
             <CreatePostButton onClick={handleCreatePost} />

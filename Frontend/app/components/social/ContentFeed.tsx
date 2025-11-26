@@ -11,7 +11,8 @@ interface ContentFeedProps {
     vehicleId?: string;
     title?: string;
     posts?: SocialPost[];
-    showAllFilters?: boolean;
+    inAppOnly?: boolean;
+    showSourceFilters?: boolean;
 }
 
 const FILTERS: Array<{ id: FeedFilterId; label: string; icon?: string }> = [
@@ -22,7 +23,13 @@ const FILTERS: Array<{ id: FeedFilterId; label: string; icon?: string }> = [
     { id: "x", label: "X", icon: "✕" },
 ];
 
-export function ContentFeed({ vehicleId, title = "Latest Activity", posts, showAllFilters = true }: ContentFeedProps) {
+export function ContentFeed({ 
+    vehicleId, 
+    title = "Latest Activity", 
+    posts,
+    inAppOnly = false,
+    showSourceFilters = false
+}: ContentFeedProps) {
     const [activeFilter, setActiveFilter] = useState<FeedFilterId>("all");
 
     const feedPosts = posts ?? MOCK_SOCIAL_POSTS;
@@ -38,15 +45,23 @@ export function ContentFeed({ vehicleId, title = "Latest Activity", posts, showA
         );
     }, [feedPosts]);
 
-    const visibleFilters = showAllFilters ? FILTERS : FILTERS.filter(f => f.id === "all" || counts[f.id] > 0);
+    const visibleFilters = FILTERS.filter(f => f.id === "all" || counts[f.id] > 0);
 
-    const filteredPosts = feedPosts.filter((post) => {
-        const matchesVehicle = vehicleId ? post.vehicleTag?.id === vehicleId : true;
-        const matchesFilter = vehicleId
-            ? true
-            : activeFilter === "all" || post.source === activeFilter;
-        return matchesVehicle && matchesFilter;
-    });
+    const filteredPosts = useMemo(() => {
+        return feedPosts.filter((post) => {
+            const matchesVehicle = vehicleId ? post.vehicleTag?.id === vehicleId : true;
+            
+            if (inAppOnly) {
+                return post.source === "in-app" && matchesVehicle;
+            }
+            
+            if (showSourceFilters && activeFilter !== "all") {
+                return post.source === activeFilter && matchesVehicle;
+            }
+            
+            return matchesVehicle;
+        });
+    }, [feedPosts, vehicleId, inAppOnly, showSourceFilters, activeFilter]);
 
     return (
         <div className="space-y-4">
@@ -54,10 +69,20 @@ export function ContentFeed({ vehicleId, title = "Latest Activity", posts, showA
                 <div>
                     <h3 className="text-xl font-bold text-white">{vehicleId ? "Vehicle Activity" : title}</h3>
                     <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">
-                        {vehicleId ? "Tagged posts only" : "Signal straight from Base"}
+                        {vehicleId ? "Tagged posts only" : inAppOnly ? "Posts from the DRVN community" : "Signal straight from Base"}
                     </p>
                 </div>
-                {!vehicleId && (
+                {inAppOnly ? (
+                    <div className="flex items-center gap-2">
+                        <span className="px-3 py-1.5 rounded-full text-xs font-semibold bg-primary/20 text-primary border border-primary/40 flex items-center gap-1.5">
+                            <span>🚗</span>
+                            DRVN Feed
+                            <span className="text-[10px] text-primary/70">
+                                {filteredPosts.length}
+                            </span>
+                        </span>
+                    </div>
+                ) : showSourceFilters && !vehicleId && (
                     <div className="flex items-center gap-2 flex-wrap">
                         {visibleFilters.map((filter) => (
                             <button
@@ -82,7 +107,7 @@ export function ContentFeed({ vehicleId, title = "Latest Activity", posts, showA
 
             {filteredPosts.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-white/10 bg-black/30 p-6 text-center text-zinc-400 text-sm">
-                    No posts match this filter yet. Share a lap or sponsor shoutout to light up the feed.
+                    No posts yet. Share a lap or sponsor shoutout to light up the feed.
                 </div>
             ) : (
                 filteredPosts.map((post) => <PostCard key={post.id} post={post} />)
