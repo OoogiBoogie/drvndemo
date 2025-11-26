@@ -5,6 +5,7 @@
   "description": "DRVN VHCLS Mini App - Frontend and Smart Contracts",
   "scripts": {
     "prepare": "husky install",
+    "postinstall": "cd Frontend && npm install",
     "build": "cd Frontend && npm run build",
     "start": "cd Frontend && npm start"
   },
