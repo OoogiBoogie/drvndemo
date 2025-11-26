@@ -24,6 +24,8 @@ export const marketplaceItems = [
     collection: "Paul Walker Collection",
     mv: "$190,000",
     av: "$190,000",
+    spread: "0%",
+    spreadValue: 0,
     status: "Coming Soon" as const,
     price: "$RS1",
     image: "/Cars/modena1.jpg",
@@ -60,6 +62,8 @@ export const marketplaceItems = [
     collection: "V-Spec",
     mv: "$172,000",
     av: "$172,000",
+    spread: "0%",
+    spreadValue: 0,
     status: "Demo" as const,
     price: "$RS2",
     image: "/Cars/bsb-gtr-1.jpg",
@@ -96,6 +100,8 @@ export const marketplaceItems = [
     collection: "Type S",
     mv: "$152,000",
     av: "$152,000",
+    spread: "0%",
+    spreadValue: 0,
     status: "Demo" as const,
     price: "$RS3",
     image: "/Cars/nsx-ts-2.jpg",
@@ -133,6 +139,8 @@ interface MarketplaceCardProps {
   collection: string;
   mv: string;
   av: string;
+  spread: string;
+  spreadValue: number;
   status: "Coming Soon" | "Demo";
   price: string;
   image: string;
@@ -159,10 +167,11 @@ export function MarketplaceCard({
   collection,
   mv,
   av,
+  spread,
+  spreadValue,
   status,
   price,
   image,
-  // specs,
   id,
   onCardClick,
 }: MarketplaceCardProps & { id: number }) {
@@ -272,6 +281,23 @@ export function MarketplaceCard({
               </div>
               <span className="text-white text-sm font-bold font-mono">
                 {av}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400 text-xs font-medium font-sans">
+                  Spread
+                </span>
+              </div>
+              <span className={`text-sm font-bold font-mono ${
+                spreadValue < 0 
+                  ? "text-[#00daa2]" 
+                  : spreadValue > 0 
+                    ? "text-red-400" 
+                    : "text-gray-400"
+              }`}>
+                {spread}
               </span>
             </div>
           </div>

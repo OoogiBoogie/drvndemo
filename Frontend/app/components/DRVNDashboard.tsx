@@ -549,6 +549,8 @@ export function DRVNDashboard() {
                         collection={item.collection}
                         mv={item.mv}
                         av={item.av}
+                        spread={item.spread}
+                        spreadValue={item.spreadValue}
                         status={item.status}
                         price={item.price}
                         image={item.image}
@@ -599,6 +601,8 @@ export function DRVNDashboard() {
                       collection={marketplaceItems[currentCarIndex].collection}
                       mv={marketplaceItems[currentCarIndex].mv}
                       av={marketplaceItems[currentCarIndex].av}
+                      spread={marketplaceItems[currentCarIndex].spread}
+                      spreadValue={marketplaceItems[currentCarIndex].spreadValue}
                       status={marketplaceItems[currentCarIndex].status}
                       price={marketplaceItems[currentCarIndex].price}
                       image={marketplaceItems[currentCarIndex].image}
@@ -937,6 +941,8 @@ export function DRVNDashboard() {
                       collection={item.collection}
                       mv={item.mv}
                       av={item.av}
+                      spread={item.spread}
+                      spreadValue={item.spreadValue}
                       status={item.status}
                       price={item.price}
                       image={item.image}
@@ -987,6 +993,8 @@ export function DRVNDashboard() {
                     collection={marketplaceItems[currentCarIndex].collection}
                     mv={marketplaceItems[currentCarIndex].mv}
                     av={marketplaceItems[currentCarIndex].av}
+                    spread={marketplaceItems[currentCarIndex].spread}
+                    spreadValue={marketplaceItems[currentCarIndex].spreadValue}
                     status={marketplaceItems[currentCarIndex].status}
                     price={marketplaceItems[currentCarIndex].price}
                     image={marketplaceItems[currentCarIndex].image}
