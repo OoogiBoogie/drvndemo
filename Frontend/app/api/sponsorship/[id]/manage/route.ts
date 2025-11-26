@@ -2,18 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Sponsorship from "@/lib/models/Sponsorship";
 
-/**
- * GET /api/sponsorship/[id]/manage
- * Retrieves sponsorship details for management
- */
+type RouteContext = {
+    params: Promise<{ id: string }>;
+};
+
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    context: RouteContext
 ) {
     try {
         await dbConnect();
 
-        const { id } = params;
+        const { id } = await context.params;
         const sponsorship = await Sponsorship.findById(id).populate("vehicle");
 
         if (!sponsorship) {
@@ -33,30 +33,14 @@ export async function GET(
     }
 }
 
-/**
- * PATCH /api/sponsorship/[id]/manage
- * Updates sponsorship branding details
- * 
- * Expected body:
- * {
- *   branding: {
- *     name: string,
- *     logo: string, // IPFS URL
- *     bio: string,
- *     website: string,
- *     socialLinks: { twitter, instagram, etc. },
- *     photos: string[] // IPFS URLs
- *   }
- * }
- */
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    context: RouteContext
 ) {
     try {
         await dbConnect();
 
-        const { id } = params;
+        const { id } = await context.params;
         const body = await req.json();
         const { branding } = body;
 
@@ -75,7 +59,6 @@ export async function PATCH(
             );
         }
 
-        // Update branding
         sponsorship.branding = branding;
         sponsorship.isClaimed = true;
         sponsorship.claimedAt = new Date();

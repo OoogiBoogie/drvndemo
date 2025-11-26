@@ -2,11 +2,16 @@ import { Settings } from "../components/Settings";
 import { HeroHeader } from "../components/ui/hero-header";
 
 export default function SettingsPage() {
-    // Mock current user for demo
     const mockCurrentUser = {
         _id: "demo-user-id",
+        firstName: "DRVN",
+        lastName: "Enthusiast",
         username: "drvn_enthusiast",
+        email: "demo@drvnvhcls.com",
         displayName: "DRVN Enthusiast",
+        walletAddress: "0x0000000000000000000000000000000000000000",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
     };
 
     return (

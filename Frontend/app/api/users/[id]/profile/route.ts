@@ -2,18 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import User from "@/lib/models/User";
 
-/**
- * GET /api/users/[id]/profile
- * Retrieves public user profile
- */
+type RouteContext = {
+    params: Promise<{ id: string }>;
+};
+
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    context: RouteContext
 ) {
     try {
         await dbConnect();
 
-        const { id } = params;
+        const { id } = await context.params;
         const user = await User.findById(id).select(
             "-email -walletAddress -createdAt -updatedAt"
         );
@@ -32,26 +32,14 @@ export async function GET(
     }
 }
 
-/**
- * PATCH /api/users/[id]/profile
- * Updates user profile
- * 
- * Expected body:
- * {
- *   displayName?: string,
- *   bio?: string,
- *   profileImage?: string,
- *   socialLinks?: { base, x, instagram, etc. }
- * }
- */
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    context: RouteContext
 ) {
     try {
         await dbConnect();
 
-        const { id } = params;
+        const { id } = await context.params;
         const body = await req.json();
         const { displayName, bio, profileImage, socialLinks } = body;
 

@@ -2,39 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import RegisteredVehicle from "@/lib/models/RegisteredVehicle";
 
-/**
- * POST /api/vehicles/[id]/upgrade
- * 
- * Upgrades a registered vehicle to monetized status.
- * 
- * Expected body:
- * {
- *   carToken: {
- *     ticker: string,
- *     address: string,
- *     clankerCastHash: string
- *   },
- *   sponsorshipCollection: {
- *     contractAddress: string,
- *     tier: 'bronze' | 'silver' | 'gold',
- *     maxSupply: 14,
- *     mintPrice: number
- *   },
- *   wrapperTxHash: string
- * }
- */
+type RouteContext = {
+    params: Promise<{ id: string }>;
+};
+
 export async function POST(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    context: RouteContext
 ) {
     try {
         await dbConnect();
 
-        const { id } = params;
+        const { id } = await context.params;
         const body = await req.json();
         const { carToken, sponsorshipCollection, wrapperTxHash } = body;
 
-        // Validation
         if (!carToken || !sponsorshipCollection || !wrapperTxHash) {
             return NextResponse.json(
                 { error: "Missing required fields" },
@@ -42,7 +24,6 @@ export async function POST(
             );
         }
 
-        // Find vehicle
         const vehicle = await RegisteredVehicle.findById(id);
         if (!vehicle) {
             return NextResponse.json(
@@ -58,7 +39,6 @@ export async function POST(
             );
         }
 
-        // Update vehicle
         vehicle.isUpgraded = true;
         vehicle.carToken = carToken;
         vehicle.sponsorshipCollection = sponsorshipCollection;
