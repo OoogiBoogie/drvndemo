@@ -4,7 +4,9 @@
   "private": true,
   "description": "DRVN VHCLS Mini App - Frontend and Smart Contracts",
   "scripts": {
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "build": "cd Frontend && npm run build",
+    "start": "cd Frontend && npm start"
   },
   "devDependencies": {
     "husky": "^9.0.0",
