@@ -36,7 +36,20 @@ The application utilizes TailwindCSS for utility-first styling and Radix UI for 
   Opens from Marketplace section for shopping/buying experience.
 - **Sponsor Details Modal**: Opens when clicking claimed sponsorship slots. Displays sponsor logo (large), website + promo links, social accounts row (Base, X, Instagram, Facebook, YouTube, TikTok, LinkedIn), bio section, photo gallery with navigation, and OpenSea NFT link. Includes wallet-gated "Manage Sponsorship" button (only visible to holder).
 - **Manage Sponsorship Modal**: Allows NFT holders to update sponsor branding (name, logo, bio, website, social links, gallery photos). Accessible only when connected wallet matches sponsor's holderAddress.
-- **Garage Page**: Functions as a public profile, separating public and private sections based on `isOwner` detection. Enhanced User Profile Card with extensive social links.
+- **Garage Page**: Functions as a public profile, separating public and private sections based on `isOwner` detection. Structure:
+  - **User Profile Card** (above Hero on desktop): Two-column compact layout with:
+    - Left: PFP, username, Farcaster/Base handles, follower counts
+    - Right: Social icons + Follow button (same row), bio with clickable links, token ticker quick links
+  - **Hero Section**: Interactive swipeable garage viewer for RWA vehicle collection with ticker badges
+  - **Portfolio Snapshot**: Summary cards showing total value, 24h change, vehicles owned, ETH balance
+  - **VHCL Collection** (4 tabs, public):
+    - RWA Collection: List-style view of car tokens held with tickers and ownership %
+    - VHCL Registry: Grid of user's registered vehicles with "Register New VHCL" button
+    - VHCL Collection: Grid of other users' tokenized vehicles user owns shares of
+    - Sponsored VHCLs: Grid of sponsorship NFTs with manage/OpenSea links
+  - **Asset Vault** (2 tabs, owner-only with Private badge):
+    - Assets: List of ETH, USDC, BSTR, and partner tokens with live balances
+    - Collectibles: Grid of Founder's Keys and Sponsorship NFTs with condensed supported collections list
 - **DRVN Culture Page**: A content hub with category filters, featured content, stats bar, latest episodes grid, browse-by-category, and a "Coming Soon" section for originals.
 - **Feed (Social Hub)**: Accessible via "Feed" nav item (renamed from Social). Features platform connection cards (Farcaster, Base, X), multi-platform feed filtering, and cross-posting functionality.
 - **Arcade Section**: Expandable navigation section with three subsections:

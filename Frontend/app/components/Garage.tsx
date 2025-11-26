@@ -1,49 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useAccount, useReadContract, useBalance } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { formatUnits } from "viem";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import {
-  Car,
-  TrendingUp,
-  ChevronDown,
-  Coins,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 import Image from "next/image";
-import deployedContracts from "../../contracts/deployedContracts";
-import ETHPriceDisplay from "../../service/priceService";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BusterSwapModal } from "./modals/token-swap-modal";
 import { UserProfileCard } from "./profile/UserProfileCard";
-import { VHCLRegistry } from "./profile/VHCLRegistry";
-import { DigitalCollectibles } from "./profile/DigitalCollectibles";
-import { RegisteredVHCLsSection, type RegisteredVehicle } from "./profile/RegisteredVHCLsSection";
+import { VHCLCollectionTabs } from "./profile/VHCLCollectionTabs";
+import { AssetVaultTabs } from "./profile/AssetVaultTabs";
 import { RegisterVehicleModal } from "./modals/RegisterVehicleModal";
 import { VehicleDetailModal } from "./modals/VehicleDetailModal";
+import { SponsorProfileEditorModal } from "./modals/SponsorProfileEditorModal";
 import { RegisteredVHCLPage } from "./vehicle/RegisteredVHCLPage";
 import type { VehicleRegistrationResult } from "@/hooks/useVehicleLifecycle";
-import { type Vehicle } from "@/app/data/vehicleData";
+import { type Vehicle, type Sponsor } from "@/app/data/vehicleData";
 
-/**
- * Garage Component (Public Profile)
- *
- * This component displays the user's public profile and garage with:
- * 
- * PUBLIC SECTIONS (visible to everyone):
- * - User Profile Card (PFP, username, display name, bio, follower count, follow button, social links, edit profile button)
- * - Swipeable Garage Graphic (RWA vehicles they hold shares in)
- * - VHCL Collection (RWA stats, USD value, 24hr performance, car list)
- * - VHCL Registry (Registered vehicles, registration info, register button)
- * - Digital Collectibles (Ecosystem NFTs or available collections)
- * 
- * PRIVATE SECTIONS (visible only to profile owner):
- * - Assets Vault (Wallet balance)
- */
 interface RwaHolding {
   id: string;
   name: string;
@@ -54,13 +33,28 @@ interface RwaHolding {
   change24h: number;
   image: string;
   location: string;
+  ticker?: string;
+}
+
+interface RegisteredVehicle {
+  _id: string;
+  nickname: string;
+  make: string;
+  model: string;
+  year: number;
+  vin: string;
+  registryId: string;
+  images: { url: string; isNftImage: boolean }[];
+  isUpgraded: boolean;
+  carToken?: { ticker: string; address: string };
+  createdAt: string;
 }
 
 interface GarageProps {
   currentUser: any;
   isAuthenticated: boolean;
-  profileWalletAddress?: string; // Optional: for viewing other users' profiles
-  onNavigate?: (page: string) => void; // For navigating within the dashboard
+  profileWalletAddress?: string;
+  onNavigate?: (page: string) => void;
 }
 
 export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onNavigate }: GarageProps) {
@@ -70,10 +64,11 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showVehicleDetail, setShowVehicleDetail] = useState(false);
   const [showRegisteredVehiclePage, setShowRegisteredVehiclePage] = useState(false);
+  const [showSponsorEditor, setShowSponsorEditor] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [selectedRegisteredVehicle, setSelectedRegisteredVehicle] = useState<RegisteredVehicle | null>(null);
+  const [selectedSponsor, setSelectedSponsor] = useState<{ sponsor: Sponsor; vehicleName: string } | null>(null);
   const [activeHoldingIndex, setActiveHoldingIndex] = useState(0);
-  const [isCollectionExpanded, setIsCollectionExpanded] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchEndX, setTouchEndX] = useState<number | null>(null);
   const [registeredVehicles, setRegisteredVehicles] = useState<RegisteredVehicle[]>([
@@ -112,18 +107,10 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
     },
   ]);
 
-  // Determine if the viewer is the owner of the profile
-  // The profile address should come from props (for viewing other users) or from the currentUser
-  // IMPORTANT: Do NOT fall back to viewer's address, as that would incorrectly grant ownership
   const profileAddress = profileWalletAddress || currentUser?.walletAddress;
   
-  // Only consider isOwner = true if:
-  // 1. We have a valid profile address to compare against
-  // 2. The viewer is connected with a wallet
-  // 3. The connected wallet matches the profile wallet
-  // If no profile address is available, default to true (viewing own profile in main garage view)
   const isOwner = !profileAddress 
-    ? true // Default to owner view when no profile address is specified (main garage view)
+    ? true
     : (isConnected && address && profileAddress && 
        address.toLowerCase() === profileAddress.toLowerCase());
 
@@ -132,6 +119,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
       id: "rwa-gt3",
       name: "Porsche 911 GT3 RS",
       collection: "Paul Walker Legacy Set",
+      ticker: "GT3RS",
       sharesOwned: 1250,
       totalShares: 10000,
       usdValue: 27500,
@@ -143,6 +131,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
       id: "rwa-r34",
       name: "Nissan R34 GT-R",
       collection: "Skyline Legends",
+      ticker: "R34GTR",
       sharesOwned: 890,
       totalShares: 8000,
       usdValue: 18200,
@@ -154,6 +143,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
       id: "rwa-nsx",
       name: "Honda NSX Type S",
       collection: "Track Icons",
+      ticker: "NSXTS",
       sharesOwned: 640,
       totalShares: 7500,
       usdValue: 15980,
@@ -168,18 +158,17 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
       ? rwaHoldings[activeHoldingIndex % rwaHoldings.length]
       : null;
 
-
-  // Mock user profile for demo
-  // Use the profile address being viewed, or the connected address for own profile
   const displayWalletAddress = profileAddress || address || "0x0000000000000000000000000000000000000000";
   
   const mockUserProfile = {
     _id: "demo-user-id",
     username: currentUser?.username || "drvn_enthusiast",
     displayName: currentUser?.displayName || "DRVN Enthusiast",
-    bio: currentUser?.bio || "Passionate about cars and Web3 🏎️",
+    bio: currentUser?.bio || "Passionate about cars and Web3. Check out my builds at https://drvn.io/garage 🏎️",
     profileImage: currentUser?.profileImage || "https://github.com/shadcn.png",
     walletAddress: displayWalletAddress,
+    farcasterHandle: currentUser?.farcasterHandle || "drvn",
+    baseHandle: currentUser?.baseHandle || "drvn_vhcls",
     socialLinks: currentUser?.socialLinks || {
       farcaster: "https://warpcast.com/drvn",
       base: "https://base.org/drvn",
@@ -190,7 +179,14 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
     followingCount: currentUser?.followingCount || 567,
   };
 
-  // Handlers
+  const vehicleTokens = registeredVehicles
+    .filter(v => v.isUpgraded && v.carToken)
+    .map(v => ({
+      ticker: v.carToken!.ticker,
+      address: v.carToken!.address,
+      vehicleName: `${v.year} ${v.make} ${v.model}`,
+    }));
+
   const handleEditProfile = () => {
     if (onNavigate) {
       onNavigate("settings");
@@ -240,6 +236,18 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
     setShowVehicleDetail(true);
   };
 
+  const handleSponsorDashboardClick = (sponsor: Sponsor, vehicleName: string) => {
+    setSelectedSponsor({ sponsor, vehicleName });
+    setShowSponsorEditor(true);
+  };
+
+  const handleTokenClick = (token: { ticker: string; vehicleName?: string }) => {
+    const vehicle = registeredVehicles.find(v => v.carToken?.ticker === token.ticker);
+    if (vehicle) {
+      handleRegisteredVehicleClick(vehicle);
+    }
+  };
+
   const showPreviousHolding = () => {
     setActiveHoldingIndex((prev) =>
       prev === 0 ? rwaHoldings.length - 1 : prev - 1,
@@ -271,43 +279,18 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
     setTouchEndX(null);
   };
 
-
-  // Contract addresses
-  const usdcConfig = deployedContracts[8453].USDC;
-  const usdcAddress = usdcConfig.address as `0x${string}`;
-
-  // Fetch real wallet balances using wagmi hooks
-  const { data: usdcBalanceData } = useReadContract({
-    address: usdcAddress,
-    abi: usdcConfig.abi,
-    functionName: "balanceOf",
-    args: address ? [address] : undefined,
-    query: {
-      refetchInterval: 30000, // Refresh every 30 seconds
-    },
-  });
-
   const { data: ethBalanceData } = useBalance({
     address: address,
     query: {
-      refetchInterval: 30000, // Refresh every 30 seconds
+      refetchInterval: 30000,
     },
   });
 
-  // Calculate total portfolio value
-  const usdcBalance = usdcBalanceData
-    ? formatUnits(usdcBalanceData as unknown as bigint, 6)
-    : "0";
   const ethBalance = ethBalanceData
     ? formatUnits(ethBalanceData.value, 18)
     : "0";
 
-  // For demo purposes, assuming 1 ETH = $3000 (you can integrate with a price API later)
   const ethPrice = 3000;
-  const ethValue = parseFloat(ethBalance) * ethPrice;
-  const usdcValue = parseFloat(usdcBalance);
-  const totalValue = (ethValue + usdcValue).toFixed(2);
-
   const totalCollectionValue = rwaHoldings.reduce(
     (sum, holding) => sum + holding.usdValue,
     0,
@@ -329,19 +312,17 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
     <div className="min-h-screen bg-gray-950 p-4 md:p-6">
       <div className="max-w-6xl mx-auto space-y-6">
 
-        {/* =========================================== */}
-        {/* PUBLIC PROFILE SECTION - Visible to Everyone */}
-        {/* =========================================== */}
-
-        {/* Module 1: User Profile Card */}
+        {/* Module 1: User Profile Card - ABOVE Hero on desktop */}
         <UserProfileCard
           user={mockUserProfile}
           isOwner={isOwner}
+          vehicleTokens={vehicleTokens}
           onEditProfile={handleEditProfile}
           onFollow={handleFollow}
+          onTokenClick={handleTokenClick}
         />
 
-        {/* Module 2: Swipeable Garage Graphic (Existing) */}
+        {/* Module 2: Swipeable Garage Graphic (Hero Section) */}
         {activeHolding ? (
           <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-white/5 rounded-3xl p-4 md:p-6">
             <div
@@ -366,9 +347,16 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
                   <p className="text-sm uppercase tracking-wide text-white/70 font-mono">
                     {activeHolding.collection}
                   </p>
-                  <h2 className="text-2xl md:text-4xl font-bold text-white font-mono">
-                    {activeHolding.name}
-                  </h2>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-2xl md:text-4xl font-bold text-white font-mono">
+                      {activeHolding.name}
+                    </h2>
+                    {activeHolding.ticker && (
+                      <span className="text-sm font-bold text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+                        ${activeHolding.ticker}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-white/70 text-sm font-sans">
                     {activeHolding.location}
                   </p>
@@ -456,264 +444,56 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
           </Card>
         )}
 
-        {/* Module 3: VHCL Collection (RWA Shares) */}
-        <div className={`grid grid-cols-1 ${isOwner ? 'lg:grid-cols-3' : ''} gap-6`}>
-          {/* Left Column - Vehicle Collection (Full width when not owner) */}
-          <div className={isOwner ? "lg:col-span-2" : ""}>
-            <Card className="bg-gradient-to-br from-gray-900 to-black border border-gray-700 backdrop-blur-sm h-full">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-white font-mono">
-                    Vehicle Collection
-                  </h2>
-                  <Button
-                    className="bg-[#00daa2] hover:bg-[#00b894] text-black font-mono"
-                    size="sm"
-                  >
-                    Marketplace
-                  </Button>
-                </div>
-
-                {/* Summary Value */}
-                <div className="mb-6">
-                  <div className="text-4xl font-bold text-white font-mono mb-1">
-                    {formatUsd(totalCollectionValue)}
-                  </div>
-                  <div className="text-lg text-[#00daa2] font-mono">
-                    {weightedChange >= 0 ? "+" : ""}
-                    {weightedChange.toFixed(2)}% 24hr
-                  </div>
-                </div>
-
-                {/* Stats Grid */}
-                <div className="space-y-4">
-                  {/* Cars Owned */}
-                  <div className="flex items-center justify-between py-3 border-b border-gray-700">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-none rounded-lg flex items-center justify-center">
-                        <Car className="w-5 h-5 text-red-500" />
-                      </div>
-                      <span className="text-white font-mono">Cars Owned</span>
-                    </div>
-                    <span className="text-white font-mono font-bold">
-                      {rwaHoldings.length}
-                    </span>
-                  </div>
-
-                  {/* 30 Day Performance */}
-                  <div className="flex items-center justify-between py-3 border-b border-gray-700">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-none rounded-lg flex items-center justify-center">
-                        <TrendingUp className="w-5 h-5 text-[#00daa2]" />
-                      </div>
-                      <span className="text-white font-mono">
-                        30 Day Performance
-                      </span>
-                    </div>
-                    <span
-                      className={`${
-                        weightedChange >= 0 ? "text-[#00daa2]" : "text-red-400"
-                      } font-mono font-bold`}
-                    >
-                      {weightedChange.toFixed(2)}%
-                    </span>
-                  </div>
-
-                  {/* Collection List */}
-                  <div className="flex items-center justify-between py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-none rounded-lg flex items-center justify-center">
-                        <Coins className="w-7 h-7 text-white/80" />
-                      </div>
-                      <span className="text-[#00daa2] font-mono">
-                        Collection List
-                      </span>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-[#00daa2]"
-                      onClick={() => setIsCollectionExpanded((prev) => !prev)}
-                    >
-                      <ChevronDown
-                        className={`w-5 h-5 transition-transform ${isCollectionExpanded ? "rotate-180" : ""}`}
-                      />
-                    </Button>
-                  </div>
-
-                  {isCollectionExpanded && (
-                    <div className="mt-4 space-y-3">
-                      {rwaHoldings.map((holding) => (
-                        <div
-                          key={holding.id}
-                          className="flex items-center justify-between p-3 rounded-lg bg-black/40 border border-white/5"
-                        >
-                          <div>
-                            <p className="text-white font-mono font-semibold">
-                              {holding.name}
-                            </p>
-                            <p className="text-white/60 text-xs font-sans">
-                              {holding.sharesOwned.toLocaleString()} shares · {(holding.sharesOwned / holding.totalShares * 100).toFixed(2)}%
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-white font-mono font-semibold">
-                              {formatUsd(holding.usdValue)}
-                            </p>
-                            <p
-                              className={`text-xs font-mono ${holding.change24h >= 0 ? "text-[#00daa2]" : "text-red-400"}`}
-                            >
-                              {holding.change24h >= 0 ? "+" : ""}
-                              {holding.change24h}%
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Right Column - Assets Vault (Owner Only - PRIVATE) */}
-          {isOwner && (
-            <div className="lg:col-span-1">
-              <Card className="bg-gradient-to-br from-gray-900 to-black border border-gray-700 backdrop-blur-sm h-full relative overflow-hidden">
-                {/* Private Badge */}
-                <div className="absolute top-3 right-3 z-10">
-                  <span className="bg-purple-500/20 text-purple-400 text-xs px-2 py-1 rounded-full font-mono border border-purple-500/30">
-                    Private
-                  </span>
-                </div>
-                <CardContent className="p-6">
-                  <h2 className="text-2xl font-bold text-white font-mono mb-6">
-                    Assets Vault
-                  </h2>
-
-                  {/* Total Value */}
-                  <div className="mb-6">
-                    <div className="text-3xl font-bold text-white font-mono mb-1">
-                      {isConnected ? (
-                        `$${parseFloat(totalValue).toLocaleString()}`
-                      ) : (
-                        <span className="text-gray-400">Connect Wallet</span>
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-400 font-mono">
-                      Total Portfolio Value
-                    </div>
-                  </div>
-
-                  {/* Asset Breakdown */}
-                  <div className="space-y-4">
-                    {/* USDC Balance */}
-                    <div className="flex items-center justify-between py-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 flex items-center justify-center">
-                          <Image
-                            src="/Cars/usdc.png"
-                            alt="USDC"
-                            width={24}
-                            height={24}
-                            className="w-6 h-6 rounded-full"
-                          />
-                        </div>
-                        <span className="text-white font-mono text-sm">
-                          Base USDC
-                        </span>
-                      </div>
-                      <span className="text-white font-mono font-bold">
-                        {isConnected ? (
-                          `$${parseFloat(usdcBalance).toLocaleString()}`
-                        ) : (
-                          <span className="text-gray-400">-</span>
-                        )}
-                      </span>
-                    </div>
-
-                    {/* ETH Balance */}
-                    <div className="flex items-center justify-between py-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 flex items-center justify-center">
-                          <Image
-                            src="/Cars/base-logo.png"
-                            alt="Base ETH"
-                            width={24}
-                            height={24}
-                            className="w-6 h-6 rounded-full"
-                          />
-                        </div>
-                        <span className="text-white font-mono text-sm">
-                          Base ETH
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-white font-mono font-bold">
-                          {isConnected ? (
-                            `${parseFloat(ethBalance).toFixed(4)}`
-                          ) : (
-                            <span className="text-gray-400">-</span>
-                          )}
-                        </div>
-                        {isConnected && parseFloat(ethBalance) > 0 && (
-                          <ETHPriceDisplay
-                            ethAmount={ethBalance}
-                            className="text-xs text-[#00daa2] font-mono"
-                          />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="mt-6 space-y-3">
-                    {!isConnected ? (
-                      <Button
-                        className="w-full bg-purple-600 hover:bg-purple-700 text-white font-mono"
-                        size="sm"
-                      >
-                        Connect Wallet
-                      </Button>
-                    ) : (
-                      <Button
-                        className="w-full bg-[#00daa2] hover:bg-[#00b894] text-black font-mono"
-                        size="sm"
-                        onClick={() => setShowSwapModal(true)}
-                      >
-                        Swap
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+        {/* Module 3: Portfolio Snapshot */}
+        <Card className="bg-gradient-to-br from-gray-900 to-black border border-gray-700 backdrop-blur-sm">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-white font-mono">Portfolio Snapshot</h2>
             </div>
-          )}
-        </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="p-4 rounded-xl bg-black/40 border border-white/5">
+                <p className="text-xs text-zinc-400 mb-1">Total Value</p>
+                <p className="text-2xl font-bold text-white font-mono">{formatUsd(totalCollectionValue)}</p>
+              </div>
+              <div className="p-4 rounded-xl bg-black/40 border border-white/5">
+                <p className="text-xs text-zinc-400 mb-1">24h Change</p>
+                <p className={`text-2xl font-bold font-mono ${weightedChange >= 0 ? 'text-[#00daa2]' : 'text-red-400'}`}>
+                  {weightedChange >= 0 ? '+' : ''}{weightedChange.toFixed(2)}%
+                </p>
+              </div>
+              <div className="p-4 rounded-xl bg-black/40 border border-white/5">
+                <p className="text-xs text-zinc-400 mb-1">Vehicles Owned</p>
+                <p className="text-2xl font-bold text-white font-mono">{rwaHoldings.length}</p>
+              </div>
+              <div className="p-4 rounded-xl bg-black/40 border border-white/5">
+                <p className="text-xs text-zinc-400 mb-1">ETH Balance</p>
+                <p className="text-2xl font-bold text-white font-mono">
+                  {isConnected ? parseFloat(ethBalance).toFixed(4) : '---'}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-        {/* Module 4: Registered VHCLS (User's personally registered vehicles) */}
-        <RegisteredVHCLsSection
+        {/* Module 4: VHCL Collection (4 Tabs) - PUBLIC */}
+        <VHCLCollectionTabs
           isOwner={isOwner}
-          registeredVehicles={registeredVehicles}
-          onRegisterClick={handleRegisterVehicle}
-          onVehicleClick={handleRegisteredVehicleClick}
-        />
-
-        {/* Module 5: VHCL Registry (Marketplace vehicles) */}
-        <VHCLRegistry
-          isOwner={isOwner}
+          profileAddress={profileAddress}
           onRegisterClick={handleRegisterVehicle}
           onVehicleClick={handleVehicleClick}
+          onSponsorDashboardClick={handleSponsorDashboardClick}
         />
 
-        {/* Module 5: Digital Collectibles (Updated) */}
-        <DigitalCollectibles 
-          profileAddress={profileAddress}
+        {/* Module 5: Asset Vault (2 Tabs) - OWNER ONLY */}
+        <AssetVaultTabs
           isOwner={isOwner}
+          profileAddress={profileAddress}
+          onSwapClick={() => setShowSwapModal(true)}
+          onSponsorManageClick={handleSponsorDashboardClick}
         />
       </div>
 
-      {/* Swap Modal - Placed outside main container for full viewport coverage */}
+      {/* Swap Modal */}
       <BusterSwapModal
         currentUser={currentUser}
         isAuthenticated={isAuthenticated}
@@ -740,6 +520,29 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
           }}
           vehicle={selectedVehicle}
           isOwner={isOwner}
+        />
+      )}
+
+      {/* Sponsor Profile Editor Modal */}
+      {selectedSponsor && (
+        <SponsorProfileEditorModal
+          isOpen={showSponsorEditor}
+          onClose={() => {
+            setShowSponsorEditor(false);
+            setSelectedSponsor(null);
+          }}
+          sponsor={{
+            tokenId: selectedSponsor.sponsor.tokenId,
+            name: selectedSponsor.sponsor.name || "",
+            holderAddress: selectedSponsor.sponsor.holderAddress,
+            bio: selectedSponsor.sponsor.bio,
+            website: selectedSponsor.sponsor.websiteUrl,
+            promoLink: selectedSponsor.sponsor.promoUrl,
+            logo: selectedSponsor.sponsor.logo,
+            socialLinks: selectedSponsor.sponsor.socialLinks,
+            galleryImages: selectedSponsor.sponsor.gallery,
+          }}
+          vehicleName={selectedSponsor.vehicleName}
         />
       )}
 

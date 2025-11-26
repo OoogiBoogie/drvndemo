@@ -1,0 +1,15 @@
+## Garage Page
+
+1. User card: Move this card above the Hero Section on desktop as it is on mobile. Arrange the elements to minimize vertical space as follows:
+    1. Left column: PFP, username, base/farcaster handle, Followers/Following
+    2. Right column: (side-by-side: Social link icons, Follow button) bio (links in bio should be clickable), token ticker quick links of their registered vehicles.
+2. Hero Section: This page should feature the interactive garage viewer at the top allowing users to swipe through their or another user’s collection. Initially this will just feature RWA cars tokenized by DRVN, but will later be expanded to show any tokenized vehicle.
+3. Portfolio snapshot: This section looks good.
+4. VHCL Collection: Display 4 tabs. This section will be viewable by everyone. For all VHCL cards, include the token ticker.
+- RWA Collection will be a list-style interface that displays all car tokens held.
+- VHCL Registry: Displays a grid of vehicles owned by the user that have been added to the onchain registry. Always include a button to “Register New VHCL”.
+- VHCL Collection: Displays a grid of user-tokenized vehicles which other users have added to the onchain registry
+- Sponsored VHCLS: Displays a grid of vehicles that the user holds a sponsorship NFT of. When clicked it takes the user to the sponsor dashboard of the vehicle where they can manage the logo, upload decal assets, and DM the car owner for promotion requests.
+1. Asset Vault: Below the VHCL collection section, display a module to view all other assets held by the user. It will be divided into 2 tabs. This section will only be viewable by the account owner.
+    1. Assets: A list view of whitelisted tokens. This will consist of DRVN Labo’s ecosystem tokens ($BSTR, and more to come) and partner tokens ($DBRO, $RYFT, etc.)
+    2. Collectibles: A grid view of DRVN Labo ecosystem NFTs. Below the grid view show a list of all supported collections with a link to buy/mint them. What you have now, showing the Founder’s Club Keys will work, but the row could be condensed to save space.
