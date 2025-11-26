@@ -140,6 +140,7 @@ export function VehicleDetailModal({ isOpen, onClose, vehicle, isOwner = false }
         <DialogContent 
           className="max-w-6xl w-[95vw] h-[90vh] p-0 bg-white/[0.03] backdrop-blur-2xl border border-white/10 overflow-hidden shadow-2xl shadow-black/50"
           aria-describedby="vehicle-detail-description"
+          hideCloseButton
         >
           {/* Accessibility: Hidden title and description for screen readers */}
           <VisuallyHidden>

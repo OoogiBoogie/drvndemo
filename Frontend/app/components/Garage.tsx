@@ -151,15 +151,73 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
     {
       _id: "1",
       nickname: "Black Widow",
-      make: "Porsche",
-      model: "911 GT3 RS",
+      make: "Nissan",
+      model: "GT-R R35",
       year: 2024,
       images: [
-        { url: "/Cars/Porsche911.jpg", isNftImage: true }
+        { url: "/Cars/GtrHero1.jpg", isNftImage: true },
+        { url: "/Cars/DRVNGtr3.jpg", isNftImage: false }
       ],
       isUpgraded: true,
       carToken: {
-        ticker: "GT3RS"
+        ticker: "BWIDOW"
+      }
+    },
+    {
+      _id: "2",
+      nickname: "Red Devil",
+      make: "Ferrari",
+      model: "360 Modena",
+      year: 1999,
+      images: [
+        { url: "/Cars/modena1.jpg", isNftImage: true },
+        { url: "/Cars/ModenaHero1.jpg", isNftImage: false }
+      ],
+      isUpgraded: true,
+      carToken: {
+        ticker: "MODENA"
+      }
+    },
+    {
+      _id: "3",
+      nickname: "Godzilla",
+      make: "Nissan",
+      model: "GT-R R34",
+      year: 2002,
+      images: [
+        { url: "/Cars/GtrDemo1.png", isNftImage: true },
+        { url: "/Cars/GtrDemo2.png", isNftImage: false },
+        { url: "/Cars/bsb-gtr-1.jpg", isNftImage: false }
+      ],
+      isUpgraded: true,
+      carToken: {
+        ticker: "R34GTR"
+      }
+    },
+    {
+      _id: "4",
+      nickname: "NSX Dream",
+      make: "Acura",
+      model: "NSX Type S",
+      year: 2022,
+      images: [
+        { url: "/Cars/nsx-ts-2.jpg", isNftImage: true }
+      ],
+      isUpgraded: false
+    },
+    {
+      _id: "5",
+      nickname: "MK4 Legend",
+      make: "Toyota",
+      model: "Supra MK4",
+      year: 1998,
+      images: [
+        { url: "/Cars/SupraHero1.jpg", isNftImage: true },
+        { url: "/Cars/SupraHero2.jpg", isNftImage: false }
+      ],
+      isUpgraded: true,
+      carToken: {
+        ticker: "MK4"
       }
     },
   ]);
