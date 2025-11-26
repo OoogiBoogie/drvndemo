@@ -1,0 +1,39 @@
+### 5. Publishing a Post
+
+5.1 - User navigates to Social feed page and clicks the floating + button on the lower right side of the page.  
+
+5.1.1 - Alternatively, a user can initiate a post from a Registered VHCL page. When it is accessed here the car is tagged by default.
+
+5.2 - Modal or slide-up input appears and user enters post content and media in the same manner as posting on the Base app or Farcaster. If the user has a Registered VHCL a drop down menu will appear where they can select the car they are posting about. They can do this multiple times to post about more than one car (e.g. if they are posting a picture or video with 2 of their registered vehicles.
+
+5.2.1 - If a registered vehicle is tagged it will also be displayed in the registered vehicle social feed.
+
+<aside>
+<img src="/icons/currency-coin_blue.svg" alt="/icons/currency-coin_blue.svg" width="40px" />
+
+### 6. Post Interactions (in DRVN/VHCLS feed)
+
+6.1 - Published posts with tagged registered vehicle will display the CRtoken ticker along the bottom of the post, or as a cashtag amended to the end of the post content. When clicked it will take the user to the Registered VHCL page. 
+
+6.2 - Published posts with a registered vehicle that also has sponsors will have another amendment after the content or car cashtag listing all the sponsors, in the following format:
+
+Sponsored by:
+
+Coinbase / Clanker / Num Num Boba | 11 sponsorships available
+
+Each sponsor is a clickable link that will load their sponsor page associated with the registered vehicle
+
+</aside>
+
+<aside>
+<img src="/icons/currency-coin_blue.svg" alt="/icons/currency-coin_blue.svg" width="40px" />
+
+### 7. Post Interactions (in Base/Farcaster feed)
+
+7.1 - Posts that originate from within the DRVN/VHCLS app will be displayed in Base and Farcaster with a frame. Text content is displayed natively in the post. If an image or video is included in the post this will be show within the frame. If no media is present a default DRVN/VHCLS banner will be displayed. The text at the bottom of the frame will read “View in DRVN/VHLCS”.
+
+7.2 - Published posts with tagged registered vehicle will display the CRtoken ticker along the bottom of the post. When clicked it will take the user to the Registered VHCL page within the DRVN/VHCLS app. 
+
+7.3 - Published posts with a registered vehicle and sponsorships will follow the same format as in section 6.2. When clicked it will take the user to the sponsorship page associate with the registered VHCL within the DRVN/VHCLS app.
+
+</aside>
