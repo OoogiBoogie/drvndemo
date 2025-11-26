@@ -23,7 +23,26 @@ import { UserProfileCard } from "./profile/UserProfileCard";
 import { VHCLRegistry } from "./profile/VHCLRegistry";
 import { DigitalCollectibles } from "./profile/DigitalCollectibles";
 import { RegisterVehicleModal } from "./modals/RegisterVehicleModal";
+import { VehicleDetailModal } from "./modals/VehicleDetailModal";
 import type { VehicleRegistrationResult } from "@/hooks/useVehicleLifecycle";
+
+// Type for vehicle detail modal
+interface VehicleForModal {
+  _id: string;
+  nickname?: string;
+  make: string;
+  model: string;
+  year: number;
+  images: { url: string; isNftImage: boolean }[];
+  isUpgraded: boolean;
+  location?: string;
+  registryId?: string;
+  owner?: { name: string; username?: string; avatar?: string };
+  followerCount?: number;
+  carToken?: { address: string; ticker: string; price: number; change24h: number; mcap: number };
+  sponsorshipCollection?: { contractAddress: string; maxSupply: number; mintPrice: number; mintedCount: number };
+  sponsors: { tokenId: string; logo?: string; name?: string; holderAddress: string }[];
+}
 
 /**
  * Garage Component (Public Profile)
@@ -64,6 +83,8 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
   const { address, isConnected } = useAccount();
   const [showSwapModal, setShowSwapModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showVehicleDetail, setShowVehicleDetail] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState<VehicleForModal | null>(null);
   const [activeHoldingIndex, setActiveHoldingIndex] = useState(0);
   const [isCollectionExpanded, setIsCollectionExpanded] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -200,6 +221,57 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
   const handleFollow = () => {
     console.log("Follow clicked");
     // Would call /api/users/[id]/follow
+  };
+
+  // Handler for clicking on a registered vehicle to view details
+  const handleVehicleClick = (vehicle: {
+    _id: string;
+    nickname?: string;
+    make: string;
+    model: string;
+    year: number;
+    images: { url: string; isNftImage: boolean }[];
+    isUpgraded: boolean;
+    carToken?: { address: string; ticker: string };
+  }) => {
+    // Convert the vehicle data to the modal format with mock data for demo
+    const vehicleForModal: VehicleForModal = {
+      _id: vehicle._id,
+      nickname: vehicle.nickname,
+      make: vehicle.make,
+      model: vehicle.model,
+      year: vehicle.year,
+      images: vehicle.images,
+      isUpgraded: vehicle.isUpgraded,
+      location: "Los Angeles, CA",
+      registryId: `DRVN-${vehicle._id.slice(0, 8).toUpperCase()}`,
+      owner: {
+        name: mockUserProfile.displayName,
+        username: mockUserProfile.username,
+        avatar: mockUserProfile.profileImage,
+      },
+      followerCount: 2847,
+      carToken: vehicle.isUpgraded && vehicle.carToken ? {
+        address: vehicle.carToken.address,
+        ticker: vehicle.carToken.ticker,
+        price: 0.0025,
+        change24h: 12.5,
+        mcap: 125000,
+      } : undefined,
+      sponsorshipCollection: vehicle.isUpgraded ? {
+        contractAddress: "0x1234...5678",
+        maxSupply: 8,
+        mintPrice: 0.05,
+        mintedCount: 5,
+      } : undefined,
+      sponsors: vehicle.isUpgraded ? [
+        { tokenId: "1", name: "BSTR Labs", logo: "/sponsors/bstr.png", holderAddress: "0x1234...5678" },
+        { tokenId: "2", name: "DRVN Platform", logo: "/sponsors/drvn.png", holderAddress: "0x2345...6789" },
+      ] : [],
+    };
+
+    setSelectedVehicle(vehicleForModal);
+    setShowVehicleDetail(true);
   };
 
   const showPreviousHolding = () => {
@@ -658,6 +730,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
           vehicles={registeredVehicles}
           isOwner={isOwner}
           onRegisterClick={handleRegisterVehicle}
+          onVehicleClick={handleVehicleClick}
         />
 
         {/* Module 5: Digital Collectibles (Updated) */}
@@ -683,6 +756,19 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
         userId={mockUserProfile._id}
         onSuccess={handleRegistrationSuccess}
       />
+
+      {/* Vehicle Detail Modal */}
+      {selectedVehicle && (
+        <VehicleDetailModal
+          isOpen={showVehicleDetail}
+          onClose={() => {
+            setShowVehicleDetail(false);
+            setSelectedVehicle(null);
+          }}
+          vehicle={selectedVehicle}
+          isOwner={isOwner}
+        />
+      )}
 
     </div>
   );

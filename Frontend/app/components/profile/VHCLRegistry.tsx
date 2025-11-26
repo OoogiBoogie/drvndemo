@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/ca
 import { Button } from "@/app/components/ui/button";
 import { Plus, ShieldCheck, Zap, Trophy } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 
 interface RegisteredVehicle {
     _id: string;
@@ -23,9 +22,10 @@ interface VHCLRegistryProps {
     vehicles: RegisteredVehicle[];
     isOwner: boolean;
     onRegisterClick: () => void;
+    onVehicleClick?: (vehicle: RegisteredVehicle) => void;
 }
 
-export function VHCLRegistry({ vehicles, isOwner, onRegisterClick }: VHCLRegistryProps) {
+export function VHCLRegistry({ vehicles, isOwner, onRegisterClick, onVehicleClick }: VHCLRegistryProps) {
     return (
         <Card className="w-full bg-black/40 border-white/10 backdrop-blur-md mb-6">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -49,8 +49,12 @@ export function VHCLRegistry({ vehicles, isOwner, onRegisterClick }: VHCLRegistr
                 {vehicles.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {vehicles.map((vehicle) => (
-                            <Link key={vehicle._id} href={`/vehicles/${vehicle._id}`}>
-                                <div className="group relative aspect-video rounded-lg overflow-hidden border border-white/10 bg-zinc-900 transition-all hover:border-primary/50">
+                            <button
+                                key={vehicle._id}
+                                onClick={() => onVehicleClick?.(vehicle)}
+                                className="text-left w-full"
+                            >
+                                <div className="group relative aspect-video rounded-lg overflow-hidden border border-white/10 bg-zinc-900 transition-all hover:border-primary/50 cursor-pointer">
                                     {/* Image */}
                                     {vehicle.images && vehicle.images[0] ? (
                                         <Image
@@ -86,7 +90,7 @@ export function VHCLRegistry({ vehicles, isOwner, onRegisterClick }: VHCLRegistr
                                         </div>
                                     </div>
                                 </div>
-                            </Link>
+                            </button>
                         ))}
                     </div>
                 ) : (

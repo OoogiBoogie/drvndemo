@@ -116,6 +116,24 @@ The application supports multiple access methods:
 
 ## Recent Changes
 
+### November 26, 2025 - Vehicle Detail Modal Implementation
+- **Created VehicleDetailModal** as a full-screen responsive overlay for registered vehicle details:
+  - Full-screen modal with dark backdrop and scrollable content
+  - Swipeable image gallery using SwipeableGallery component
+  - Car Profile Card showing vehicle name, location, registry ID, owner info, and follow button
+  - Sponsorship Module for minting sponsorship slots (owner view) or viewing sponsors (public view)
+  - Token Details section for upgraded vehicles showing price, market cap, 24hr change
+  - Content Feed section with tabs for Timeline, Gallery, Modifications
+  - Responsive layout: 2-column grid on desktop (profile+sponsors | token+feed), stacked on mobile
+- **Updated VHCLRegistry component**:
+  - Changed from `<Link>` navigation to `<button>` with `onVehicleClick` callback
+  - Vehicle clicks now open modal overlay instead of navigating to separate route
+  - Maintains context on Garage page without full page reload
+- **Updated Garage component**:
+  - Added state management for `selectedVehicle` and `showVehicleDetail`
+  - Added `handleVehicleClick` handler to convert vehicle data for modal format
+  - Renders VehicleDetailModal conditionally when vehicle is selected
+
 ### November 25, 2025 - Edit Profile Navigation & Farcaster Social Links
 - **Fixed Edit Profile button navigation**:
   - Added `onNavigate` prop to Garage component for in-dashboard navigation
