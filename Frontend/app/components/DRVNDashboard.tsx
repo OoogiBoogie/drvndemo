@@ -47,6 +47,7 @@ import { ConnectButton } from "./web3/ConnectButton";
 import TotalKeysMinted from "./web3/TotalKeysMinted";
 import { HeroHeader } from "./ui/hero-header";
 import { ContentFeed } from "./social/ContentFeed";
+import { CreatePostButton } from "./social/CreatePostButton";
 import { CreatePostModal } from "./modals/CreatePostModal";
 import { SocialPost, PlatformConnection, CrossPostSettings } from "./social/types";
 import { MOCK_SOCIAL_POSTS } from "./social/mockPosts";
@@ -1667,6 +1668,28 @@ export function DRVNDashboard() {
           setSelectedMarketplaceItem(null);
         }}
         item={selectedMarketplaceItem}
+      />
+
+      {/* Global Floating Post Button - Hidden on Settings page */}
+      {activePage !== "settings" && (
+        <CreatePostButton onClick={() => setShowCreatePostModal(true)} />
+      )}
+
+      {/* Global Create Post Modal */}
+      <CreatePostModal
+        isOpen={showCreatePostModal}
+        onClose={() => setShowCreatePostModal(false)}
+        userId={currentUser?._id || "anonymous"}
+        registeredVehicles={mockRegisteredVehicles}
+        currentUser={{
+          name: currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : "DRVN User",
+          username: currentUser?.username || "drvn_user",
+          avatar: currentUser?.profileImage || "https://github.com/shadcn.png",
+        }}
+        sponsors={availableSponsors}
+        onPostCreated={handlePostCreated}
+        connectedPlatforms={platformConnections.filter(p => p.connected).map(p => p.platform)}
+        initialCrossPostSettings={crossPostSettings}
       />
     </div>
   );

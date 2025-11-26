@@ -2,8 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { ContentFeed } from "@/app/components/social/ContentFeed";
-import { CreatePostButton } from "@/app/components/social/CreatePostButton";
-import { CreatePostModal } from "@/app/components/modals/CreatePostModal";
 import { HeroHeader } from "@/app/components/ui/hero-header";
 import { Button } from "@/app/components/ui/button";
 import Image from "next/image";
@@ -23,8 +21,7 @@ import { SocialPost, PlatformConnection, CrossPostSettings } from "@/app/compone
 import { MOCK_SOCIAL_POSTS } from "@/app/components/social/mockPosts";
 
 export default function SocialFeedPage() {
-    const [showCreatePostModal, setShowCreatePostModal] = useState(false);
-    const [feedPosts, setFeedPosts] = useState<SocialPost[]>(() => [...MOCK_SOCIAL_POSTS]);
+    const [feedPosts] = useState<SocialPost[]>(() => [...MOCK_SOCIAL_POSTS]);
     
     const [platformConnections, setPlatformConnections] = useState<PlatformConnection[]>([
         { platform: "farcaster", connected: false },
@@ -37,50 +34,6 @@ export default function SocialFeedPage() {
         base: true,
         x: false,
     });
-
-    const mockUserId = "demo-user-id";
-    const mockUser = {
-        id: mockUserId,
-        name: "Ava Accelerator",
-        username: "ava_drvn",
-        avatar: "https://i.pravatar.cc/150?img=11",
-    };
-
-    const mockRegisteredVehicles = [
-        {
-            id: "1",
-            nickname: "Black Widow",
-            make: "Porsche",
-            model: "911 GT3 RS",
-        },
-    ];
-
-    const availableSponsors = useMemo(
-        () => [
-            {
-                id: "rb-1",
-                name: "Red Bull Racing",
-                logo: "https://avatars.githubusercontent.com/u/108554348?s=200&v=4",
-                url: "/sponsors/1",
-            },
-            {
-                id: "base-cameras",
-                name: "Base Cameras",
-                logo: "https://avatars.githubusercontent.com/u/108554348?s=200&v=4",
-                url: "https://base.org",
-            },
-        ],
-        [],
-    );
-
-    const handleCreatePost = () => {
-        setShowCreatePostModal(true);
-    };
-
-    const handlePostCreated = (post: SocialPost, settings: CrossPostSettings) => {
-        setCrossPostSettings(settings);
-        setFeedPosts((prev) => [post, ...prev]);
-    };
 
     const handleConnectPlatform = (platform: "farcaster" | "base" | "x") => {
         setPlatformConnections(prev => 
@@ -110,7 +63,7 @@ export default function SocialFeedPage() {
                 />
 
                 <QuickComposerCard 
-                    onCreate={handleCreatePost} 
+                    onCreate={() => {}}
                     connectedPlatforms={platformConnections.filter(p => p.connected)}
                     crossPostSettings={crossPostSettings}
                     onTogglePlatform={(platform) => {
@@ -127,24 +80,6 @@ export default function SocialFeedPage() {
 
                 <ContentFeed posts={feedPosts} inAppOnly={true} />
             </div>
-
-            <CreatePostButton onClick={handleCreatePost} />
-
-            <CreatePostModal
-                isOpen={showCreatePostModal}
-                onClose={() => setShowCreatePostModal(false)}
-                userId={mockUserId}
-                registeredVehicles={mockRegisteredVehicles}
-                currentUser={{
-                    name: mockUser.name,
-                    username: mockUser.username,
-                    avatar: mockUser.avatar,
-                }}
-                sponsors={availableSponsors}
-                onPostCreated={handlePostCreated}
-                connectedPlatforms={platformConnections.filter(p => p.connected).map(p => p.platform)}
-                initialCrossPostSettings={crossPostSettings}
-            />
         </div>
     );
 }
