@@ -25,7 +25,15 @@ The application utilizes TailwindCSS for utility-first styling and Radix UI for 
 - **Development Environment**: Configured for Replit with Node.js 22, frontend dependencies, and a development server on port 5000. Next.js host checking is disabled for Replit proxy compatibility.
 
 ### Feature Specifications
-- **Vehicle Detail Modal**: Full-screen, responsive overlay for vehicle details including image gallery, car profile card, sponsorship module, token details, valuation card (AV/MV/Spread), content feed (Timeline, Gallery, Modifications), and Tagged Posts section. Uses glassmorphic styling (bg-white/[0.03], bg-black/40 backdrop-blur-md). Opens from both Garage page and Marketplace section via explicit ID mapping (marketplaceToVehicleMap).
+- **Vehicle Detail Modal (VHCL)**: Full-screen, responsive overlay for ownership-focused vehicle details including image gallery, car profile card, sponsorship module, token details, valuation card (AV/MV/Spread), content feed (Timeline, Gallery, Modifications), and Tagged Posts section. Uses glassmorphic styling (bg-white/[0.03], bg-black/40 backdrop-blur-md). Opens from Garage page for community/ownership experience.
+- **Marketplace Detail Modal**: Buyer-focused modal with same glassmorphic styling but different content. Features:
+  - Vehicle identity card with brand, model, year, collection
+  - Valuation card with AV/MV/Spread and color-coded spread indicator (green=undervalued buying opportunity, red=premium pricing)
+  - Tabbed section for Specs/History/Upgrades with detailed specifications (VIN, mileage, engine, transmission, colors, curb weight)
+  - History tab with description and provenance documentation
+  - Performance highlights (engine, power, top speed, 0-100 acceleration)
+  - Buy Shares action card with Coming Soon handling
+  Opens from Marketplace section for shopping/buying experience.
 - **Sponsor Details Modal**: Opens when clicking claimed sponsorship slots. Displays sponsor logo (large), website + promo links, social accounts row (Base, X, Instagram, Facebook, YouTube, TikTok, LinkedIn), bio section, photo gallery with navigation, and OpenSea NFT link. Includes wallet-gated "Manage Sponsorship" button (only visible to holder).
 - **Manage Sponsorship Modal**: Allows NFT holders to update sponsor branding (name, logo, bio, website, social links, gallery photos). Accessible only when connected wallet matches sponsor's holderAddress.
 - **Garage Page**: Functions as a public profile, separating public and private sections based on `isOwner` detection. Enhanced User Profile Card with extensive social links.
