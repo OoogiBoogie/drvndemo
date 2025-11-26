@@ -55,6 +55,8 @@ import { CreatePostModal } from "./modals/CreatePostModal";
 import { SocialPost, PlatformConnection, CrossPostSettings } from "./social/types";
 import { MOCK_SOCIAL_POSTS } from "./social/mockPosts";
 import { Globe, Check, Plus, Zap, Users, Shield, ExternalLink, Sparkles, Trophy } from "lucide-react";
+import { VehicleDetailModal } from "./modals/VehicleDetailModal";
+import { vehicles, type Vehicle } from "@/app/data/vehicleData";
 
 export function DRVNDashboard() {
   const { address } = useAccount();
@@ -71,6 +73,10 @@ export function DRVNDashboard() {
   // Social Hub state
   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
   const [feedPosts, setFeedPosts] = useState<SocialPost[]>(() => [...MOCK_SOCIAL_POSTS]);
+  
+  // Marketplace Vehicle Modal state
+  const [selectedMarketplaceVehicle, setSelectedMarketplaceVehicle] = useState<Vehicle | null>(null);
+  const [showMarketplaceModal, setShowMarketplaceModal] = useState(false);
   const [platformConnections, setPlatformConnections] = useState<PlatformConnection[]>([
     { platform: "farcaster", connected: false },
     { platform: "base", connected: true, username: "0x1234...5678" },
@@ -123,6 +129,38 @@ export function DRVNDashboard() {
   };
 
   const connectedPlatformsCount = platformConnections.filter(p => p.connected).length;
+
+  // Explicit mapping from marketplace item IDs to vehicle IDs in vehicleData
+  const marketplaceToVehicleMap: Record<number, string> = {
+    1: "1", // Ferrari 360 Modena
+    2: "2", // Nissan GT-R R34
+    3: "3", // Honda NSX Type S
+  };
+
+  // Marketplace vehicle click handler - maps marketplace item to full vehicle data
+  const handleMarketplaceVehicleClick = (marketplaceId: number) => {
+    // Use explicit mapping first
+    const vehicleId = marketplaceToVehicleMap[marketplaceId];
+    let matchingVehicle: Vehicle | undefined;
+    
+    if (vehicleId) {
+      matchingVehicle = vehicles.find(v => v._id === vehicleId);
+    } else {
+      // Fallback: try to match by brand/model
+      const marketplaceItem = marketplaceItems.find(item => item.id === marketplaceId);
+      if (marketplaceItem) {
+        matchingVehicle = vehicles.find(v => 
+          v.make.toUpperCase() === marketplaceItem.brand.toUpperCase() && 
+          v.model.toLowerCase().includes(marketplaceItem.model.split(' ')[0].toLowerCase())
+        );
+      }
+    }
+    
+    if (matchingVehicle) {
+      setSelectedMarketplaceVehicle(matchingVehicle);
+      setShowMarketplaceModal(true);
+    }
+  };
 
   const mockSocialUser = {
     id: currentUser?._id || "demo-user-id",
@@ -528,6 +566,7 @@ export function DRVNDashboard() {
                         moreInfo={item.moreInfo}
                         specs={item.specs}
                         detailedSpecs={item.detailedSpecs}
+                        onCardClick={() => handleMarketplaceVehicleClick(item.id)}
                       />
                     ))}
                   </div>
@@ -581,6 +620,7 @@ export function DRVNDashboard() {
                       detailedSpecs={
                         marketplaceItems[currentCarIndex].detailedSpecs
                       }
+                      onCardClick={() => handleMarketplaceVehicleClick(marketplaceItems[currentCarIndex].id)}
                     />
                   </div>
                 </div>
@@ -914,6 +954,7 @@ export function DRVNDashboard() {
                       moreInfo={item.moreInfo}
                       specs={item.specs}
                       detailedSpecs={item.detailedSpecs}
+                      onCardClick={() => handleMarketplaceVehicleClick(item.id)}
                     />
                   ))}
                 </div>
@@ -965,6 +1006,7 @@ export function DRVNDashboard() {
                     detailedSpecs={
                       marketplaceItems[currentCarIndex].detailedSpecs
                     }
+                    onCardClick={() => handleMarketplaceVehicleClick(marketplaceItems[currentCarIndex].id)}
                   />
                 </div>
               </div>
@@ -1643,6 +1685,17 @@ export function DRVNDashboard() {
         isOpen={showAuthModal && !shouldShowSignup}
         onClose={() => setShowAuthModal(false)}
         onSuccess={handleSigninSuccess}
+      />
+
+      {/* Marketplace Vehicle Detail Modal */}
+      <VehicleDetailModal
+        isOpen={showMarketplaceModal}
+        onClose={() => {
+          setShowMarketplaceModal(false);
+          setSelectedMarketplaceVehicle(null);
+        }}
+        vehicle={selectedMarketplaceVehicle}
+        isOwner={false}
       />
     </div>
   );

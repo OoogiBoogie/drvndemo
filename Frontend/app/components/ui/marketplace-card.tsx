@@ -149,6 +149,7 @@ interface MarketplaceCardProps {
     label: string;
     value: string;
   }>;
+  onCardClick?: () => void;
 }
 
 export function MarketplaceCard({
@@ -163,12 +164,17 @@ export function MarketplaceCard({
   image,
   // specs,
   id,
+  onCardClick,
 }: MarketplaceCardProps & { id: number }) {
   // const [isHovered, setIsHovered] = useState(false)
   const router = useRouter();
 
   const handleCardClick = () => {
-    router.push(`/cars/${id}`);
+    if (onCardClick) {
+      onCardClick();
+    } else {
+      router.push(`/cars/${id}`);
+    }
   };
 
   return (
