@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRVN VHCLS - Integration Guide & PR Notes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fff;
+            padding: 40px;
+            max-width: 950px;
+            margin: 0 auto;
+        }
+        
+        @media print {
+            body { padding: 20px; }
+            .no-print { display: none !important; }
+            .page-break { page-break-before: always; }
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #00daa2;
+        }
+        
+        h1 {
+            font-size: 28px;
+            color: #0a0a0a;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .date {
+            font-size: 14px;
+            color: #888;
+            margin-top: 8px;
+        }
+        
+        section {
+            margin-bottom: 32px;
+        }
+        
+        h2 {
+            font-size: 20px;
+            color: #0a0a0a;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e5e5e5;
+        }
+        
+        h3 {
+            font-size: 16px;
+            color: #333;
+            margin: 16px 0 8px 0;
+        }
+        
+        p {
+            margin-bottom: 12px;
+            color: #444;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        
+        th, td {
+            text-align: left;
+            padding: 10px 12px;
+            border: 1px solid #e5e5e5;
+        }
+        
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #555;
+        }
+        
+        .status-match { color: #00a67d; font-weight: 600; }
+        .status-new { color: #3b82f6; font-weight: 600; }
+        .status-ignore { color: #9ca3af; font-weight: 600; }
+        
+        .highlight-box {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .highlight-box h4 {
+            color: #166534;
+            margin-bottom: 8px;
+        }
+        
+        .warning-box {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .warning-box h4 {
+            color: #92400e;
+            margin-bottom: 8px;
+        }
+        
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box h4 {
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+        
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+            font-size: 13px;
+            color: #0f172a;
+        }
+        
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+        
+        ul, ol {
+            margin-left: 24px;
+            margin-bottom: 16px;
+        }
+        
+        li {
+            margin-bottom: 6px;
+        }
+        
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .checklist li {
+            padding: 8px 12px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .checklist li::before {
+            content: "☐";
+            font-size: 18px;
+            color: #9ca3af;
+        }
+        
+        .file-tree {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        
+        .file-tree .folder { color: #3b82f6; font-weight: 600; }
+        .file-tree .file { color: #64748b; }
+        .file-tree .new { color: #10b981; font-weight: 600; }
+        .file-tree .comment { color: #9ca3af; font-style: italic; }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e5e5;
+            color: #888;
+            font-size: 13px;
+        }
+        
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #00daa2;
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        
+        .print-btn:hover { background: #00c492; }
+    </style>
+</head>
+<body>
+    <button class="print-btn no-print" onclick="window.print()">Save as PDF</button>
+    
+    <header>
+        <h1>DRVN VHCLS Integration Guide</h1>
+        <p class="subtitle">PR Notes & Backend Integration Checklist</p>
+        <p class="date">Prepared: November 26, 2025</p>
+    </header>
+
+    <div class="highlight-box">
+        <h4>Quick Summary</h4>
+        <p style="margin-bottom:0;">This PR adds <strong>Garage Profiles, Vehicle Registry, Social Feed, Sponsor Branding & Management, and dRyft Sponsorship Flow</strong> - all three deliverable line items ($12,500 total). The code structure matches your official DRVN-LABO-BUILD repository exactly and is ready for seamless integration.</p>
+    </div>
+
+    <section>
+        <h2>Pre-Merge Checklist</h2>
+        <ul class="checklist">
+            <li>Review new API routes in <code>Frontend/app/api/</code></li>
+            <li>Set up required environment variables (see below)</li>
+            <li>Run <code>npm install</code> in Frontend directory</li>
+            <li>Run <code>yarn install</code> in Hardhat directory</li>
+            <li>Test locally with <code>npm run dev</code></li>
+            <li>Verify Prettier/ESLint passes: <code>npm run lint && npm run format:check</code></li>
+            <li>Test in all 3 environments (dApp, Farcaster Mini App, Base Mini App)</li>
+            <li>Deploy contracts to Base mainnet when ready (optional)</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Configuration Compatibility</h2>
+        <p>All configuration files match your official repository exactly:</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Config File</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>.prettierrc</code></td>
+                    <td class="status-match">Identical</td>
+                    <td>Same formatting rules (semi, trailingComma, tabWidth, etc.)</td>
+                </tr>
+                <tr>
+                    <td><code>.lintstagedrc.json</code></td>
+                    <td class="status-match">Identical</td>
+                    <td>Same lint-staged hooks for JS/TS/CSS/JSON</td>
+                </tr>
+                <tr>
+                    <td><code>.prettierignore</code></td>
+                    <td class="status-match">Identical</td>
+                    <td>Same ignore patterns for node_modules, build, etc.</td>
+                </tr>
+                <tr>
+                    <td><code>.husky/pre-commit</code></td>
+                    <td class="status-match">Identical</td>
+                    <td>Same pre-commit hooks</td>
+                </tr>
+                <tr>
+                    <td><code>.github/</code></td>
+                    <td class="status-match">Present</td>
+                    <td>Workflows, PR templates, CODEOWNERS included</td>
+                </tr>
+                <tr>
+                    <td><code>package.json</code> (root)</td>
+                    <td class="status-match">Compatible</td>
+                    <td>Same structure, husky/lint-staged deps match</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="page-break">
+        <h2>New Files Added</h2>
+        
+        <h3>Frontend - API Routes</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Route</th>
+                    <th>Purpose</th>
+                    <th>Deliverable</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>/api/vehicles/register</code></td>
+                    <td>Register new vehicle with VIN decoding</td>
+                    <td>Line Item 1</td>
+                </tr>
+                <tr>
+                    <td><code>/api/vehicles/[id]/upgrade</code></td>
+                    <td>Upgrade vehicle to tokenized VHCL</td>
+                    <td>Line Item 1</td>
+                </tr>
+                <tr>
+                    <td><code>/api/vin/decode</code></td>
+                    <td>NHTSA VIN decoder integration</td>
+                    <td>Line Item 1</td>
+                </tr>
+                <tr>
+                    <td><code>/api/social/posts</code></td>
+                    <td>Social feed posts (create/read)</td>
+                    <td>Line Item 1</td>
+                </tr>
+                <tr>
+                    <td><code>/api/sponsorship/[id]/manage</code></td>
+                    <td>Update sponsor branding (off-chain)</td>
+                    <td>Line Item 2</td>
+                </tr>
+                <tr>
+                    <td><code>/api/sponsorship/create</code></td>
+                    <td>Create sponsorship collection</td>
+                    <td>Line Item 3</td>
+                </tr>
+                <tr>
+                    <td><code>/api/users/[id]/follow</code></td>
+                    <td>Follow/unfollow users</td>
+                    <td>Line Item 1</td>
+                </tr>
+                <tr>
+                    <td><code>/api/users/[id]/profile</code></td>
+                    <td>User profile data</td>
+                    <td>Line Item 1</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Frontend - Components</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Purpose</th>
+                    <th>Deliverable</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>RegisterVehicleModal.tsx</code></td>
+                    <td>Multi-step vehicle registration with VIN capture</td>
+                    <td>Line Item 1</td>
+                </tr>
+                <tr>
+                    <td><code>UpgradeVehicleModal.tsx</code></td>
+                    <td>CRNFT UX + Clanker token creation flow</td>
+                    <td>Line Item 1</td>
+                </tr>
+                <tr>
+                    <td><code>ContentFeed.tsx</code></td>
+                    <td>Social feed with platform filtering</td>
+                    <td>Line Item 1</td>
+                </tr>
+                <tr>
+                    <td><code>CreatePostModal.tsx</code></td>
+                    <td>Cross-platform posting (Farcaster/Base/X)</td>
+                    <td>Line Item 1</td>
+                </tr>
+                <tr>
+                    <td><code>UserProfileCard.tsx</code></td>
+                    <td>Garage profile display</td>
+                    <td>Line Item 1</td>
+                </tr>
+                <tr>
+                    <td><code>VHCLCollectionTabs.tsx</code></td>
+                    <td>4-tab collection view</td>
+                    <td>Line Item 1</td>
+                </tr>
+                <tr>
+                    <td><code>ManageSponsorshipModal.tsx</code></td>
+                    <td>Sponsor branding editor (logo, bio, gallery)</td>
+                    <td>Line Item 2</td>
+                </tr>
+                <tr>
+                    <td><code>SponsorDetailsModal.tsx</code></td>
+                    <td>Sponsor profile view</td>
+                    <td>Line Item 2</td>
+                </tr>
+                <tr>
+                    <td><code>SponsorshipModule.tsx</code></td>
+                    <td>14-slot sponsorship grid</td>
+                    <td>Line Item 2</td>
+                </tr>
+                <tr>
+                    <td><code>MintSponsorshipModal.tsx</code></td>
+                    <td>NFT minting flow UI</td>
+                    <td>Line Item 3</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Hardhat - Smart Contracts</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Contract</th>
+                    <th>Purpose</th>
+                    <th>Deployment Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>TokenWrapper.sol</code></td>
+                    <td>ERC20 token wrapping, deploys SponsorshipNFT</td>
+                    <td>Ready for deployment</td>
+                </tr>
+                <tr>
+                    <td><code>SponsorshipNFT.sol</code></td>
+                    <td>ERC721 sponsorship NFTs (14 max supply)</td>
+                    <td>Ready for deployment</td>
+                </tr>
+                <tr>
+                    <td><code>VehicleRegistry.sol</code></td>
+                    <td>On-chain vehicle registration</td>
+                    <td>Ready for deployment</td>
+                </tr>
+                <tr>
+                    <td><code>DRVNSteel.sol</code></td>
+                    <td>Steel tier Founder's Key (ERC1155)</td>
+                    <td>Already deployed</td>
+                </tr>
+                <tr>
+                    <td><code>DRVNCarbon.sol</code></td>
+                    <td>Carbon tier Founder's Key (ERC1155)</td>
+                    <td>Already deployed</td>
+                </tr>
+                <tr>
+                    <td><code>DRVNTitanium.sol</code></td>
+                    <td>Titanium tier Founder's Key (ERC1155)</td>
+                    <td>Already deployed</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="page-break">
+        <h2>Environment Variables Required</h2>
+        
+        <div class="info-box">
+            <h4>Frontend/.env.local</h4>
+            <p style="margin-bottom:0;">Copy from <code>.env.example</code> and fill in your values:</p>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Variable</th>
+                    <th>Purpose</th>
+                    <th>Required</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>MONGODB_URI</code></td>
+                    <td>MongoDB connection string for user/vehicle data</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td><code>REDIS_URL</code></td>
+                    <td>Redis for caching and notifications</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td><code>NEXT_PUBLIC_ONCHAINKIT_API_KEY</code></td>
+                    <td>OnchainKit wallet integration</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td><code>NEXT_PUBLIC_ALCHEMY_API_KEY</code></td>
+                    <td>Alchemy RPC for Base network</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td><code>PINATA_API_KEY</code></td>
+                    <td>IPFS uploads for images/metadata</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td><code>PINATA_SECRET_KEY</code></td>
+                    <td>Pinata authentication</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td><code>CLANKER_API_KEY</code></td>
+                    <td>Token deployment via Clanker</td>
+                    <td>When ready</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="info-box">
+            <h4>Hardhat/.env</h4>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Variable</th>
+                    <th>Purpose</th>
+                    <th>Required</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>PRIVATE_KEY</code></td>
+                    <td>Deployer wallet private key</td>
+                    <td>For deployment</td>
+                </tr>
+                <tr>
+                    <td><code>ALCHEMY_API_KEY</code></td>
+                    <td>Base mainnet RPC</td>
+                    <td>For deployment</td>
+                </tr>
+                <tr>
+                    <td><code>BASESCAN_API_KEY</code></td>
+                    <td>Contract verification on Basescan</td>
+                    <td>For deployment</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>Files Safe to Ignore/Exclude</h2>
+        <p>These files are Replit-specific and won't affect your codebase:</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Purpose</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>replit.md</code></td>
+                    <td>Replit environment documentation</td>
+                    <td class="status-ignore">Can delete or ignore</td>
+                </tr>
+                <tr>
+                    <td><code>client-deliverables-summary.html</code></td>
+                    <td>Client deliverables PDF</td>
+                    <td class="status-ignore">Can delete or ignore</td>
+                </tr>
+                <tr>
+                    <td><code>client-integration-guide.html</code></td>
+                    <td>This integration guide</td>
+                    <td class="status-ignore">Can delete or ignore</td>
+                </tr>
+                <tr>
+                    <td><code>attached_assets/</code></td>
+                    <td>Replit asset uploads</td>
+                    <td class="status-ignore">Can delete or ignore</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="warning-box">
+            <h4>Note on package.json</h4>
+            <p style="margin-bottom:0;">The root <code>package.json</code> has a few extra convenience scripts (<code>postinstall</code>, <code>build</code>, <code>start</code>) and an <code>openai</code> dependency. These are additive and won't conflict with your existing setup. You can keep or remove them as needed.</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>Integration Steps</h2>
+        
+        <h3>Option A: Direct Merge (Recommended)</h3>
+        <ol>
+            <li>Create a new branch from <code>main</code>: <code>git checkout -b feature/deliverables-integration</code></li>
+            <li>Add this repo as a remote: <code>git remote add deliverables [repo-url]</code></li>
+            <li>Fetch and merge: <code>git fetch deliverables && git merge deliverables/main --allow-unrelated-histories</code></li>
+            <li>Resolve any conflicts (should be minimal)</li>
+            <li>Run linting: <code>npm run lint</code></li>
+            <li>Test locally: <code>npm run dev</code></li>
+            <li>Create PR to main</li>
+        </ol>
+        
+        <h3>Option B: Cherry-Pick Components</h3>
+        <ol>
+            <li>Copy specific directories you need:
+                <ul>
+                    <li><code>Frontend/app/components/modals/</code> - Modal components</li>
+                    <li><code>Frontend/app/components/profile/</code> - Profile components</li>
+                    <li><code>Frontend/app/components/social/</code> - Social feed components</li>
+                    <li><code>Frontend/app/components/vehicle/</code> - Vehicle components</li>
+                    <li><code>Frontend/app/api/</code> - API routes</li>
+                    <li><code>Hardhat/contracts/</code> - Smart contracts</li>
+                </ul>
+            </li>
+            <li>Install any new dependencies from <code>Frontend/package.json</code></li>
+            <li>Add required environment variables</li>
+            <li>Test integration</li>
+        </ol>
+    </section>
+
+    <section>
+        <h2>Testing After Integration</h2>
+        
+        <h3>Frontend Tests</h3>
+        <pre>cd Frontend
+npm run lint          # ESLint check
+npm run format:check  # Prettier check
+npm run typecheck     # TypeScript check
+npm run build         # Production build test</pre>
+        
+        <h3>Hardhat Tests</h3>
+        <pre>cd Hardhat
+yarn lint             # Solidity linting
+yarn compile          # Compile contracts
+yarn test             # Run contract tests</pre>
+        
+        <h3>Manual Testing Checklist</h3>
+        <ul class="checklist">
+            <li>Vehicle registration flow works (VIN decode, specs review, image upload)</li>
+            <li>Vehicle upgrade to VHCL works (ticker selection, Clanker integration)</li>
+            <li>Social feed displays posts correctly</li>
+            <li>Cross-platform posting works (Farcaster, Base, X)</li>
+            <li>Sponsor branding modal saves data</li>
+            <li>Sponsorship NFT minting UI functions</li>
+            <li>All modals open/close correctly</li>
+            <li>Wallet connection works on Base network</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Pending Items (Awaiting Approval)</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Status</th>
+                    <th>What's Needed</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Clanker API Integration</td>
+                    <td>UI Complete, API Mocked</td>
+                    <td>Clanker API key + client approval to enable live token deployment</td>
+                </tr>
+                <tr>
+                    <td>TokenWrapper Contract Deployment</td>
+                    <td>Contract Ready</td>
+                    <td>Client approval + Base mainnet deployment</td>
+                </tr>
+                <tr>
+                    <td>SponsorshipNFT Contract Deployment</td>
+                    <td>Contract Ready</td>
+                    <td>Client approval + Base mainnet deployment</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>Support & Questions</h2>
+        <p>If you encounter any issues during integration:</p>
+        <ol>
+            <li>Check the environment variables are set correctly</li>
+            <li>Ensure MongoDB and Redis are accessible</li>
+            <li>Verify you're on Node.js 22.x (<code>node --version</code>)</li>
+            <li>Clear <code>.next</code> cache: <code>rm -rf Frontend/.next</code></li>
+            <li>Reinstall dependencies: <code>rm -rf node_modules && npm install</code></li>
+        </ol>
+    </section>
+
+    <footer>
+        <p>DRVN VHCLS Integration Guide - Confidential</p>
+        <p>Generated November 26, 2025</p>
+    </footer>
+</body>
+</html>
