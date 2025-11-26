@@ -12,7 +12,8 @@ import {
   ExternalLink,
   ChevronLeft,
   ChevronRight,
-  Settings
+  Settings,
+  Share2
 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -66,6 +67,7 @@ export function SponsorDetailsModal({
   };
 
   const socialIcons: { key: keyof SponsorSocialLinks; label: string; icon: string }[] = [
+    { key: "farcaster", label: "Farcaster", icon: "🟣" },
     { key: "base", label: "Base", icon: "/Cars/base-logo.png" },
     { key: "x", label: "X", icon: "/Cars/XIcon.png" },
     { key: "instagram", label: "Instagram", icon: "instagram" },
@@ -74,6 +76,26 @@ export function SponsorDetailsModal({
     { key: "tiktok", label: "TikTok", icon: "tiktok" },
     { key: "linkedin", label: "LinkedIn", icon: "linkedin" },
   ];
+
+  const handleShare = async () => {
+    const shareText = `Check out ${sponsor.name} - a sponsor on DRVN VHCLS!`;
+    const shareUrl = window.location.href;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: sponsor.name || "Sponsor",
+          text: shareText,
+          url: shareUrl,
+        });
+      } catch (err) {
+        console.log("Share cancelled or failed", err);
+      }
+    } else {
+      await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+      alert("Link copied to clipboard!");
+    }
+  };
 
   const handleBrandingUpdate = (branding: {
     name?: string;
@@ -105,14 +127,24 @@ export function SponsorDetailsModal({
           {/* Header */}
           <div className="sticky top-0 z-10 flex items-center justify-between p-4 border-b border-white/5 bg-white/5 backdrop-blur-xl">
             <h2 className="text-lg font-bold text-white font-mono">Sponsor Details</h2>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={onClose} 
-              className="text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
-            >
-              <X className="w-5 h-5" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={handleShare} 
+                className="text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
+              >
+                <Share2 className="w-5 h-5" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={onClose} 
+                className="text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
 
           {/* Content */}

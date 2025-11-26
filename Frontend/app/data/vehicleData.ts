@@ -1,4 +1,5 @@
 export interface SponsorSocialLinks {
+  farcaster?: string;
   base?: string;
   x?: string;
   instagram?: string;

@@ -8,6 +8,7 @@ export interface SocialAuthor {
     fid?: number;
     baseAddress?: string;
     xHandle?: string;
+    isFollowing?: boolean;
 }
 
 export interface SocialVehicleTag {

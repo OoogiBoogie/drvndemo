@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { ContentFeed } from "@/app/components/social/ContentFeed";
 import { HeroHeader } from "@/app/components/ui/hero-header";
 import { Button } from "@/app/components/ui/button";
@@ -20,8 +20,17 @@ import {
 import { SocialPost, PlatformConnection, CrossPostSettings } from "@/app/components/social/types";
 import { MOCK_SOCIAL_POSTS } from "@/app/components/social/mockPosts";
 
+type FeedTab = "all" | "following" | "vhcls";
+
+const FEED_TABS: { id: FeedTab; label: string }[] = [
+    { id: "all", label: "All Posts" },
+    { id: "following", label: "Following" },
+    { id: "vhcls", label: "VHCLS" },
+];
+
 export default function SocialFeedPage() {
     const [feedPosts] = useState<SocialPost[]>(() => [...MOCK_SOCIAL_POSTS]);
+    const [activeTab, setActiveTab] = useState<FeedTab>("all");
     
     const [platformConnections, setPlatformConnections] = useState<PlatformConnection[]>([
         { platform: "farcaster", connected: false },
@@ -48,11 +57,28 @@ export default function SocialFeedPage() {
 
     const connectedCount = platformConnections.filter(p => p.connected).length;
 
+    const userOwnedVehicleTickers = ["SUPRA", "GTR", "NSX"];
+
+    const filteredPosts = useMemo(() => {
+        switch (activeTab) {
+            case "all":
+                return feedPosts;
+            case "following":
+                return feedPosts.filter(post => post.author?.isFollowing);
+            case "vhcls":
+                return feedPosts.filter(post => 
+                    post.vehicleTag && userOwnedVehicleTickers.includes(post.vehicleTag.ticker || "")
+                );
+            default:
+                return feedPosts;
+        }
+    }, [feedPosts, activeTab]);
+
     return (
         <div className="min-h-screen bg-gray-950 pb-20">
             <div className="max-w-2xl mx-auto space-y-6 p-4 md:p-6">
                 <HeroHeader
-                    title="Social Hub"
+                    title="Feed"
                     subtitle="Share builds across Farcaster, Base & X from one place"
                     backgroundImage="/Cars/GarageV12.jpg"
                 />
@@ -78,7 +104,24 @@ export default function SocialFeedPage() {
 
                 <SponsorSpotlightCard />
 
-                <ContentFeed posts={feedPosts} inAppOnly={true} />
+                {/* Feed Tabs */}
+                <div className="rounded-xl bg-black/60 backdrop-blur-md border border-white/10 p-1 flex gap-1">
+                    {FEED_TABS.map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
+                                activeTab === tab.id
+                                    ? "bg-primary text-black shadow-lg shadow-primary/20"
+                                    : "text-zinc-400 hover:text-white hover:bg-white/5"
+                            }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+
+                <ContentFeed posts={filteredPosts} inAppOnly={true} />
             </div>
         </div>
     );
