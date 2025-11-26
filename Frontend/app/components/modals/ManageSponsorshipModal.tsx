@@ -139,7 +139,7 @@ export function ManageSponsorshipModal({
             setTimeout(() => {
                 onClose();
             }, 2000);
-        } catch (_err) {
+        } catch {
             setError("Failed to save changes. Please try again.");
         } finally {
             setIsLoading(false);

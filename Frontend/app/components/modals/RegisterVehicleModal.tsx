@@ -57,7 +57,7 @@ export function RegisterVehicleModal({ isOpen, onClose, userId, onSuccess }: Reg
 
             setDecodedData(data);
             setStep("review");
-        } catch (_err) {
+        } catch {
             setError("Failed to decode VIN. Please try again or enter manually.");
         } finally {
             setIsLoading(false);
@@ -116,7 +116,7 @@ export function RegisterVehicleModal({ isOpen, onClose, userId, onSuccess }: Reg
             onSuccess?.(mintedVehicle);
 
             setStep("success");
-        } catch (_err) {
+        } catch {
             setError("Registration failed. Please try again.");
             setStep("confirm");
         } finally {

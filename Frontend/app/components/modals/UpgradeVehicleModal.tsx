@@ -113,7 +113,7 @@ export function UpgradeVehicleModal({
             });
 
             setStep("success");
-        } catch (_err) {
+        } catch {
             setError("Upgrade failed. Please try again.");
             setStep("confirm");
         } finally {

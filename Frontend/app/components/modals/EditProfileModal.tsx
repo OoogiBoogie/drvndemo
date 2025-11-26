@@ -89,7 +89,7 @@ export function EditProfileModal({
                 // Refresh page or invalidate query to show updated profile
                 window.location.reload();
             }, 2000);
-        } catch (_err) {
+        } catch {
             setError("Failed to save changes. Please try again.");
         } finally {
             setIsLoading(false);

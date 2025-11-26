@@ -359,7 +359,8 @@ export function DRVNDashboard() {
     }
 
     // Use progressive disclosure instead of blocking access
-    const canAccessPage = (page: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const canAccessPage = (_page: string) => {
       // All pages are accessible - settings will show appropriate UI based on auth state
       return true;
     };
