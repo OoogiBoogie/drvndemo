@@ -174,7 +174,7 @@ export function VehicleDetailModal({ isOpen, onClose, vehicle, isOwner = false }
           </div>
 
           {/* Scrollable Content */}
-          <div className="overflow-y-auto h-[calc(90vh-65px)] p-4 md:p-6">
+          <div className="overflow-y-auto h-[calc(90vh-65px)] p-4 md:p-6 sleek-scrollbar">
             {/* Module 1: Swipeable Gallery */}
             <div className="relative w-full aspect-video md:aspect-[21/9] rounded-2xl overflow-hidden bg-black/40 mb-6 group border border-white/10 shadow-xl">
               {vehicle.images.length > 0 ? (
@@ -512,7 +512,7 @@ export function VehicleDetailModal({ isOpen, onClose, vehicle, isOwner = false }
                   </CardHeader>
                   <CardContent>
                     {taggedPosts.length > 0 ? (
-                      <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+                      <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 sleek-scrollbar">
                         {taggedPosts.map((post) => (
                           <div key={post.id} className="p-3 bg-white/5 backdrop-blur-sm rounded-xl border border-white/5 hover:bg-white/10 transition-all">
                             <div className="flex items-center gap-2 mb-2">
