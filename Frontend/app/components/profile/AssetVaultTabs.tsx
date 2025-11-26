@@ -463,9 +463,10 @@ export function AssetVaultTabs({
                             onClick={() => setActiveTab(tab.id)}
                             role="tab"
                             aria-selected={activeTab === tab.id}
+                            style={activeTab === tab.id ? { backgroundColor: '#00daa2' } : undefined}
                             className={`flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 border ${
                                 activeTab === tab.id
-                                    ? "bg-primary text-black border-primary/50 shadow-[0_0_20px_rgba(0,218,162,0.4)] ring-1 ring-primary/30"
+                                    ? "!bg-[#00daa2] text-black font-bold border-[#00daa2]/50 shadow-[0_0_20px_rgba(0,218,162,0.4)]"
                                     : "text-zinc-300 border-transparent hover:text-white hover:bg-white/10 hover:border-white/10"
                             }`}
                         >
