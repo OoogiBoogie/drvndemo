@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
-import { Plus, ShieldCheck, Zap, Trophy } from "lucide-react";
+import { Plus, ShieldCheck, Zap, Trophy, Users } from "lucide-react";
 import Image from "next/image";
 import { vehicles, formatCurrency, type Vehicle } from "@/app/data/vehicleData";
 
@@ -157,6 +157,83 @@ export function VHCLRegistry({ isOwner, onRegisterClick, onVehicleClick }: VHCLR
                                                 </div>
                                             )}
                                         </div>
+
+                                        {/* Sponsor Slots Preview */}
+                                        {vehicle.sponsorshipCollection && (
+                                            <div className="pt-3 mt-3 border-t border-white/5">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <Trophy className="w-3.5 h-3.5 text-yellow-500" />
+                                                        <span className="text-xs text-zinc-400 font-medium">Sponsors</span>
+                                                    </div>
+                                                    <span className="text-xs text-zinc-500">
+                                                        {vehicle.sponsors.length}/{vehicle.sponsorshipCollection.maxSupply} claimed
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    {/* Show claimed sponsor logos (up to 5) */}
+                                                    {vehicle.sponsors.slice(0, 5).map((sponsor, idx) => (
+                                                        <div 
+                                                            key={sponsor.tokenId} 
+                                                            className="w-7 h-7 rounded-lg border border-white/20 bg-zinc-800 overflow-hidden relative shadow-sm"
+                                                            style={{ marginLeft: idx > 0 ? '-4px' : 0, zIndex: 5 - idx }}
+                                                        >
+                                                            {sponsor.logo ? (
+                                                                <Image
+                                                                    src={sponsor.logo}
+                                                                    alt={sponsor.name || "Sponsor"}
+                                                                    fill
+                                                                    className="object-cover"
+                                                                />
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-700 to-zinc-800">
+                                                                    <span className="text-[8px] font-bold text-zinc-400">
+                                                                        {sponsor.name?.substring(0, 2).toUpperCase() || "SP"}
+                                                                    </span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                    {/* Show remaining count if more than 5 */}
+                                                    {vehicle.sponsors.length > 5 && (
+                                                        <div 
+                                                            className="w-7 h-7 rounded-lg border border-white/10 bg-zinc-800 flex items-center justify-center"
+                                                            style={{ marginLeft: '-4px' }}
+                                                        >
+                                                            <span className="text-[9px] font-bold text-zinc-400">
+                                                                +{vehicle.sponsors.length - 5}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                    {/* Show available slots indicator */}
+                                                    {vehicle.sponsorshipCollection.maxSupply - vehicle.sponsors.length > 0 && (
+                                                        <div className="flex items-center gap-1 ml-2">
+                                                            <div className="w-5 h-5 rounded border border-dashed border-yellow-500/40 bg-yellow-500/5 flex items-center justify-center">
+                                                                <Plus className="w-2.5 h-2.5 text-yellow-500/60" />
+                                                            </div>
+                                                            <span className="text-[10px] text-yellow-500/70 font-medium">
+                                                                {vehicle.sponsorshipCollection.maxSupply - vehicle.sponsors.length} available
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* No Sponsorship Collection - Show Opportunity */}
+                                        {!vehicle.sponsorshipCollection && vehicle.isUpgraded && (
+                                            <div className="pt-3 mt-3 border-t border-white/5">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <Trophy className="w-3.5 h-3.5 text-zinc-500" />
+                                                        <span className="text-xs text-zinc-500">No sponsors yet</span>
+                                                    </div>
+                                                    <span className="text-[10px] text-yellow-500/70 bg-yellow-500/10 px-2 py-0.5 rounded-full border border-yellow-500/20">
+                                                        Create Collection
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </button>

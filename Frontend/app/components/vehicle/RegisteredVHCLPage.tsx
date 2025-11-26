@@ -20,7 +20,9 @@ import { TokenSwapModal } from "../modals/TokenSwapModal";
 import { CreateSponsorshipCollectionModal } from "../modals/CreateSponsorshipCollectionModal";
 import { MintSponsorshipModal } from "../modals/MintSponsorshipModal";
 import { SponsorProfileEditorModal } from "../modals/SponsorProfileEditorModal";
+import { SponsorDetailsModal } from "../modals/SponsorDetailsModal";
 import { useToast } from "@/app/components/ui/toast-context";
+import { type Sponsor as FullSponsor } from "@/app/data/vehicleData";
 
 interface VehicleImage {
   url: string;
@@ -123,8 +125,10 @@ export function RegisteredVHCLPage({
   const [showCreateCollectionModal, setShowCreateCollectionModal] = useState(false);
   const [showMintModal, setShowMintModal] = useState(false);
   const [showProfileEditor, setShowProfileEditor] = useState(false);
+  const [showSponsorDetailsModal, setShowSponsorDetailsModal] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<number | undefined>(undefined);
   const [selectedSponsor, setSelectedSponsor] = useState<Sponsor | null>(null);
+  const [viewingSponsor, setViewingSponsor] = useState<FullSponsor | null>(null);
   
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [isEditingMods, setIsEditingMods] = useState(false);
@@ -134,7 +138,14 @@ export function RegisteredVHCLPage({
     maxSupply: number;
     mintPrice: number;
     mintedCount?: number;
-  } | null>(null);
+  } | null>(
+    vehicleData?.isUpgraded && vehicleData?.carToken ? {
+      contractAddress: "0xdemo...sponsorship",
+      maxSupply: 14,
+      mintPrice: 250,
+      mintedCount: 3,
+    } : null
+  );
   
   const initialDescription = vehicleData?.description || "";
   const initialMods = vehicleData?.modifications || [];
@@ -146,6 +157,31 @@ export function RegisteredVHCLPage({
   const [images, setImages] = useState<VehicleImage[]>(initialImages);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const mockSponsorDetails: Record<string, Partial<FullSponsor>> = {
+    "1": {
+      websiteUrl: "https://bstr.io",
+      promoUrl: "https://bstr.io/promo/drvn",
+      socialLinks: { base: "https://base.org/bstr", x: "https://x.com/bstrlabs" },
+      bio: "BSTR Labs is a leading Web3 automotive technology company, building the future of decentralized vehicle ownership.",
+      gallery: ["/Cars/BusterHero1.jpg", "/Cars/LFGBuster1.jpg"],
+      openSeaUrl: "https://opensea.io/assets/base/0x1234/1",
+    },
+    "2": {
+      websiteUrl: "https://base.org",
+      socialLinks: { x: "https://x.com/base" },
+      bio: "Base is a secure, low-cost, developer-friendly Ethereum L2 built to bring the next billion users on-chain.",
+      gallery: ["/Cars/modena1.jpg"],
+      openSeaUrl: "https://opensea.io/assets/base/0x1234/2",
+    },
+    "3": {
+      websiteUrl: "https://drvn.io",
+      socialLinks: { x: "https://x.com/drvn_platform", youtube: "https://youtube.com/@drvn" },
+      bio: "DRVN is the next-generation automotive platform tokenizing real-world vehicles on Base.",
+      gallery: ["/Cars/CultureHero1.jpg", "/Cars/GtrDemo1.png"],
+      openSeaUrl: "https://opensea.io/assets/base/0x1234/3",
+    },
+  };
 
   const vehicle: RegisteredVehicle = {
     _id: vehicleData?._id || vehicleId,
@@ -275,11 +311,20 @@ export function RegisteredVHCLPage({
   };
 
   const handleViewSponsor = (sponsor: Sponsor) => {
-    addToast({
-      type: "info",
-      title: sponsor.name || "Sponsor",
-      message: `Viewing sponsor details...`,
-    });
+    const fullSponsor: FullSponsor = {
+      tokenId: sponsor.tokenId,
+      name: sponsor.name,
+      logo: sponsor.logo,
+      holderAddress: sponsor.holderAddress,
+      websiteUrl: mockSponsorDetails[sponsor.tokenId]?.websiteUrl,
+      promoUrl: mockSponsorDetails[sponsor.tokenId]?.promoUrl,
+      socialLinks: mockSponsorDetails[sponsor.tokenId]?.socialLinks,
+      bio: mockSponsorDetails[sponsor.tokenId]?.bio,
+      gallery: mockSponsorDetails[sponsor.tokenId]?.gallery,
+      openSeaUrl: mockSponsorDetails[sponsor.tokenId]?.openSeaUrl,
+    };
+    setViewingSponsor(fullSponsor);
+    setShowSponsorDetailsModal(true);
   };
 
   const handleSaveProfile = (profile: Partial<Sponsor>) => {
@@ -859,6 +904,16 @@ export function RegisteredVHCLPage({
           onSave={handleSaveProfile}
         />
       )}
+
+      <SponsorDetailsModal
+        isOpen={showSponsorDetailsModal}
+        onClose={() => {
+          setShowSponsorDetailsModal(false);
+          setViewingSponsor(null);
+        }}
+        sponsor={viewingSponsor}
+        vehicleName={vehicleDisplayName}
+      />
     </div>
   );
 }
