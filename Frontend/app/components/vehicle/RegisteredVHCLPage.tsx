@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
-import { ArrowLeft, Users, Zap, Coins, TrendingUp, Shield, Share2 } from "lucide-react";
+import { Input } from "@/app/components/ui/input";
+import { Textarea } from "@/app/components/ui/textarea";
+import { 
+  ArrowLeft, Users, Zap, Coins, TrendingUp, Shield, Share2, 
+  Plus, X, Edit2, Save, ImagePlus, Trash2, Wrench 
+} from "lucide-react";
 import Image from "next/image";
 import { SwipeableGallery } from "./SwipeableGallery";
 import { CarProfileCard } from "./CarProfileCard";
@@ -35,6 +40,8 @@ interface RegisteredVehicle {
   isUpgraded: boolean;
   location?: string;
   registryId?: string;
+  description?: string;
+  modifications?: string[];
   owner?: {
     name: string;
     username?: string;
@@ -72,7 +79,25 @@ interface TaggedPost {
 
 interface RegisteredVHCLPageProps {
   vehicleId: string;
+  vehicleData?: {
+    _id: string;
+    nickname?: string;
+    make: string;
+    model: string;
+    year: number;
+    vin: string;
+    registryId: string;
+    images: { url: string; isNftImage: boolean }[];
+    isUpgraded: boolean;
+    description?: string;
+    modifications?: string[];
+    carToken?: {
+      ticker: string;
+      address: string;
+    };
+  };
   onBack: () => void;
+  onUpdate?: (updates: { images?: VehicleImage[]; description?: string; modifications?: string[] }) => void;
   currentUserAddress?: string;
   isOwner?: boolean;
   connectedPlatforms?: string[];
@@ -80,7 +105,9 @@ interface RegisteredVHCLPageProps {
 
 export function RegisteredVHCLPage({ 
   vehicleId, 
+  vehicleData,
   onBack, 
+  onUpdate,
   currentUserAddress,
   isOwner = false,
   connectedPlatforms = []
@@ -88,45 +115,57 @@ export function RegisteredVHCLPage({
   const [showSponsorModal, setShowSponsorModal] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showSwapModal, setShowSwapModal] = useState(false);
+  
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [isEditingMods, setIsEditingMods] = useState(false);
+  
+  const initialDescription = vehicleData?.description || "";
+  const initialMods = vehicleData?.modifications || [];
+  const initialImages = vehicleData?.images || [{ url: "/Cars/R34GTR.jpg", isNftImage: true }];
+  
+  const [description, setDescription] = useState(initialDescription);
+  const [modifications, setModifications] = useState<string[]>(initialMods);
+  const [newMod, setNewMod] = useState("");
+  const [images, setImages] = useState<VehicleImage[]>(initialImages);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const vehicle: RegisteredVehicle = {
-    _id: vehicleId,
-    nickname: "Project Midnight",
-    make: "Nissan",
-    model: "GT-R R34",
-    year: 1999,
-    images: [
-      { url: "/Cars/R34GTR.jpg", isNftImage: true },
-      { url: "/Cars/GarageV12.jpg", isNftImage: false },
-      { url: "/Cars/Porsche911.jpg", isNftImage: false },
-    ],
-    isUpgraded: true,
+    _id: vehicleData?._id || vehicleId,
+    nickname: vehicleData?.nickname || "",
+    make: vehicleData?.make || "Unknown",
+    model: vehicleData?.model || "Vehicle",
+    year: vehicleData?.year || 2024,
+    images: images,
+    isUpgraded: vehicleData?.isUpgraded ?? false,
     location: "Los Angeles, CA",
-    registryId: "DRVN-0042",
+    registryId: vehicleData?.registryId || "DRVN-0000",
+    description: description,
+    modifications: modifications,
     owner: {
       name: "gearhead_mike",
       username: "gearhead_mike",
       avatar: "/avatars/default.png",
     },
     followerCount: 1234,
-    carToken: {
-      address: "0x1234567890abcdef1234567890abcdef12345678",
-      ticker: "MDNGHT",
+    carToken: vehicleData?.carToken ? {
+      address: vehicleData.carToken.address,
+      ticker: vehicleData.carToken.ticker,
       price: 0.000045,
       change24h: 5.2,
       mcap: 45000,
-    },
-    sponsorshipCollection: {
+    } : undefined,
+    sponsorshipCollection: vehicleData?.isUpgraded ? {
       contractAddress: "0xsponsorship...",
       maxSupply: 14,
       mintPrice: 50,
       mintedCount: 3,
-    },
-    sponsors: [
+    } : undefined,
+    sponsors: vehicleData?.isUpgraded ? [
       { tokenId: "1", name: "BSTR", logo: "/Cars/BSTR-Logo-Official.png", holderAddress: "0xsp1..." },
       { tokenId: "2", name: "Base", logo: "/Cars/DCWhtV4.png", holderAddress: "0xsp2..." },
       { tokenId: "3", name: "Coinbase", logo: "/Cars/DRVNLaboLogoDrk.png", holderAddress: "0xsp3..." },
-    ],
+    ] : [],
     ownerAddress: currentUserAddress || "0x1234...5678",
   };
 
@@ -173,6 +212,61 @@ export function RegisteredVHCLPage({
     );
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const url = reader.result as string;
+        const newImages = [...images, { url, isNftImage: false }];
+        handleImageChange(newImages);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleRemoveImage = (index: number) => {
+    if (images[index].isNftImage) return;
+    const newImages = images.filter((_, i) => i !== index);
+    handleImageChange(newImages);
+  };
+
+  const handleSetNftImage = (index: number) => {
+    const newImages = images.map((img, i) => ({
+      ...img,
+      isNftImage: i === index
+    }));
+    handleImageChange(newImages);
+  };
+
+  const handleAddMod = () => {
+    if (newMod.trim()) {
+      setModifications(prev => [...prev, newMod.trim()]);
+      setNewMod("");
+    }
+  };
+
+  const handleRemoveMod = (index: number) => {
+    setModifications(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSaveDescription = () => {
+    setIsEditingDescription(false);
+    onUpdate?.({ description });
+  };
+
+  const handleSaveMods = () => {
+    setIsEditingMods(false);
+    onUpdate?.({ modifications });
+  };
+
+  const handleImageChange = (newImages: VehicleImage[]) => {
+    setImages(newImages);
+    onUpdate?.({ images: newImages });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -198,6 +292,75 @@ export function RegisteredVHCLPage({
 
       <SwipeableGallery images={vehicle.images} />
 
+      {isOwner && (
+        <Card className="bg-black/40 border-white/10 backdrop-blur-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-zinc-400 flex items-center gap-2">
+              <ImagePlus className="w-4 h-4" />
+              Manage Gallery
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-3">
+              {images.map((img, index) => (
+                <div key={index} className="relative group">
+                  <div className="w-20 h-20 rounded-lg overflow-hidden border border-white/10">
+                    <Image
+                      src={img.url}
+                      alt={`Image ${index + 1}`}
+                      width={80}
+                      height={80}
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                  {img.isNftImage && (
+                    <div className="absolute -top-1 -left-1 bg-primary text-black text-[8px] font-bold px-1 rounded">
+                      NFT
+                    </div>
+                  )}
+                  {!img.isNftImage && (
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+                      <button
+                        onClick={() => handleSetNftImage(index)}
+                        className="p-1 bg-primary/80 rounded text-black text-[10px] hover:bg-primary"
+                        title="Set as NFT image"
+                      >
+                        NFT
+                      </button>
+                      <button
+                        onClick={() => handleRemoveImage(index)}
+                        className="p-1 bg-red-500/80 rounded text-white hover:bg-red-500"
+                        title="Remove"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+              
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="w-20 h-20 rounded-lg border-2 border-dashed border-white/20 flex items-center justify-center text-zinc-500 hover:border-primary/50 hover:text-primary transition-colors"
+              >
+                <Plus className="w-6 h-6" />
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={handleImageUpload}
+              />
+            </div>
+            <p className="text-xs text-zinc-500 mt-2">
+              Click an image to set as NFT image or remove. NFT image updates on-chain metadata.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-6">
           <CarProfileCard
@@ -219,6 +382,154 @@ export function RegisteredVHCLPage({
               } : undefined,
             }}
           />
+
+          <Card className="bg-black/40 border-white/10 backdrop-blur-md">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
+                  <Edit2 className="w-4 h-4 text-primary" />
+                  Description
+                </CardTitle>
+                {isOwner && !isEditingDescription && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsEditingDescription(true)}
+                    className="text-zinc-400 hover:text-white"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              {isEditingDescription ? (
+                <div className="space-y-3">
+                  <Textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="bg-zinc-900/50 border-white/10 text-white min-h-[100px]"
+                    placeholder="Describe your vehicle..."
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={handleSaveDescription}
+                      size="sm"
+                      className="bg-primary hover:bg-primary/90 text-black"
+                    >
+                      <Save className="w-4 h-4 mr-1" />
+                      Save
+                    </Button>
+                    <Button
+                      onClick={() => setIsEditingDescription(false)}
+                      variant="ghost"
+                      size="sm"
+                      className="text-zinc-400"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-zinc-300 leading-relaxed">
+                  {description || "No description yet."}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="bg-black/40 border-white/10 backdrop-blur-md">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
+                  <Wrench className="w-4 h-4 text-primary" />
+                  Modifications
+                </CardTitle>
+                {isOwner && !isEditingMods && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsEditingMods(true)}
+                    className="text-zinc-400 hover:text-white"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              {isEditingMods ? (
+                <div className="space-y-3">
+                  <div className="flex flex-wrap gap-2">
+                    {modifications.map((mod, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-1 bg-zinc-800 px-3 py-1.5 rounded-full text-sm text-white"
+                      >
+                        <span>{mod}</span>
+                        <button
+                          onClick={() => handleRemoveMod(index)}
+                          className="text-red-400 hover:text-red-300 ml-1"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      value={newMod}
+                      onChange={(e) => setNewMod(e.target.value)}
+                      placeholder="Add modification..."
+                      className="bg-zinc-900/50 border-white/10 text-white flex-1"
+                      onKeyDown={(e) => e.key === "Enter" && handleAddMod()}
+                    />
+                    <Button
+                      onClick={handleAddMod}
+                      size="sm"
+                      variant="outline"
+                      className="border-white/10"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={handleSaveMods}
+                      size="sm"
+                      className="bg-primary hover:bg-primary/90 text-black"
+                    >
+                      <Save className="w-4 h-4 mr-1" />
+                      Save
+                    </Button>
+                    <Button
+                      onClick={() => setIsEditingMods(false)}
+                      variant="ghost"
+                      size="sm"
+                      className="text-zinc-400"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {modifications.length > 0 ? (
+                    modifications.map((mod, index) => (
+                      <span
+                        key={index}
+                        className="bg-zinc-800/50 px-3 py-1.5 rounded-full text-sm text-zinc-300 border border-white/5"
+                      >
+                        {mod}
+                      </span>
+                    ))
+                  ) : (
+                    <p className="text-sm text-zinc-500">No modifications listed.</p>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {vehicle.isUpgraded && vehicle.sponsorshipCollection && (
             <SponsorshipModule

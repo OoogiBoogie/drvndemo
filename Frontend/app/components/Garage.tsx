@@ -22,8 +22,10 @@ import { BusterSwapModal } from "./modals/token-swap-modal";
 import { UserProfileCard } from "./profile/UserProfileCard";
 import { VHCLRegistry } from "./profile/VHCLRegistry";
 import { DigitalCollectibles } from "./profile/DigitalCollectibles";
+import { RegisteredVHCLsSection, type RegisteredVehicle } from "./profile/RegisteredVHCLsSection";
 import { RegisterVehicleModal } from "./modals/RegisterVehicleModal";
 import { VehicleDetailModal } from "./modals/VehicleDetailModal";
+import { RegisteredVHCLPage } from "./vehicle/RegisteredVHCLPage";
 import type { VehicleRegistrationResult } from "@/hooks/useVehicleLifecycle";
 import { type Vehicle } from "@/app/data/vehicleData";
 
@@ -67,11 +69,48 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
   const [showSwapModal, setShowSwapModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showVehicleDetail, setShowVehicleDetail] = useState(false);
+  const [showRegisteredVehiclePage, setShowRegisteredVehiclePage] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+  const [selectedRegisteredVehicle, setSelectedRegisteredVehicle] = useState<RegisteredVehicle | null>(null);
   const [activeHoldingIndex, setActiveHoldingIndex] = useState(0);
   const [isCollectionExpanded, setIsCollectionExpanded] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchEndX, setTouchEndX] = useState<number | null>(null);
+  const [registeredVehicles, setRegisteredVehicles] = useState<RegisteredVehicle[]>([
+    {
+      _id: "reg-1",
+      nickname: "Project Midnight",
+      make: "Nissan",
+      model: "GT-R R34",
+      year: 1999,
+      vin: "JN1GANR34Z0000042",
+      registryId: "DRVN-0042",
+      images: [
+        { url: "/Cars/R34GTR.jpg", isNftImage: true },
+        { url: "/Cars/R34Garage.jpg", isNftImage: false },
+      ],
+      isUpgraded: true,
+      carToken: {
+        ticker: "MDNGHT",
+        address: "0x1234567890abcdef1234567890abcdef12345678",
+      },
+      createdAt: "2024-01-15T10:30:00Z",
+    },
+    {
+      _id: "reg-2",
+      nickname: "",
+      make: "Honda",
+      model: "NSX Type S",
+      year: 2022,
+      vin: "19UNC1B03NY000123",
+      registryId: "DRVN-0123",
+      images: [
+        { url: "/Cars/NSXGarage.jpg", isNftImage: true },
+      ],
+      isUpgraded: false,
+      createdAt: "2024-02-20T14:45:00Z",
+    },
+  ]);
 
   // Determine if the viewer is the owner of the profile
   // The profile address should come from props (for viewing other users) or from the currentUser
@@ -166,6 +205,30 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
 
   const handleRegistrationSuccess = (result: VehicleRegistrationResult) => {
     console.log("Vehicle registered:", result);
+    const newVehicle: RegisteredVehicle = {
+      _id: result.vehicleId,
+      nickname: result.nickname || "",
+      make: result.factorySpecs.make,
+      model: result.factorySpecs.model,
+      year: result.factorySpecs.year,
+      vin: result.vin,
+      registryId: result.registryId || `DRVN-${result.tokenId.toString().padStart(4, "0")}`,
+      images: result.images.map((url, index) => ({ url, isNftImage: index === 0 })),
+      isUpgraded: false,
+      createdAt: new Date().toISOString(),
+    };
+    setRegisteredVehicles(prev => [newVehicle, ...prev]);
+    setShowRegisterModal(false);
+  };
+
+  const handleRegisteredVehicleClick = (vehicle: RegisteredVehicle) => {
+    setSelectedRegisteredVehicle(vehicle);
+    setShowRegisteredVehiclePage(true);
+  };
+
+  const handleBackFromRegisteredVehicle = () => {
+    setShowRegisteredVehiclePage(false);
+    setSelectedRegisteredVehicle(null);
   };
 
   const handleFollow = () => {
@@ -628,7 +691,15 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
           )}
         </div>
 
-        {/* Module 4: VHCL Registry (New) */}
+        {/* Module 4: Registered VHCLS (User's personally registered vehicles) */}
+        <RegisteredVHCLsSection
+          isOwner={isOwner}
+          registeredVehicles={registeredVehicles}
+          onRegisterClick={handleRegisterVehicle}
+          onVehicleClick={handleRegisteredVehicleClick}
+        />
+
+        {/* Module 5: VHCL Registry (Marketplace vehicles) */}
         <VHCLRegistry
           isOwner={isOwner}
           onRegisterClick={handleRegisterVehicle}
@@ -670,6 +741,29 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
           vehicle={selectedVehicle}
           isOwner={isOwner}
         />
+      )}
+
+      {/* Registered Vehicle Full Page View */}
+      {showRegisteredVehiclePage && selectedRegisteredVehicle && (
+        <div className="fixed inset-0 z-50 bg-gray-950 overflow-y-auto">
+          <div className="max-w-6xl mx-auto p-4 md:p-6">
+            <RegisteredVHCLPage
+              vehicleId={selectedRegisteredVehicle._id}
+              vehicleData={selectedRegisteredVehicle}
+              onBack={handleBackFromRegisteredVehicle}
+              onUpdate={(updates) => {
+                setRegisteredVehicles(prev => prev.map(v => 
+                  v._id === selectedRegisteredVehicle._id 
+                    ? { ...v, ...updates }
+                    : v
+                ));
+                setSelectedRegisteredVehicle(prev => prev ? { ...prev, ...updates } : null);
+              }}
+              currentUserAddress={address}
+              isOwner={isOwner}
+            />
+          </div>
+        </div>
       )}
 
     </div>
