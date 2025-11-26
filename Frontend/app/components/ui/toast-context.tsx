@@ -26,11 +26,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
       setToasts((prev) => [...prev, newToast]);
 
-      // Auto-remove success and error toasts after 3 seconds
-      if (toast.type === "success" || toast.type === "error") {
+      // Auto-remove success, error, and info toasts after 4 seconds
+      if (toast.type === "success" || toast.type === "error" || toast.type === "info") {
         setTimeout(() => {
           removeToast(id);
-        }, 3000);
+        }, 4000);
       }
     },
     [removeToast],

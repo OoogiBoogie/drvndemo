@@ -1,15 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, CheckCircle, AlertCircle, X } from "lucide-react";
+import { Loader2, CheckCircle, AlertCircle, X, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface Toast {
   id: string;
-  type: "approve" | "minting" | "success" | "error";
+  type: "approve" | "minting" | "success" | "error" | "info";
   title: string;
   message: string;
-  contractName: string;
+  contractName?: string;
   quantity?: number;
   hash?: string;
 }
@@ -42,6 +42,8 @@ export function ToastNotification({ toast, onDismiss }: ToastProps) {
         return <CheckCircle className="w-5 h-5 text-green-400" />;
       case "error":
         return <AlertCircle className="w-5 h-5 text-red-400" />;
+      case "info":
+        return <Info className="w-5 h-5 text-blue-400" />;
       default:
         return null;
     }

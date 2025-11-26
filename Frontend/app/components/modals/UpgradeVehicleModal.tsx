@@ -9,6 +9,7 @@ import {
     Loader2, CheckCircle, AlertCircle, Zap, Coins, 
     TrendingUp, Users, Shield, HelpCircle, Share2
 } from "lucide-react";
+import { useToast } from "@/app/components/ui/toast-context";
 import type { VehicleUpgradeResult } from "@/hooks/useVehicleLifecycle";
 
 interface UpgradeVehicleModalProps {
@@ -62,6 +63,7 @@ export function UpgradeVehicleModal({
     onUpgradeComplete,
     connectedPlatforms = [],
 }: UpgradeVehicleModalProps) {
+    const { addToast } = useToast();
     const [step, setStep] = useState<Step>("benefits");
     const [carTokenTicker, setCarTokenTicker] = useState("");
     const [tickerError, setTickerError] = useState("");
@@ -135,9 +137,20 @@ export function UpgradeVehicleModal({
                 sponsorshipCollection: mockSponsorshipCollection,
             });
 
+            addToast({
+                type: "success",
+                title: "Vehicle Upgraded!",
+                message: `${vehicleName} is now monetized with ${mockCarToken.ticker}`,
+            });
+
             setStep("success");
         } catch {
             setError("Upgrade failed. Please try again.");
+            addToast({
+                type: "error",
+                title: "Upgrade Failed",
+                message: "Something went wrong. Please try again.",
+            });
             setStep("confirm");
         } finally {
             setIsLoading(false);
@@ -145,13 +158,24 @@ export function UpgradeVehicleModal({
     };
 
     const handleShare = () => {
-        const shareText = `Just upgraded my ${vehicleName} on @DRVN_VHCLS! Now trading as ${createdToken?.ticker} 🚗💰`;
+        const shareText = `Just upgraded my ${vehicleName} on @DRVN_VHCLS! Now trading as ${createdToken?.ticker}`;
         
+        const platforms: string[] = [];
         if (shareToFarcaster) {
+            platforms.push("Farcaster");
             console.log("Sharing to Farcaster:", shareText);
         }
         if (shareToBase) {
+            platforms.push("Base");
             console.log("Sharing to Base:", shareText);
+        }
+        
+        if (platforms.length > 0) {
+            addToast({
+                type: "info",
+                title: "Shared!",
+                message: `Posted to ${platforms.join(" & ")}`,
+            });
         }
         
         handleClose();
