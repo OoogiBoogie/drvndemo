@@ -20,6 +20,9 @@ import {
   Play,
   Clock,
   Bell,
+  Gamepad2,
+  Rss,
+  ChevronDown,
 } from "lucide-react";
 import { FaXTwitter } from "react-icons/fa6";
 import { BsSpeedometer2 } from "react-icons/bs";
@@ -290,11 +293,19 @@ export function DRVNDashboard() {
     setMobileMenuOpen(false); // Close mobile menu when opening auth modal
   };
 
+  const [arcadeExpanded, setArcadeExpanded] = useState(false);
+
   const navigationItems = [
     {
       icon: BsSpeedometer2,
       label: "Dashboard",
       id: "dashboard",
+      isGreen: true,
+    },
+    {
+      icon: Rss,
+      label: "Feed",
+      id: "feed",
       isGreen: true,
     },
     { icon: RiNewsFill, label: "DRVN Culture", id: "culture", isGreen: true },
@@ -317,10 +328,16 @@ export function DRVNDashboard() {
       isGreen: true,
     },
     {
-      icon: MessageSquare,
-      label: "Social",
-      id: "social",
+      icon: Gamepad2,
+      label: "Arcade",
+      id: "arcade",
       isGreen: true,
+      hasSubmenu: true,
+      submenuItems: [
+        { label: "Games", id: "arcade-games" },
+        { label: "Apps", id: "arcade-apps" },
+        { label: "Predictions", id: "arcade-predictions" },
+      ],
     },
     {
       icon: SettingsIcon,
@@ -1008,7 +1025,7 @@ export function DRVNDashboard() {
           </div>
         );
 
-      case "social":
+      case "feed":
         const platformInfo: Record<string, { name: string; icon: string; description: string; benefits: string[] }> = {
           farcaster: {
             name: "Farcaster",
@@ -1224,6 +1241,61 @@ export function DRVNDashboard() {
           </div>
         );
 
+      case "arcade":
+      case "arcade-games":
+        return (
+          <div className="space-y-6">
+            <HeroHeader
+              title="Arcade - Games"
+              subtitle="Play onchain games and compete with the community"
+              backgroundImage="/Cars/GarageV12.jpg"
+            />
+            <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900 to-black p-8 text-center">
+              <Gamepad2 className="w-16 h-16 text-[#00daa2] mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-white mb-2">Games Coming Soon</h2>
+              <p className="text-zinc-400 max-w-md mx-auto">
+                Compete in racing challenges, earn rewards, and climb the leaderboards. Stay tuned!
+              </p>
+            </div>
+          </div>
+        );
+
+      case "arcade-apps":
+        return (
+          <div className="space-y-6">
+            <HeroHeader
+              title="Arcade - Apps"
+              subtitle="Discover automotive tools and utilities"
+              backgroundImage="/Cars/GarageV12.jpg"
+            />
+            <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900 to-black p-8 text-center">
+              <Gamepad2 className="w-16 h-16 text-[#00daa2] mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-white mb-2">Apps Coming Soon</h2>
+              <p className="text-zinc-400 max-w-md mx-auto">
+                Explore mini apps for vehicle management, token tracking, and more. Stay tuned!
+              </p>
+            </div>
+          </div>
+        );
+
+      case "arcade-predictions":
+        return (
+          <div className="space-y-6">
+            <HeroHeader
+              title="Arcade - Predictions"
+              subtitle="Make predictions and earn rewards"
+              backgroundImage="/Cars/GarageV12.jpg"
+            />
+            <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900 to-black p-8 text-center">
+              <Gamepad2 className="w-16 h-16 text-[#00daa2] mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-white mb-2">Predictions Coming Soon</h2>
+              <p className="text-zinc-400 max-w-md mx-auto">
+                Predict race outcomes, market trends, and more. Earn tokens for correct predictions!
+              </p>
+            </div>
+          </div>
+        );
+
       default:
         return (
           <div className="space-y-6">
@@ -1405,11 +1477,17 @@ export function DRVNDashboard() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className={`flex items-center gap-3 px-3 py-3 rounded-md transition-colors font-mono font-semibold justify-center ${activePage === item.id
+                            className={`flex items-center gap-3 px-3 py-3 rounded-md transition-colors font-mono font-semibold justify-center ${activePage === item.id || (item.hasSubmenu && item.submenuItems?.some(sub => activePage === sub.id))
                               ? "text-[#00daa2] bg-gray-800"
                               : "text-[#00daa2] hover:bg-gray-800"
                               }`}
-                            onClick={() => setActivePage(item.id)}
+                            onClick={() => {
+                              if (item.hasSubmenu) {
+                                setArcadeExpanded(!arcadeExpanded);
+                              } else {
+                                setActivePage(item.id);
+                              }
+                            }}
                           >
                             <item.icon className="h-5 w-5 flex-shrink-0" />
                           </Button>
@@ -1421,6 +1499,38 @@ export function DRVNDashboard() {
                           {item.label}
                         </TooltipContent>
                       </Tooltip>
+                    ) : item.hasSubmenu ? (
+                      <div key={item.label}>
+                        <Button
+                          variant="ghost"
+                          className={`flex items-center gap-3 px-3 py-3 rounded-md transition-colors font-mono font-semibold w-full text-left justify-start ${item.submenuItems?.some(sub => activePage === sub.id)
+                            ? "text-[#00daa2] bg-gray-800"
+                            : "text-[#00daa2] hover:bg-gray-800"
+                            }`}
+                          onClick={() => setArcadeExpanded(!arcadeExpanded)}
+                        >
+                          <item.icon className="h-5 w-5 flex-shrink-0" />
+                          <span className="ml-0 flex-1">{item.label}</span>
+                          <ChevronDown className={`h-4 w-4 transition-transform ${arcadeExpanded ? "rotate-180" : ""}`} />
+                        </Button>
+                        {arcadeExpanded && (
+                          <div className="ml-8 mt-1 space-y-1">
+                            {item.submenuItems?.map((subItem) => (
+                              <Button
+                                key={subItem.id}
+                                variant="ghost"
+                                className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors font-mono text-sm w-full text-left justify-start ${activePage === subItem.id
+                                  ? "text-[#00daa2] bg-gray-800"
+                                  : "text-gray-400 hover:text-[#00daa2] hover:bg-gray-800"
+                                  }`}
+                                onClick={() => setActivePage(subItem.id)}
+                              >
+                                <span>{subItem.label}</span>
+                              </Button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     ) : (
                       <Button
                         key={item.label}
@@ -1554,7 +1664,42 @@ export function DRVNDashboard() {
                 .filter(
                   (item) => item.isGreen, // Always show, handle access in click
                 )
-                .map((item) => (
+                .map((item) => item.hasSubmenu ? (
+                  <div key={item.label}>
+                    <Button
+                      variant="ghost"
+                      className={`flex items-center gap-3 px-3 py-3 rounded-md transition-colors font-mono font-semibold w-full text-left justify-start ${item.submenuItems?.some(sub => activePage === sub.id)
+                        ? "text-[#00daa2] bg-gray-800"
+                        : "text-[#00daa2] hover:bg-gray-800"
+                        }`}
+                      onClick={() => setArcadeExpanded(!arcadeExpanded)}
+                    >
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      <span className="ml-0 flex-1">{item.label}</span>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${arcadeExpanded ? "rotate-180" : ""}`} />
+                    </Button>
+                    {arcadeExpanded && (
+                      <div className="ml-8 mt-1 space-y-1">
+                        {item.submenuItems?.map((subItem) => (
+                          <Button
+                            key={subItem.id}
+                            variant="ghost"
+                            className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors font-mono text-sm w-full text-left justify-start ${activePage === subItem.id
+                              ? "text-[#00daa2] bg-gray-800"
+                              : "text-gray-400 hover:text-[#00daa2] hover:bg-gray-800"
+                              }`}
+                            onClick={() => {
+                              setActivePage(subItem.id);
+                              toggleMobileMenu();
+                            }}
+                          >
+                            <span>{subItem.label}</span>
+                          </Button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
                   <Button
                     key={item.label}
                     variant="ghost"
