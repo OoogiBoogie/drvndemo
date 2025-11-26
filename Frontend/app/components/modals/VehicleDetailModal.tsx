@@ -18,72 +18,14 @@ import {
   Users,
   Plus,
   ExternalLink,
-  Share2
+  Share2,
+  Scale
 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { BuySponsorshipModal } from "./BuySponsorshipModal";
 import { SponsorDetailsModal } from "./SponsorDetailsModal";
-
-interface VehicleImage {
-  url: string;
-  isNftImage: boolean;
-}
-
-interface SponsorSocialLinks {
-  base?: string;
-  x?: string;
-  instagram?: string;
-  facebook?: string;
-  youtube?: string;
-  tiktok?: string;
-  linkedin?: string;
-}
-
-interface Sponsor {
-  tokenId: string;
-  logo?: string;
-  name?: string;
-  holderAddress: string;
-  websiteUrl?: string;
-  promoUrl?: string;
-  socialLinks?: SponsorSocialLinks;
-  bio?: string;
-  gallery?: string[];
-  openSeaUrl?: string;
-}
-
-interface RegisteredVehicle {
-  _id: string;
-  nickname?: string;
-  make: string;
-  model: string;
-  year: number;
-  images: VehicleImage[];
-  isUpgraded: boolean;
-  location?: string;
-  registryId?: string;
-  owner?: {
-    name: string;
-    username?: string;
-    avatar?: string;
-  };
-  followerCount?: number;
-  carToken?: {
-    address: string;
-    ticker: string;
-    price: number;
-    change24h: number;
-    mcap: number;
-  };
-  sponsorshipCollection?: {
-    contractAddress: string;
-    maxSupply: number;
-    mintPrice: number;
-    mintedCount: number;
-  };
-  sponsors: Sponsor[];
-}
+import { type Vehicle, type Sponsor, formatCurrency } from "@/app/data/vehicleData";
 
 interface TaggedPost {
   id: string;
@@ -100,7 +42,7 @@ interface TaggedPost {
 interface VehicleDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  vehicle: RegisteredVehicle | null;
+  vehicle: Vehicle | null;
   isOwner?: boolean;
 }
 
@@ -487,7 +429,75 @@ export function VehicleDetailModal({ isOpen, onClose, vehicle, isOwner = false }
                   </Card>
                 )}
 
-                {/* Module 4b: Token Details (for upgraded vehicles) */}
+                {/* Module 4b: Valuation Card (AV, MV, Spread) */}
+                {vehicle.valuation && (
+                  <Card className="bg-white/5 backdrop-blur-lg border-white/10 rounded-2xl shadow-xl">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
+                        <Scale className="w-5 h-5 text-primary" />
+                        Valuation
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {/* Market Value */}
+                        <div className="flex justify-between items-center p-3 bg-white/5 backdrop-blur-sm rounded-xl border border-white/5">
+                          <div>
+                            <p className="text-xs text-primary font-medium mb-0.5">Market Value (MV)</p>
+                            <p className="text-xs text-zinc-500">Current trading price</p>
+                          </div>
+                          <p className="text-xl font-bold text-white font-mono">
+                            {formatCurrency(vehicle.valuation.marketValue)}
+                          </p>
+                        </div>
+
+                        {/* Appraised Value */}
+                        <div className="flex justify-between items-center p-3 bg-white/5 backdrop-blur-sm rounded-xl border border-white/5">
+                          <div>
+                            <p className="text-xs text-zinc-400 font-medium mb-0.5">Appraised Value (AV)</p>
+                            <p className="text-xs text-zinc-500">Certified assessment</p>
+                          </div>
+                          <p className="text-lg font-bold text-zinc-300 font-mono">
+                            {formatCurrency(vehicle.valuation.appraisedValue)}
+                          </p>
+                        </div>
+
+                        {/* Spread */}
+                        <div className={cn(
+                          "flex justify-between items-center p-3 rounded-xl border",
+                          vehicle.valuation.spread < 0 
+                            ? "bg-green-500/10 border-green-500/20" 
+                            : vehicle.valuation.spread > 0 
+                              ? "bg-red-500/10 border-red-500/20"
+                              : "bg-white/5 border-white/5"
+                        )}>
+                          <div>
+                            <p className="text-xs text-zinc-400 font-medium mb-0.5">Spread</p>
+                            <p className="text-xs text-zinc-500">
+                              {vehicle.valuation.spread < 0 ? "Below appraisal" : vehicle.valuation.spread > 0 ? "Above appraisal" : "At appraisal"}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className={cn(
+                              "text-lg font-bold font-mono",
+                              vehicle.valuation.spread < 0 ? "text-green-400" : vehicle.valuation.spread > 0 ? "text-red-400" : "text-zinc-400"
+                            )}>
+                              {vehicle.valuation.spread >= 0 ? '+' : ''}{formatCurrency(vehicle.valuation.spread)}
+                            </p>
+                            <p className={cn(
+                              "text-xs font-mono",
+                              vehicle.valuation.spread < 0 ? "text-green-400/70" : vehicle.valuation.spread > 0 ? "text-red-400/70" : "text-zinc-500"
+                            )}>
+                              {vehicle.valuation.spread >= 0 ? '+' : ''}{vehicle.valuation.spreadPercent.toFixed(1)}%
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Module 4c: Token Details (for upgraded vehicles) */}
                 {vehicle.carToken && (
                   <Card className="bg-white/5 backdrop-blur-lg border-white/10 rounded-2xl shadow-xl">
                     <CardHeader className="pb-2">

@@ -4,29 +4,52 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/ca
 import { Button } from "@/app/components/ui/button";
 import { Plus, ShieldCheck, Zap, Trophy } from "lucide-react";
 import Image from "next/image";
-
-interface RegisteredVehicle {
-    _id: string;
-    nickname?: string;
-    make: string;
-    model: string;
-    year: number;
-    images: { url: string; isNftImage: boolean }[];
-    isUpgraded: boolean;
-    carToken?: {
-        address?: string;
-        ticker: string;
-    };
-}
+import { vehicles, formatCurrency, type Vehicle } from "@/app/data/vehicleData";
 
 interface VHCLRegistryProps {
-    vehicles: RegisteredVehicle[];
     isOwner: boolean;
     onRegisterClick: () => void;
-    onVehicleClick?: (vehicle: RegisteredVehicle) => void;
+    onVehicleClick?: (vehicle: Vehicle) => void;
 }
 
-export function VHCLRegistry({ vehicles, isOwner, onRegisterClick, onVehicleClick }: VHCLRegistryProps) {
+function getStatusBadge(status?: Vehicle['status']) {
+    switch (status) {
+        case 'coming_soon':
+            return (
+                <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-yellow-500/90 backdrop-blur-sm text-black text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-lg">
+                    <span className="w-1.5 h-1.5 bg-black rounded-full animate-pulse" />
+                    Coming Soon
+                </div>
+            );
+        case 'demo':
+            return (
+                <div className="absolute top-2 right-2 bg-primary/90 backdrop-blur-sm text-black text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-lg">
+                    <TrendingIcon />
+                    Demo
+                </div>
+            );
+        case 'live':
+            return (
+                <div className="absolute top-2 right-2 bg-green-500/90 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-lg">
+                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                    Live
+                </div>
+            );
+        default:
+            return null;
+    }
+}
+
+function TrendingIcon() {
+    return (
+        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+            <polyline points="17 6 23 6 23 12" />
+        </svg>
+    );
+}
+
+export function VHCLRegistry({ isOwner, onRegisterClick, onVehicleClick }: VHCLRegistryProps) {
     return (
         <Card className="w-full bg-black/40 border-white/10 backdrop-blur-md mb-6">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -55,36 +78,81 @@ export function VHCLRegistry({ vehicles, isOwner, onRegisterClick, onVehicleClic
                                 onClick={() => onVehicleClick?.(vehicle)}
                                 className="text-left w-full"
                             >
-                                <div className="group relative aspect-video rounded-lg overflow-hidden border border-white/10 bg-zinc-900 transition-all hover:border-primary/50 cursor-pointer">
-                                    {/* Image */}
-                                    {vehicle.images && vehicle.images[0] ? (
-                                        <Image
-                                            src={vehicle.images[0].url}
-                                            alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
-                                            fill
-                                            className="object-cover transition-transform group-hover:scale-105"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-zinc-800 text-zinc-600">
-                                            No Image
-                                        </div>
-                                    )}
-
-                                    {/* Overlay Info */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-4 flex flex-col justify-end">
-                                        <div className="flex justify-between items-end">
-                                            <div>
-                                                <h3 className="font-bold text-white text-lg leading-tight">
-                                                    {vehicle.nickname || `${vehicle.year} ${vehicle.model}`}
-                                                </h3>
-                                                <p className="text-xs text-zinc-300">
-                                                    {vehicle.make}
-                                                </p>
+                                <div className="group relative rounded-xl overflow-hidden border border-white/10 bg-zinc-900 transition-all hover:border-primary/50 cursor-pointer">
+                                    {/* Image Container */}
+                                    <div className="relative aspect-video">
+                                        {vehicle.images && vehicle.images[0] ? (
+                                            <Image
+                                                src={vehicle.images[0].url}
+                                                alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+                                                fill
+                                                className="object-cover transition-transform group-hover:scale-105"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center bg-zinc-800 text-zinc-600">
+                                                No Image
                                             </div>
-                                            {vehicle.isUpgraded && (
-                                                <div className="flex flex-col items-end">
-                                                    <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
-                                                        ${vehicle.carToken?.ticker}
+                                        )}
+                                        
+                                        {/* Status Badge */}
+                                        {getStatusBadge(vehicle.status)}
+                                    </div>
+
+                                    {/* Info Section */}
+                                    <div className="p-4 bg-zinc-900/95 border-t border-white/5">
+                                        {/* Year, Make & Token */}
+                                        <div className="flex justify-between items-start mb-1">
+                                            <p className="text-xs text-zinc-400 font-mono uppercase tracking-wide">
+                                                {vehicle.year} {vehicle.make}
+                                            </p>
+                                            {vehicle.isUpgraded && vehicle.carToken && (
+                                                <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
+                                                    ${vehicle.carToken.ticker}
+                                                </span>
+                                            )}
+                                        </div>
+                                        
+                                        {/* Model Name */}
+                                        <h3 className="font-bold text-white text-xl font-mono leading-tight mb-0.5">
+                                            {vehicle.model}
+                                        </h3>
+                                        
+                                        {/* Collection/Nickname */}
+                                        {vehicle.collection && (
+                                            <p className="text-xs text-zinc-500 mb-3">
+                                                {vehicle.collection}
+                                            </p>
+                                        )}
+                                        
+                                        {/* Valuation Section */}
+                                        <div className="space-y-2 pt-2 border-t border-white/5">
+                                            {/* Market Value */}
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-xs text-primary font-medium">MV</span>
+                                                <span className="text-sm font-bold text-white font-mono">
+                                                    {formatCurrency(vehicle.valuation.marketValue)}
+                                                </span>
+                                            </div>
+                                            
+                                            {/* Appraised Value */}
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-xs text-zinc-500 font-medium">AV</span>
+                                                <span className="text-sm text-zinc-400 font-mono">
+                                                    {formatCurrency(vehicle.valuation.appraisedValue)}
+                                                </span>
+                                            </div>
+                                            
+                                            {/* Spread */}
+                                            {vehicle.valuation.spread !== 0 && (
+                                                <div className="flex justify-between items-center pt-1 border-t border-white/5">
+                                                    <span className="text-xs text-zinc-500 font-medium">Spread</span>
+                                                    <span className={`text-xs font-bold font-mono ${
+                                                        vehicle.valuation.spread < 0 
+                                                            ? 'text-green-400' 
+                                                            : 'text-red-400'
+                                                    }`}>
+                                                        {vehicle.valuation.spread >= 0 ? '+' : ''}
+                                                        {formatCurrency(vehicle.valuation.spread)} ({vehicle.valuation.spread >= 0 ? '+' : ''}{vehicle.valuation.spreadPercent.toFixed(1)}%)
                                                     </span>
                                                 </div>
                                             )}

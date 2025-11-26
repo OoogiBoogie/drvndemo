@@ -18,34 +18,12 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { ManageSponsorshipModal } from "./ManageSponsorshipModal";
 import { useAccount } from "wagmi";
-
-interface SponsorSocialLinks {
-  base?: string;
-  x?: string;
-  instagram?: string;
-  facebook?: string;
-  youtube?: string;
-  tiktok?: string;
-  linkedin?: string;
-}
-
-interface SponsorDetails {
-  tokenId: string;
-  name: string;
-  logo?: string;
-  holderAddress: string;
-  websiteUrl?: string;
-  promoUrl?: string;
-  socialLinks?: SponsorSocialLinks;
-  bio?: string;
-  gallery?: string[];
-  openSeaUrl?: string;
-}
+import { type Sponsor, type SponsorSocialLinks } from "@/app/data/vehicleData";
 
 interface SponsorDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  sponsor: SponsorDetails | null;
+  sponsor: Sponsor | null;
   vehicleName?: string;
 }
 

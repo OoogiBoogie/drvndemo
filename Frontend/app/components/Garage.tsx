@@ -25,49 +25,7 @@ import { DigitalCollectibles } from "./profile/DigitalCollectibles";
 import { RegisterVehicleModal } from "./modals/RegisterVehicleModal";
 import { VehicleDetailModal } from "./modals/VehicleDetailModal";
 import type { VehicleRegistrationResult } from "@/hooks/useVehicleLifecycle";
-
-// Type for sponsor social links
-interface SponsorSocialLinks {
-  base?: string;
-  x?: string;
-  instagram?: string;
-  facebook?: string;
-  youtube?: string;
-  tiktok?: string;
-  linkedin?: string;
-}
-
-// Type for sponsor in vehicle detail modal
-interface SponsorForModal {
-  tokenId: string;
-  logo?: string;
-  name?: string;
-  holderAddress: string;
-  websiteUrl?: string;
-  promoUrl?: string;
-  socialLinks?: SponsorSocialLinks;
-  bio?: string;
-  gallery?: string[];
-  openSeaUrl?: string;
-}
-
-// Type for vehicle detail modal
-interface VehicleForModal {
-  _id: string;
-  nickname?: string;
-  make: string;
-  model: string;
-  year: number;
-  images: { url: string; isNftImage: boolean }[];
-  isUpgraded: boolean;
-  location?: string;
-  registryId?: string;
-  owner?: { name: string; username?: string; avatar?: string };
-  followerCount?: number;
-  carToken?: { address: string; ticker: string; price: number; change24h: number; mcap: number };
-  sponsorshipCollection?: { contractAddress: string; maxSupply: number; mintPrice: number; mintedCount: number };
-  sponsors: SponsorForModal[];
-}
+import { vehicles, type Vehicle } from "@/app/data/vehicleData";
 
 /**
  * Garage Component (Public Profile)
@@ -109,7 +67,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
   const [showSwapModal, setShowSwapModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showVehicleDetail, setShowVehicleDetail] = useState(false);
-  const [selectedVehicle, setSelectedVehicle] = useState<VehicleForModal | null>(null);
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [activeHoldingIndex, setActiveHoldingIndex] = useState(0);
   const [isCollectionExpanded, setIsCollectionExpanded] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -171,85 +129,6 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
       ? rwaHoldings[activeHoldingIndex % rwaHoldings.length]
       : null;
 
-  // Mock registered vehicles for demo
-  const [registeredVehicles, setRegisteredVehicles] = useState<any[]>([
-    {
-      _id: "1",
-      nickname: "Black Widow",
-      make: "Nissan",
-      model: "GT-R R35",
-      year: 2024,
-      images: [
-        { url: "/Cars/GtrHero1.jpg", isNftImage: true },
-        { url: "/Cars/DRVNGtr3.jpg", isNftImage: false }
-      ],
-      isUpgraded: true,
-      carToken: {
-        address: "0x1234567890abcdef1234567890abcdef12345678",
-        ticker: "BWIDOW"
-      }
-    },
-    {
-      _id: "2",
-      nickname: "Red Devil",
-      make: "Ferrari",
-      model: "360 Modena",
-      year: 1999,
-      images: [
-        { url: "/Cars/modena1.jpg", isNftImage: true },
-        { url: "/Cars/ModenaHero1.jpg", isNftImage: false }
-      ],
-      isUpgraded: true,
-      carToken: {
-        address: "0x2345678901abcdef2345678901abcdef23456789",
-        ticker: "MODENA"
-      }
-    },
-    {
-      _id: "3",
-      nickname: "Godzilla",
-      make: "Nissan",
-      model: "GT-R R34",
-      year: 2002,
-      images: [
-        { url: "/Cars/GtrDemo1.png", isNftImage: true },
-        { url: "/Cars/GtrDemo2.png", isNftImage: false },
-        { url: "/Cars/bsb-gtr-1.jpg", isNftImage: false }
-      ],
-      isUpgraded: true,
-      carToken: {
-        address: "0x3456789012abcdef3456789012abcdef34567890",
-        ticker: "R34GTR"
-      }
-    },
-    {
-      _id: "4",
-      nickname: "NSX Dream",
-      make: "Acura",
-      model: "NSX Type S",
-      year: 2022,
-      images: [
-        { url: "/Cars/nsx-ts-2.jpg", isNftImage: true }
-      ],
-      isUpgraded: false
-    },
-    {
-      _id: "5",
-      nickname: "MK4 Legend",
-      make: "Toyota",
-      model: "Supra MK4",
-      year: 1998,
-      images: [
-        { url: "/Cars/SupraHero1.jpg", isNftImage: true },
-        { url: "/Cars/SupraHero2.jpg", isNftImage: false }
-      ],
-      isUpgraded: true,
-      carToken: {
-        address: "0x5678901234abcdef5678901234abcdef56789012",
-        ticker: "MK4"
-      }
-    },
-  ]);
 
   // Mock user profile for demo
   // Use the profile address being viewed, or the connected address for own profile
@@ -286,151 +165,15 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
   };
 
   const handleRegistrationSuccess = (result: VehicleRegistrationResult) => {
-    const normalizedImages = result.images.map((url) => ({
-      url: url.startsWith("ipfs://") ? url.replace("ipfs://", "https://ipfs.io/ipfs/") : url,
-      isNftImage: true,
-    }));
-
-    setRegisteredVehicles((prev) => [
-      ...prev,
-      {
-        _id: result.vehicleId,
-        nickname: result.nickname,
-        make: result.factorySpecs.make,
-        model: result.factorySpecs.model,
-        year: result.factorySpecs.year,
-        images: normalizedImages,
-        isUpgraded: false,
-      },
-    ]);
+    console.log("Vehicle registered:", result);
   };
 
   const handleFollow = () => {
     console.log("Follow clicked");
-    // Would call /api/users/[id]/follow
   };
 
-  // Handler for clicking on a registered vehicle to view details
-  const handleVehicleClick = (vehicle: {
-    _id: string;
-    nickname?: string;
-    make: string;
-    model: string;
-    year: number;
-    images: { url: string; isNftImage: boolean }[];
-    isUpgraded: boolean;
-    carToken?: { address?: string; ticker: string };
-  }) => {
-    // Convert the vehicle data to the modal format with mock data for demo
-    const vehicleForModal: VehicleForModal = {
-      _id: vehicle._id,
-      nickname: vehicle.nickname,
-      make: vehicle.make,
-      model: vehicle.model,
-      year: vehicle.year,
-      images: vehicle.images,
-      isUpgraded: vehicle.isUpgraded,
-      location: "Los Angeles, CA",
-      registryId: `DRVN-${vehicle._id.slice(0, 8).toUpperCase()}`,
-      owner: {
-        name: mockUserProfile.displayName,
-        username: mockUserProfile.username,
-        avatar: mockUserProfile.profileImage,
-      },
-      followerCount: 2847,
-      carToken: vehicle.isUpgraded && vehicle.carToken ? {
-        address: vehicle.carToken.address || "0x0000000000000000000000000000000000000000",
-        ticker: vehicle.carToken.ticker,
-        price: 0.0025,
-        change24h: 12.5,
-        mcap: 125000,
-      } : undefined,
-      sponsorshipCollection: vehicle.isUpgraded ? {
-        contractAddress: "0x1234...5678",
-        maxSupply: 8,
-        mintPrice: 0.05,
-        mintedCount: 5,
-      } : undefined,
-      sponsors: vehicle.isUpgraded ? [
-        { 
-          tokenId: "1", 
-          name: "BSTR Labs", 
-          logo: "/Cars/BSTR-Logo-Official.png", 
-          holderAddress: "0x1234567890abcdef1234567890abcdef12345678",
-          websiteUrl: "https://bstr.io",
-          promoUrl: "https://bstr.io/promo/drvn",
-          socialLinks: {
-            base: "https://base.org/bstr",
-            x: "https://x.com/bstrlabs",
-            instagram: "https://instagram.com/bstrlabs",
-          },
-          bio: "BSTR Labs is a leading Web3 automotive technology company, building the future of decentralized vehicle ownership and community engagement on the Base blockchain.",
-          gallery: ["/Cars/BusterHero1.jpg", "/Cars/BusterHero2.jpg", "/Cars/LFGBuster1.jpg"],
-          openSeaUrl: "https://opensea.io/assets/base/0x1234/1",
-        },
-        { 
-          tokenId: "2", 
-          name: "DRVN Platform", 
-          logo: "/Cars/DRVNLaboLogoDrk.png", 
-          holderAddress: "0x2345678901abcdef2345678901abcdef23456789",
-          websiteUrl: "https://drvn.io",
-          promoUrl: "https://drvn.io/sponsors",
-          socialLinks: {
-            base: "https://base.org/drvn",
-            x: "https://x.com/drvn_platform",
-            youtube: "https://youtube.com/@drvn",
-          },
-          bio: "DRVN is the next-generation automotive platform tokenizing real-world vehicles on Base. Join the revolution in car culture and Web3.",
-          gallery: ["/Cars/CultureHero1.jpg", "/Cars/CultureHero2.jpg"],
-          openSeaUrl: "https://opensea.io/assets/base/0x1234/2",
-        },
-        { 
-          tokenId: "3", 
-          name: "FatStacks Racing", 
-          logo: "/Cars/FatstacksLogo.png", 
-          holderAddress: "0x3456789012abcdef3456789012abcdef34567890",
-          websiteUrl: "https://fatstacks.racing",
-          socialLinks: {
-            x: "https://x.com/fatstacksracing",
-            instagram: "https://instagram.com/fatstacksracing",
-            tiktok: "https://tiktok.com/@fatstacks",
-          },
-          bio: "FatStacks Racing - where performance meets passion. Premium automotive parts and racing equipment for enthusiasts worldwide.",
-          gallery: ["/Cars/GtrHero1.jpg", "/Cars/GtrDemo1.png"],
-          openSeaUrl: "https://opensea.io/assets/base/0x1234/3",
-        },
-        { 
-          tokenId: "4", 
-          name: "JDM Culture", 
-          logo: "/Cars/DCWhtV4.png", 
-          holderAddress: "0x4567890123abcdef4567890123abcdef45678901",
-          websiteUrl: "https://jdmculture.jp",
-          socialLinks: {
-            x: "https://x.com/jdmculture",
-            instagram: "https://instagram.com/jdmculturejp",
-          },
-          bio: "Authentic Japanese Domestic Market culture. Celebrating the heritage and future of JDM automotive excellence.",
-          gallery: ["/Cars/SupraHero1.jpg", "/Cars/nsx-ts-2.jpg"],
-          openSeaUrl: "https://opensea.io/assets/base/0x1234/4",
-        },
-        { 
-          tokenId: "5", 
-          name: "Base Motorsports", 
-          logo: "/Cars/base-logo.png", 
-          holderAddress: "0x5678901234abcdef5678901234abcdef56789012",
-          websiteUrl: "https://base.org/motorsports",
-          socialLinks: {
-            base: "https://base.org/motorsports",
-            x: "https://x.com/base",
-          },
-          bio: "Official Base blockchain motorsports division. Bringing Web3 innovation to racing and automotive culture worldwide.",
-          gallery: ["/Cars/modena1.jpg", "/Cars/ModenaHero1.jpg"],
-          openSeaUrl: "https://opensea.io/assets/base/0x1234/5",
-        },
-      ] : [],
-    };
-
-    setSelectedVehicle(vehicleForModal);
+  const handleVehicleClick = (vehicle: Vehicle) => {
+    setSelectedVehicle(vehicle);
     setShowVehicleDetail(true);
   };
 
@@ -887,7 +630,6 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
 
         {/* Module 4: VHCL Registry (New) */}
         <VHCLRegistry
-          vehicles={registeredVehicles}
           isOwner={isOwner}
           onRegisterClick={handleRegisterVehicle}
           onVehicleClick={handleVehicleClick}
