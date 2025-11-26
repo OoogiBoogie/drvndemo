@@ -242,7 +242,7 @@ export function CreateSponsorshipCollectionModal({
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={handleClose} />
             
-            <div className="relative w-full max-w-2xl mx-4 bg-gradient-to-b from-zinc-900 to-black border border-white/10 rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+            <div className="relative w-full max-w-2xl mx-4 bg-gradient-to-b from-zinc-900 to-black border border-white/10 rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-yellow-500/10 via-transparent to-transparent pointer-events-none" />
                 
                 <button
@@ -253,209 +253,211 @@ export function CreateSponsorshipCollectionModal({
                 </button>
 
                 {step === "select-stage" && (
-                    <div className="relative p-8">
-                        <div className="text-center mb-8">
-                            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/30">
-                                <Trophy className="w-8 h-8 text-white" />
+                    <>
+                        <div className="relative flex-1 overflow-y-auto p-8 pb-4">
+                            <div className="text-center mb-6">
+                                <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/30">
+                                    <Trophy className="w-7 h-7 text-white" />
+                                </div>
+                                <h2 className="text-2xl font-bold text-white mb-1">Create Sponsorship Collection</h2>
+                                <p className="text-zinc-400 text-sm">{vehicleName} • ${vehicleTicker}</p>
                             </div>
-                            <h2 className="text-2xl font-bold text-white mb-2">Create Sponsorship Collection</h2>
-                            <p className="text-zinc-400">{vehicleName} • ${vehicleTicker}</p>
-                        </div>
 
-                        <p className="text-center text-sm text-zinc-400 mb-6">
-                            Choose a tier that matches your goals. Higher tiers mean higher mint prices and more revenue.
-                        </p>
+                            <p className="text-center text-sm text-zinc-400 mb-5">
+                                Choose a tier that matches your goals
+                            </p>
 
-                        <div className="space-y-4 mb-8">
-                            {STAGE_OPTIONS.map((stage) => (
-                                <button
-                                    key={stage.id}
-                                    onClick={() => handleStageSelect(stage)}
-                                    className={`w-full text-left p-5 rounded-2xl border-2 transition-all ${
-                                        selectedStage?.id === stage.id
-                                            ? "border-yellow-500 bg-yellow-500/10 shadow-lg shadow-yellow-500/10"
-                                            : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
-                                    }`}
-                                >
-                                    <div className="flex items-start justify-between mb-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stage.color} flex items-center justify-center shadow-lg`}>
-                                                {selectedStage?.id === stage.id ? (
-                                                    <Check className="w-6 h-6 text-white" />
-                                                ) : (
-                                                    <span className="text-xl font-bold text-white">{stage.id}</span>
-                                                )}
+                            <div className="space-y-3">
+                                {STAGE_OPTIONS.map((stage) => (
+                                    <button
+                                        key={stage.id}
+                                        onClick={() => handleStageSelect(stage)}
+                                        className={`w-full text-left p-4 rounded-2xl border-2 transition-all ${
+                                            selectedStage?.id === stage.id
+                                                ? "border-yellow-500 bg-yellow-500/10 shadow-lg shadow-yellow-500/10"
+                                                : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
+                                        }`}
+                                    >
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stage.color} flex items-center justify-center shadow-lg`}>
+                                                    {selectedStage?.id === stage.id ? (
+                                                        <Check className="w-5 h-5 text-white" />
+                                                    ) : (
+                                                        <span className="text-lg font-bold text-white">{stage.id}</span>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-base font-bold text-white">{stage.name}</h3>
+                                                    <p className="text-xs text-zinc-400">{stage.description}</p>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-xl font-bold text-white">${stage.mintPrice}</p>
+                                                <p className="text-[10px] text-zinc-500">per sponsor</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-3 gap-3 p-2.5 rounded-xl bg-black/30 text-center">
+                                            <div>
+                                                <p className="text-[10px] text-zinc-500 mb-0.5">Wrap</p>
+                                                <p className="text-xs text-white font-medium">
+                                                    {formatNumber(stage.wrapCarToken + stage.wrapCarTokenBonus)}
+                                                </p>
                                             </div>
                                             <div>
-                                                <h3 className="text-lg font-bold text-white">{stage.name}</h3>
-                                                <p className="text-sm text-zinc-400">{stage.description}</p>
+                                                <p className="text-[10px] text-zinc-500 mb-0.5">Fee</p>
+                                                <p className="text-xs text-white font-medium">${stage.upgradeFee}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] text-zinc-500 mb-0.5">Revenue</p>
+                                                <p className="text-xs text-green-400 font-bold">${stage.netRevenue.toLocaleString()}</p>
                                             </div>
                                         </div>
-                                        <div className="text-right">
-                                            <p className="text-2xl font-bold text-white">${stage.mintPrice}</p>
-                                            <p className="text-xs text-zinc-500">per sponsor</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="grid grid-cols-3 gap-4 p-3 rounded-xl bg-black/30">
-                                        <div>
-                                            <p className="text-xs text-zinc-500 mb-1">Wrap Required</p>
-                                            <p className="text-sm text-white font-medium">
-                                                {formatNumber(stage.wrapCarToken + stage.wrapCarTokenBonus)} ${vehicleTicker}
-                                            </p>
-                                            <p className="text-xs text-zinc-400">+ {formatNumber(stage.wrapBSTR)} $BSTR</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-xs text-zinc-500 mb-1">Creation Fee</p>
-                                            <p className="text-sm text-white font-medium">${stage.upgradeFee} USDC</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-xs text-zinc-500 mb-1">Potential Revenue</p>
-                                            <p className="text-sm text-green-400 font-bold">${stage.netRevenue.toLocaleString()}</p>
-                                            <p className="text-xs text-zinc-500">from 14 mints</p>
-                                        </div>
-                                    </div>
-                                </button>
-                            ))}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
 
-                        <Button
-                            onClick={() => setStep("customize-offers")}
-                            disabled={!selectedStage}
-                            className="w-full h-14 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            Continue
-                            <ChevronRight className="w-5 h-5 ml-2" />
-                        </Button>
-                    </div>
+                        <div className="relative sticky bottom-0 bg-gradient-to-t from-black via-black to-transparent p-6 pt-8">
+                            <Button
+                                onClick={() => setStep("customize-offers")}
+                                disabled={!selectedStage}
+                                className="w-full h-14 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-yellow-500/20"
+                            >
+                                Continue
+                                <ChevronRight className="w-5 h-5 ml-2" />
+                            </Button>
+                        </div>
+                    </>
                 )}
 
                 {step === "customize-offers" && selectedStage && (
-                    <div className="relative p-8">
-                        <div className="flex items-center gap-4 mb-8">
-                            <button
-                                onClick={() => setStep("select-stage")}
-                                className="p-2 rounded-full bg-white/5 hover:bg-white/10"
-                            >
-                                <ChevronRight className="w-5 h-5 text-zinc-400 rotate-180" />
-                            </button>
-                            <div>
-                                <h2 className="text-xl font-bold text-white">Customize Sponsor Offerings</h2>
-                                <p className="text-sm text-zinc-400">What will sponsors receive?</p>
-                            </div>
-                        </div>
-
-                        <div className="space-y-3 mb-6">
-                            {standardOffers.map((offer) => (
-                                <label
-                                    key={offer.id}
-                                    className={`flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all ${
-                                        offer.checked 
-                                            ? "bg-yellow-500/10 border-2 border-yellow-500/30" 
-                                            : "bg-white/5 border-2 border-transparent hover:bg-white/10"
-                                    }`}
+                    <>
+                        <div className="relative flex-1 overflow-y-auto p-6 pb-4">
+                            <div className="flex items-center gap-4 mb-6">
+                                <button
+                                    onClick={() => setStep("select-stage")}
+                                    className="p-2 rounded-full bg-white/5 hover:bg-white/10"
                                 >
-                                    <Checkbox
-                                        checked={offer.checked}
-                                        onCheckedChange={() => handleToggleStandardOffer(offer.id)}
-                                        className="w-5 h-5 border-2 border-white/30 data-[state=checked]:bg-yellow-500 data-[state=checked]:border-yellow-500"
+                                    <ChevronRight className="w-5 h-5 text-zinc-400 rotate-180" />
+                                </button>
+                                <div>
+                                    <h2 className="text-xl font-bold text-white">Customize Offerings</h2>
+                                    <p className="text-sm text-zinc-400">What will sponsors receive?</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2 mb-4">
+                                {standardOffers.map((offer) => (
+                                    <label
+                                        key={offer.id}
+                                        className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
+                                            offer.checked 
+                                                ? "bg-yellow-500/10 border-2 border-yellow-500/30" 
+                                                : "bg-white/5 border-2 border-transparent hover:bg-white/10"
+                                        }`}
+                                    >
+                                        <Checkbox
+                                            checked={offer.checked}
+                                            onCheckedChange={() => handleToggleStandardOffer(offer.id)}
+                                            className="w-5 h-5 border-2 border-white/30 data-[state=checked]:bg-yellow-500 data-[state=checked]:border-yellow-500"
+                                        />
+                                        <span className="text-white font-medium text-sm">{offer.label}</span>
+                                    </label>
+                                ))}
+                                
+                                {customOffers.map((offer) => (
+                                    <div
+                                        key={offer.id}
+                                        className="flex items-center gap-3 p-3 rounded-xl bg-green-500/10 border-2 border-green-500/30"
+                                    >
+                                        <div className="w-5 h-5 rounded bg-green-500 flex items-center justify-center">
+                                            <Check className="w-3 h-3 text-white" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-white font-medium text-sm">{offer.title}</p>
+                                            {offer.description && (
+                                                <p className="text-xs text-zinc-400">{offer.description}</p>
+                                            )}
+                                        </div>
+                                        <button
+                                            onClick={() => handleRemoveCustomOffer(offer.id)}
+                                            className="p-1 rounded-full hover:bg-white/10"
+                                        >
+                                            <X className="w-4 h-4 text-zinc-400" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {showAddOffer ? (
+                                <div className="space-y-3 p-4 rounded-xl bg-white/5 border border-white/10 mb-4">
+                                    <Input
+                                        value={newOfferTitle}
+                                        onChange={(e) => setNewOfferTitle(e.target.value)}
+                                        placeholder="Offer title (e.g., VIP event access)"
+                                        className="bg-black/30 border-white/10 text-white placeholder:text-zinc-500"
                                     />
-                                    <span className="text-white font-medium">{offer.label}</span>
-                                </label>
-                            ))}
-                            
-                            {customOffers.map((offer) => (
-                                <div
-                                    key={offer.id}
-                                    className="flex items-center gap-4 p-4 rounded-xl bg-green-500/10 border-2 border-green-500/30"
+                                    <Input
+                                        value={newOfferDescription}
+                                        onChange={(e) => setNewOfferDescription(e.target.value)}
+                                        placeholder="Description (optional)"
+                                        className="bg-black/30 border-white/10 text-white placeholder:text-zinc-500"
+                                    />
+                                    <div className="flex gap-2">
+                                        <Button
+                                            onClick={handleAddCustomOffer}
+                                            disabled={!newOfferTitle.trim()}
+                                            size="sm"
+                                            className="bg-green-500 hover:bg-green-600 text-white"
+                                        >
+                                            <Check className="w-4 h-4 mr-1" />
+                                            Add
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                setShowAddOffer(false);
+                                                setNewOfferTitle("");
+                                                setNewOfferDescription("");
+                                            }}
+                                            size="sm"
+                                            variant="ghost"
+                                            className="text-zinc-400"
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={() => setShowAddOffer(true)}
+                                    className="w-full p-3 rounded-xl border-2 border-dashed border-white/20 hover:border-yellow-500/50 hover:bg-yellow-500/5 transition-all flex items-center justify-center gap-2 text-zinc-400 hover:text-yellow-500 text-sm"
                                 >
-                                    <div className="w-5 h-5 rounded bg-green-500 flex items-center justify-center">
-                                        <Check className="w-3 h-3 text-white" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="text-white font-medium">{offer.title}</p>
-                                        {offer.description && (
-                                            <p className="text-sm text-zinc-400">{offer.description}</p>
-                                        )}
-                                    </div>
-                                    <button
-                                        onClick={() => handleRemoveCustomOffer(offer.id)}
-                                        className="p-1 rounded-full hover:bg-white/10"
-                                    >
-                                        <X className="w-4 h-4 text-zinc-400" />
-                                    </button>
-                                </div>
-                            ))}
+                                    <Plus className="w-4 h-4" />
+                                    Add Custom Offer
+                                </button>
+                            )}
                         </div>
 
-                        {showAddOffer ? (
-                            <div className="space-y-4 p-5 rounded-xl bg-white/5 border border-white/10 mb-6">
-                                <Input
-                                    value={newOfferTitle}
-                                    onChange={(e) => setNewOfferTitle(e.target.value)}
-                                    placeholder="Offer title (e.g., VIP event access)"
-                                    className="bg-black/30 border-white/10 text-white placeholder:text-zinc-500"
-                                />
-                                <Input
-                                    value={newOfferDescription}
-                                    onChange={(e) => setNewOfferDescription(e.target.value)}
-                                    placeholder="Description (optional)"
-                                    className="bg-black/30 border-white/10 text-white placeholder:text-zinc-500"
-                                />
-                                <div className="flex gap-2">
-                                    <Button
-                                        onClick={handleAddCustomOffer}
-                                        disabled={!newOfferTitle.trim()}
-                                        size="sm"
-                                        className="bg-green-500 hover:bg-green-600 text-white"
-                                    >
-                                        <Check className="w-4 h-4 mr-1" />
-                                        Add
-                                    </Button>
-                                    <Button
-                                        onClick={() => {
-                                            setShowAddOffer(false);
-                                            setNewOfferTitle("");
-                                            setNewOfferDescription("");
-                                        }}
-                                        size="sm"
-                                        variant="ghost"
-                                        className="text-zinc-400"
-                                    >
-                                        Cancel
-                                    </Button>
+                        <div className="relative sticky bottom-0 bg-gradient-to-t from-black via-black to-transparent p-6 pt-4 space-y-4">
+                            <div className="p-3 rounded-xl bg-black/50 border border-white/10">
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="text-zinc-400">{selectedStage.name} • {getSelectedOfferCount()} offers</span>
+                                    <span className="text-white font-bold">${selectedStage.mintPrice}/mint</span>
                                 </div>
                             </div>
-                        ) : (
-                            <button
-                                onClick={() => setShowAddOffer(true)}
-                                className="w-full p-4 rounded-xl border-2 border-dashed border-white/20 hover:border-yellow-500/50 hover:bg-yellow-500/5 transition-all flex items-center justify-center gap-2 text-zinc-400 hover:text-yellow-500 mb-6"
+
+                            <Button
+                                onClick={handleCreate}
+                                disabled={getSelectedOfferCount() === 0}
+                                className="w-full h-14 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold text-lg shadow-lg shadow-yellow-500/20"
                             >
-                                <Plus className="w-5 h-5" />
-                                Add Custom Offer
-                            </button>
-                        )}
-
-                        <div className="p-4 rounded-xl bg-black/30 border border-white/10 mb-6">
-                            <div className="flex items-center justify-between text-sm mb-2">
-                                <span className="text-zinc-400">Selected tier:</span>
-                                <span className="text-white font-bold">{selectedStage.name} - ${selectedStage.mintPrice}/mint</span>
-                            </div>
-                            <div className="flex items-center justify-between text-sm">
-                                <span className="text-zinc-400">Total offers:</span>
-                                <span className="text-white font-bold">{getSelectedOfferCount()} items</span>
-                            </div>
+                                <Coins className="w-5 h-5 mr-2" />
+                                Create Collection for ${selectedStage.upgradeFee}
+                            </Button>
                         </div>
-
-                        <Button
-                            onClick={handleCreate}
-                            disabled={getSelectedOfferCount() === 0}
-                            className="w-full h-14 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold text-lg"
-                        >
-                            <Coins className="w-5 h-5 mr-2" />
-                            Create Collection for ${selectedStage.upgradeFee}
-                        </Button>
-                    </div>
+                    </>
                 )}
 
                 {step === "processing" && (
