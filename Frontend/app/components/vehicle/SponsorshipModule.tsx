@@ -2,9 +2,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
-import { Trophy, Plus, Sparkles, Users, DollarSign, Share2 } from "lucide-react";
+import { Trophy, Plus, Sparkles, Users, DollarSign, Share2, Settings } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 
 interface Sponsor {
     tokenId: string;
@@ -18,6 +17,7 @@ interface SponsorshipModuleProps {
     vehicleTicker?: string;
     isOwner?: boolean;
     isUpgraded?: boolean;
+    connectedAddress?: string;
     sponsorshipCollection?: {
         contractAddress: string;
         maxSupply: number;
@@ -25,9 +25,11 @@ interface SponsorshipModuleProps {
         mintedCount?: number;
     };
     sponsors: Sponsor[];
-    onSponsorClick: () => void;
+    onSponsorClick: (slotId?: number) => void;
     onCreateCollection?: () => void;
     onShare?: () => void;
+    onManageSponsor?: (sponsor: Sponsor) => void;
+    onViewSponsor?: (sponsor: Sponsor) => void;
 }
 
 export function SponsorshipModule({
@@ -35,11 +37,14 @@ export function SponsorshipModule({
     vehicleTicker,
     isOwner = false,
     isUpgraded = false,
+    connectedAddress,
     sponsorshipCollection,
     sponsors,
     onSponsorClick,
     onCreateCollection,
-    onShare
+    onShare,
+    onManageSponsor,
+    onViewSponsor
 }: SponsorshipModuleProps) {
     if (!sponsorshipCollection && isOwner && isUpgraded) {
         return (
@@ -165,8 +170,21 @@ export function SponsorshipModule({
                                     </span>
                                 </button>
                             ) : (
-                                <Link href={`/sponsors/${slot.sponsor?.tokenId}`}>
-                                    <div className="w-full h-full rounded-lg border border-white/10 bg-zinc-900 overflow-hidden relative group hover:border-yellow-500 transition-all">
+                                <div className="relative w-full h-full group">
+                                    <button
+                                        onClick={() => {
+                                            if (slot.sponsor) {
+                                                const isHolder = connectedAddress && 
+                                                    slot.sponsor.holderAddress.toLowerCase() === connectedAddress.toLowerCase();
+                                                if (isHolder && onManageSponsor) {
+                                                    onManageSponsor(slot.sponsor);
+                                                } else if (onViewSponsor) {
+                                                    onViewSponsor(slot.sponsor);
+                                                }
+                                            }
+                                        }}
+                                        className="w-full h-full rounded-lg border border-white/10 bg-zinc-900 overflow-hidden relative hover:border-yellow-500 transition-all"
+                                    >
                                         {slot.sponsor?.logo ? (
                                             <Image
                                                 src={slot.sponsor.logo}
@@ -179,8 +197,18 @@ export function SponsorshipModule({
                                                 {slot.sponsor?.name?.substring(0, 2) || "SP"}
                                             </div>
                                         )}
-                                    </div>
-                                </Link>
+                                    </button>
+                                    {connectedAddress && 
+                                     slot.sponsor?.holderAddress.toLowerCase() === connectedAddress.toLowerCase() && (
+                                        <button
+                                            onClick={() => slot.sponsor && onManageSponsor?.(slot.sponsor)}
+                                            className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center shadow-lg hover:bg-yellow-400 transition-colors z-10"
+                                            title="Manage Sponsorship"
+                                        >
+                                            <Settings className="w-3 h-3 text-black" />
+                                        </button>
+                                    )}
+                                </div>
                             )}
                         </div>
                     ))}

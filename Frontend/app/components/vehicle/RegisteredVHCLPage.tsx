@@ -18,6 +18,8 @@ import { BuySponsorshipModal } from "../modals/BuySponsorshipModal";
 import { UpgradeVehicleModal } from "../modals/UpgradeVehicleModal";
 import { TokenSwapModal } from "../modals/TokenSwapModal";
 import { CreateSponsorshipCollectionModal } from "../modals/CreateSponsorshipCollectionModal";
+import { MintSponsorshipModal } from "../modals/MintSponsorshipModal";
+import { SponsorProfileEditorModal } from "../modals/SponsorProfileEditorModal";
 import { useToast } from "@/app/components/ui/toast-context";
 
 interface VehicleImage {
@@ -119,6 +121,10 @@ export function RegisteredVHCLPage({
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showSwapModal, setShowSwapModal] = useState(false);
   const [showCreateCollectionModal, setShowCreateCollectionModal] = useState(false);
+  const [showMintModal, setShowMintModal] = useState(false);
+  const [showProfileEditor, setShowProfileEditor] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<number | undefined>(undefined);
+  const [selectedSponsor, setSelectedSponsor] = useState<Sponsor | null>(null);
   
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [isEditingMods, setIsEditingMods] = useState(false);
@@ -194,9 +200,14 @@ export function RegisteredVHCLPage({
   ];
 
   const nftImage = vehicle.images.find(img => img.isNftImage)?.url || vehicle.images[0]?.url;
-  const availableSlots = vehicle.sponsorshipCollection 
+  const availableSlotsCount = vehicle.sponsorshipCollection 
     ? vehicle.sponsorshipCollection.maxSupply - (vehicle.sponsorshipCollection.mintedCount || 0)
     : 0;
+  const claimedSlotIds = vehicle.sponsors.map(s => parseInt(s.tokenId));
+  const availableSlotIds = vehicle.sponsorshipCollection
+    ? Array.from({ length: vehicle.sponsorshipCollection.maxSupply }, (_, i) => i + 1)
+        .filter(id => !claimedSlotIds.includes(id))
+    : [];
   const vehicleDisplayName = vehicle.nickname || `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
 
   const handleSponsorClick = () => {
@@ -237,6 +248,43 @@ export function RegisteredVHCLPage({
       `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`,
       '_blank'
     );
+  };
+
+  const handleSponsorSlotClick = (slotId?: number) => {
+    if (isOwner) {
+      setShowSponsorModal(true);
+    } else {
+      setSelectedSlot(slotId);
+      setShowMintModal(true);
+    }
+  };
+
+  const handleMintSuccess = (result: { tokenId: number; transactionHash: string }) => {
+    setShowMintModal(false);
+    setShowProfileEditor(true);
+    setSelectedSponsor({
+      tokenId: String(result.tokenId),
+      name: "",
+      holderAddress: currentUserAddress || "",
+    });
+  };
+
+  const handleManageSponsor = (sponsor: Sponsor) => {
+    setSelectedSponsor(sponsor);
+    setShowProfileEditor(true);
+  };
+
+  const handleViewSponsor = (sponsor: Sponsor) => {
+    addToast({
+      type: "info",
+      title: sponsor.name || "Sponsor",
+      message: `Viewing sponsor details...`,
+    });
+  };
+
+  const handleSaveProfile = (profile: Partial<Sponsor>) => {
+    setShowProfileEditor(false);
+    setSelectedSponsor(null);
   };
 
   const handleShare = () => {
@@ -575,11 +623,14 @@ export function RegisteredVHCLPage({
               vehicleTicker={vehicle.carToken?.ticker}
               isOwner={isOwner}
               isUpgraded={vehicle.isUpgraded}
+              connectedAddress={currentUserAddress}
               sponsorshipCollection={vehicle.sponsorshipCollection}
               sponsors={vehicle.sponsors}
-              onSponsorClick={handleSponsorClick}
+              onSponsorClick={handleSponsorSlotClick}
               onCreateCollection={handleCreateCollection}
               onShare={handleShareCollection}
+              onManageSponsor={handleManageSponsor}
+              onViewSponsor={handleViewSponsor}
             />
           )}
 
@@ -708,7 +759,7 @@ export function RegisteredVHCLPage({
         vehicleName={vehicle.nickname || vehicle.model}
         vehicleImage={nftImage || ""}
         mintPrice={vehicle.sponsorshipCollection?.mintPrice || 50}
-        availableSlots={availableSlots}
+        availableSlots={availableSlotsCount}
         onPurchaseSuccess={(result) => {
           console.log("Sponsorship purchased:", result);
           setShowSponsorModal(false);
@@ -745,6 +796,47 @@ export function RegisteredVHCLPage({
           vehicleTicker={vehicle.carToken.ticker}
           onCreationComplete={handleCollectionCreated}
           connectedPlatforms={connectedPlatforms}
+        />
+      )}
+
+      {vehicle.sponsorshipCollection && (
+        <MintSponsorshipModal
+          isOpen={showMintModal}
+          onClose={() => {
+            setShowMintModal(false);
+            setSelectedSlot(undefined);
+          }}
+          vehicleId={vehicle._id}
+          vehicleName={vehicleDisplayName}
+          vehicleImage={nftImage}
+          mintPrice={vehicle.sponsorshipCollection.mintPrice}
+          availableSlots={availableSlotIds}
+          maxSupply={vehicle.sponsorshipCollection.maxSupply}
+          benefits={[
+            "Logo placement on vehicle wrap",
+            "Social media mentions",
+            "Cross-promotion opportunities",
+            "Branded content features"
+          ]}
+          onMintSuccess={handleMintSuccess}
+        />
+      )}
+
+      {selectedSponsor && (
+        <SponsorProfileEditorModal
+          isOpen={showProfileEditor}
+          onClose={() => {
+            setShowProfileEditor(false);
+            setSelectedSponsor(null);
+          }}
+          sponsor={{
+            tokenId: selectedSponsor.tokenId,
+            name: selectedSponsor.name || "",
+            logo: selectedSponsor.logo,
+            holderAddress: selectedSponsor.holderAddress,
+          }}
+          vehicleName={vehicleDisplayName}
+          onSave={handleSaveProfile}
         />
       )}
     </div>
