@@ -403,6 +403,53 @@ export function VehicleDetailModal({ isOpen, onClose, vehicle, isOwner = false }
                     </CardContent>
                   </Card>
                 )}
+
+                {/* Module 5: Tagged Posts (moved to left column) */}
+                <Card className="bg-white/5 backdrop-blur-lg border-white/10 rounded-2xl shadow-xl">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
+                      <Users className="w-5 h-5 text-primary" />
+                      Tagged Posts
+                    </CardTitle>
+                    <p className="text-xs text-zinc-500">Posts featuring this vehicle</p>
+                  </CardHeader>
+                  <CardContent>
+                    {taggedPosts.length > 0 ? (
+                      <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 sleek-scrollbar">
+                        {taggedPosts.map((post) => (
+                          <div key={post.id} className="p-3 bg-white/5 backdrop-blur-sm rounded-xl border border-white/5 hover:bg-white/10 transition-all">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="w-7 h-7 rounded-full bg-zinc-700 overflow-hidden relative">
+                                <Image
+                                  src={post.author.avatar}
+                                  alt={post.author.username}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-white">@{post.author.username}</p>
+                                <p className="text-[10px] text-zinc-500">{post.timestamp}</p>
+                              </div>
+                            </div>
+                            <p className="text-sm text-zinc-300 mb-2">{post.content}</p>
+                            {post.image && (
+                              <div className="relative aspect-video rounded overflow-hidden mb-2">
+                                <Image src={post.image} alt="Post" fill className="object-cover" />
+                              </div>
+                            )}
+                            <p className="text-xs text-zinc-500">❤️ {post.likes}</p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-6">
+                        <Users className="w-8 h-8 text-zinc-600 mx-auto mb-2" />
+                        <p className="text-sm text-zinc-400">No posts tagged yet</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </div>
 
               {/* Right Column */}
@@ -553,53 +600,6 @@ export function VehicleDetailModal({ isOpen, onClose, vehicle, isOwner = false }
                     </CardContent>
                   </Card>
                 )}
-
-                {/* Module 5: Content Feed */}
-                <Card className="bg-white/5 backdrop-blur-lg border-white/10 rounded-2xl shadow-xl">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
-                      <Users className="w-5 h-5 text-primary" />
-                      Tagged Posts
-                    </CardTitle>
-                    <p className="text-xs text-zinc-500">Posts featuring this vehicle</p>
-                  </CardHeader>
-                  <CardContent>
-                    {taggedPosts.length > 0 ? (
-                      <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 sleek-scrollbar">
-                        {taggedPosts.map((post) => (
-                          <div key={post.id} className="p-3 bg-white/5 backdrop-blur-sm rounded-xl border border-white/5 hover:bg-white/10 transition-all">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="w-7 h-7 rounded-full bg-zinc-700 overflow-hidden relative">
-                                <Image
-                                  src={post.author.avatar}
-                                  alt={post.author.username}
-                                  fill
-                                  className="object-cover"
-                                />
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-white">@{post.author.username}</p>
-                                <p className="text-[10px] text-zinc-500">{post.timestamp}</p>
-                              </div>
-                            </div>
-                            <p className="text-sm text-zinc-300 mb-2">{post.content}</p>
-                            {post.image && (
-                              <div className="relative aspect-video rounded overflow-hidden mb-2">
-                                <Image src={post.image} alt="Post" fill className="object-cover" />
-                              </div>
-                            )}
-                            <p className="text-xs text-zinc-500">❤️ {post.likes}</p>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-6">
-                        <Users className="w-8 h-8 text-zinc-600 mx-auto mb-2" />
-                        <p className="text-sm text-zinc-400">No posts tagged yet</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
               </div>
             </div>
           </div>
