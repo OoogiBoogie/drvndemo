@@ -14,6 +14,7 @@ interface RegisteredVehicle {
     images: { url: string; isNftImage: boolean }[];
     isUpgraded: boolean;
     carToken?: {
+        address?: string;
         ticker: string;
     };
 }

@@ -160,6 +160,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
       ],
       isUpgraded: true,
       carToken: {
+        address: "0x1234567890abcdef1234567890abcdef12345678",
         ticker: "BWIDOW"
       }
     },
@@ -175,6 +176,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
       ],
       isUpgraded: true,
       carToken: {
+        address: "0x2345678901abcdef2345678901abcdef23456789",
         ticker: "MODENA"
       }
     },
@@ -191,6 +193,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
       ],
       isUpgraded: true,
       carToken: {
+        address: "0x3456789012abcdef3456789012abcdef34567890",
         ticker: "R34GTR"
       }
     },
@@ -217,6 +220,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
       ],
       isUpgraded: true,
       carToken: {
+        address: "0x5678901234abcdef5678901234abcdef56789012",
         ticker: "MK4"
       }
     },
@@ -290,7 +294,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
     year: number;
     images: { url: string; isNftImage: boolean }[];
     isUpgraded: boolean;
-    carToken?: { address: string; ticker: string };
+    carToken?: { address?: string; ticker: string };
   }) => {
     // Convert the vehicle data to the modal format with mock data for demo
     const vehicleForModal: VehicleForModal = {
@@ -310,7 +314,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
       },
       followerCount: 2847,
       carToken: vehicle.isUpgraded && vehicle.carToken ? {
-        address: vehicle.carToken.address,
+        address: vehicle.carToken.address || "0x0000000000000000000000000000000000000000",
         ticker: vehicle.carToken.ticker,
         price: 0.0025,
         change24h: 12.5,
