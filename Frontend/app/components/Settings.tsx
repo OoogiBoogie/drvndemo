@@ -250,10 +250,30 @@ export function Settings({
     }
   }, [currentUser, fetchEditableUserData]);
 
-  // Early return if wallet not connected or user not authenticated
-  // This prevents the component from rendering without proper authentication
+  // Show connect wallet prompt if wallet not connected or user not authenticated
   if (!isConnected || !isAuthenticated || !currentUser) {
-    return null;
+    return (
+      <Card className="w-full bg-black/40 border-white/10 backdrop-blur-md">
+        <CardContent className="p-8 flex flex-col items-center justify-center text-center space-y-6">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#00daa2]/20 to-[#8351a1]/20 flex items-center justify-center border border-white/10">
+            <User className="w-10 h-10 text-[#00daa2]" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold text-white font-mono">
+              Connect Your Wallet
+            </h2>
+            <p className="text-zinc-400 max-w-md">
+              Connect your wallet to access your profile settings, customize your experience, and manage your social links.
+            </p>
+          </div>
+          <div className="flex flex-col items-center gap-3 pt-2">
+            <p className="text-sm text-zinc-500">
+              Click the <span className="text-[#00daa2] font-mono">SIGN UP/LOGIN</span> button in the sidebar to get started
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   /**
