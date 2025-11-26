@@ -25,12 +25,23 @@ The application utilizes TailwindCSS for utility-first styling and Radix UI for 
 - **Development Environment**: Configured for Replit with Node.js 22, frontend dependencies, and a development server on port 5000. Next.js host checking is disabled for Replit proxy compatibility.
 
 ### Feature Specifications
-- **Vehicle Detail Modal**: Full-screen, responsive overlay for vehicle details including image gallery, car profile card, sponsorship module, token details, and content feed (Timeline, Gallery, Modifications). Uses glassmorphic styling (bg-white/[0.03], bg-black/40 backdrop-blur-md).
+- **Vehicle Detail Modal**: Full-screen, responsive overlay for vehicle details including image gallery, car profile card, sponsorship module, token details, valuation card (AV/MV/Spread), and content feed (Timeline, Gallery, Modifications). Uses glassmorphic styling (bg-white/[0.03], bg-black/40 backdrop-blur-md).
 - **Sponsor Details Modal**: Opens when clicking claimed sponsorship slots. Displays sponsor logo (large), website + promo links, social accounts row (Base, X, Instagram, Facebook, YouTube, TikTok, LinkedIn), bio section, photo gallery with navigation, and OpenSea NFT link. Includes wallet-gated "Manage Sponsorship" button (only visible to holder).
 - **Manage Sponsorship Modal**: Allows NFT holders to update sponsor branding (name, logo, bio, website, social links, gallery photos). Accessible only when connected wallet matches sponsor's holderAddress.
 - **Garage Page**: Functions as a public profile, separating public and private sections based on `isOwner` detection. Enhanced User Profile Card with extensive social links.
 - **DRVN Culture Page**: A content hub with category filters, featured content, stats bar, latest episodes grid, browse-by-category, and a "Coming Soon" section for originals.
 - **Social Hub**: Redesigned `/social` page with platform connection cards (Farcaster, Base, X), multi-platform feed filtering, and cross-posting functionality.
+
+### Data Architecture
+- **Shared Vehicle Data**: All vehicle information is centralized in `Frontend/app/data/vehicleData.ts`. This single source of truth exports:
+  - Vehicle array with full specs (make, model, year, VIN, etc.)
+  - Valuation data: Appraised Value (AV), Market Value (MV), Spread, and SpreadPercent
+  - Sponsor information with social links
+  - Car tokens and sponsorship collection details
+  - TypeScript interfaces: Vehicle, Sponsor, SponsorSocialLinks, CarToken, VehicleImage, etc.
+- **Financial Transparency**: Each vehicle displays AV (independent appraisal), MV (current market price), and spread with color coding:
+  - Green: Below appraisal (buying opportunity)
+  - Red: Above appraisal (premium pricing)
 
 ## External Dependencies
 - **OnchainKit**: For wallet integration on Base.
