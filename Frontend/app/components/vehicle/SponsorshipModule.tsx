@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
-import { Trophy, Plus } from "lucide-react";
+import { Trophy, Plus, Sparkles, Users, DollarSign, Share2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -15,6 +15,9 @@ interface Sponsor {
 
 interface SponsorshipModuleProps {
     vehicleName: string;
+    vehicleTicker?: string;
+    isOwner?: boolean;
+    isUpgraded?: boolean;
     sponsorshipCollection?: {
         contractAddress: string;
         maxSupply: number;
@@ -23,14 +26,70 @@ interface SponsorshipModuleProps {
     };
     sponsors: Sponsor[];
     onSponsorClick: () => void;
+    onCreateCollection?: () => void;
+    onShare?: () => void;
 }
 
 export function SponsorshipModule({
     vehicleName,
+    vehicleTicker,
+    isOwner = false,
+    isUpgraded = false,
     sponsorshipCollection,
     sponsors,
-    onSponsorClick
+    onSponsorClick,
+    onCreateCollection,
+    onShare
 }: SponsorshipModuleProps) {
+    if (!sponsorshipCollection && isOwner && isUpgraded) {
+        return (
+            <Card className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-yellow-500/30 backdrop-blur-md">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-xl font-bold text-white flex items-center gap-2">
+                        <Sparkles className="w-5 h-5 text-yellow-500" />
+                        Create Sponsorship Collection
+                    </CardTitle>
+                    <p className="text-sm text-zinc-400">
+                        Unlock sponsorship opportunities for {vehicleName}
+                    </p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="grid grid-cols-3 gap-3">
+                        <div className="bg-black/30 rounded-lg p-3 text-center">
+                            <Users className="w-6 h-6 mx-auto mb-1 text-yellow-500" />
+                            <p className="text-xs text-zinc-400">14 Sponsor Slots</p>
+                        </div>
+                        <div className="bg-black/30 rounded-lg p-3 text-center">
+                            <DollarSign className="w-6 h-6 mx-auto mb-1 text-green-500" />
+                            <p className="text-xs text-zinc-400">Earn Revenue</p>
+                        </div>
+                        <div className="bg-black/30 rounded-lg p-3 text-center">
+                            <Trophy className="w-6 h-6 mx-auto mb-1 text-purple-500" />
+                            <p className="text-xs text-zinc-400">Brand Partnerships</p>
+                        </div>
+                    </div>
+                    
+                    <div className="bg-black/20 rounded-lg p-3 text-sm text-zinc-300">
+                        <p className="mb-2 font-semibold text-white">How it works:</p>
+                        <ul className="space-y-1 text-xs text-zinc-400">
+                            <li>• Wrap {vehicleTicker || "car tokens"} + $BSTR to create collection</li>
+                            <li>• Sponsors mint NFTs to claim slots on your car</li>
+                            <li>• You earn from each mint + secondary sales</li>
+                        </ul>
+                    </div>
+                    
+                    <Button
+                        onClick={onCreateCollection}
+                        className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold"
+                    >
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Create Collection
+                    </Button>
+                </CardContent>
+            </Card>
+        );
+    }
+    
     if (!sponsorshipCollection) return null;
 
     const mintedCount = sponsorshipCollection.mintedCount ?? sponsors.length;
@@ -51,17 +110,29 @@ export function SponsorshipModule({
             <CardHeader className="flex flex-col gap-3 pb-2">
                 <div className="flex flex-row items-center justify-between">
                     <CardTitle className="text-xl font-bold text-white flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-yellow-500" />
-                    Sponsors
-                </CardTitle>
-                    <Button
-                        size="sm"
-                        className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold"
-                        onClick={() => !isSoldOut && onSponsorClick()}
-                        disabled={isSoldOut}
-                    >
-                        {isSoldOut ? "Sold Out" : `Sponsor ${vehicleName}`}
-                    </Button>
+                        <Trophy className="w-5 h-5 text-yellow-500" />
+                        Sponsors
+                    </CardTitle>
+                    <div className="flex items-center gap-2">
+                        {isOwner && onShare && (
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="border-white/20 hover:bg-white/10"
+                                onClick={onShare}
+                            >
+                                <Share2 className="w-4 h-4" />
+                            </Button>
+                        )}
+                        <Button
+                            size="sm"
+                            className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold"
+                            onClick={() => !isSoldOut && onSponsorClick()}
+                            disabled={isSoldOut}
+                        >
+                            {isSoldOut ? "Sold Out" : `Sponsor ${vehicleName}`}
+                        </Button>
+                    </div>
                 </div>
                 <div className="flex items-center justify-between text-xs text-zinc-400">
                     <span>

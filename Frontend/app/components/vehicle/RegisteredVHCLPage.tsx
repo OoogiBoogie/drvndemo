@@ -17,6 +17,8 @@ import { TokenDetails } from "./TokenDetails";
 import { BuySponsorshipModal } from "../modals/BuySponsorshipModal";
 import { UpgradeVehicleModal } from "../modals/UpgradeVehicleModal";
 import { TokenSwapModal } from "../modals/TokenSwapModal";
+import { CreateSponsorshipCollectionModal } from "../modals/CreateSponsorshipCollectionModal";
+import { useToast } from "@/app/components/ui/toast-context";
 
 interface VehicleImage {
   url: string;
@@ -112,12 +114,21 @@ export function RegisteredVHCLPage({
   isOwner = false,
   connectedPlatforms = []
 }: RegisteredVHCLPageProps) {
+  const { addToast } = useToast();
   const [showSponsorModal, setShowSponsorModal] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showSwapModal, setShowSwapModal] = useState(false);
+  const [showCreateCollectionModal, setShowCreateCollectionModal] = useState(false);
   
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [isEditingMods, setIsEditingMods] = useState(false);
+  
+  const [sponsorshipCollection, setSponsorshipCollection] = useState<{
+    contractAddress: string;
+    maxSupply: number;
+    mintPrice: number;
+    mintedCount?: number;
+  } | null>(null);
   
   const initialDescription = vehicleData?.description || "";
   const initialMods = vehicleData?.modifications || [];
@@ -155,13 +166,8 @@ export function RegisteredVHCLPage({
       change24h: 5.2,
       mcap: 45000,
     } : undefined,
-    sponsorshipCollection: vehicleData?.isUpgraded ? {
-      contractAddress: "0xsponsorship...",
-      maxSupply: 14,
-      mintPrice: 50,
-      mintedCount: 3,
-    } : undefined,
-    sponsors: vehicleData?.isUpgraded ? [
+    sponsorshipCollection: sponsorshipCollection || undefined,
+    sponsors: sponsorshipCollection ? [
       { tokenId: "1", name: "BSTR", logo: "/Cars/BSTR-Logo-Official.png", holderAddress: "0xsp1..." },
       { tokenId: "2", name: "Base", logo: "/Cars/DCWhtV4.png", holderAddress: "0xsp2..." },
       { tokenId: "3", name: "Coinbase", logo: "/Cars/DRVNLaboLogoDrk.png", holderAddress: "0xsp3..." },
@@ -199,6 +205,38 @@ export function RegisteredVHCLPage({
 
   const handleUpgradeComplete = () => {
     setShowUpgradeModal(false);
+  };
+
+  const handleCreateCollection = () => {
+    setShowCreateCollectionModal(true);
+  };
+
+  const handleCollectionCreated = (collection: {
+    contractAddress: string;
+    maxSupply: number;
+    mintPrice: number;
+    stage: number;
+  }) => {
+    setSponsorshipCollection({
+      contractAddress: collection.contractAddress,
+      maxSupply: collection.maxSupply,
+      mintPrice: collection.mintPrice,
+      mintedCount: 0,
+    });
+    setShowCreateCollectionModal(false);
+  };
+
+  const handleShareCollection = () => {
+    const text = `Looking for sponsors for my ${vehicleDisplayName}! Mint a sponsorship NFT for $${sponsorshipCollection?.mintPrice} USDC on @DRVN_VHCLS`;
+    addToast({
+      type: "info",
+      title: "Share",
+      message: "Opening share options...",
+    });
+    window.open(
+      `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`,
+      '_blank'
+    );
   };
 
   const handleShare = () => {
@@ -531,12 +569,17 @@ export function RegisteredVHCLPage({
             </CardContent>
           </Card>
 
-          {vehicle.isUpgraded && vehicle.sponsorshipCollection && (
+          {vehicle.isUpgraded && (
             <SponsorshipModule
               vehicleName={vehicle.nickname || vehicle.model}
+              vehicleTicker={vehicle.carToken?.ticker}
+              isOwner={isOwner}
+              isUpgraded={vehicle.isUpgraded}
               sponsorshipCollection={vehicle.sponsorshipCollection}
               sponsors={vehicle.sponsors}
               onSponsorClick={handleSponsorClick}
+              onCreateCollection={handleCreateCollection}
+              onShare={handleShareCollection}
             />
           )}
 
@@ -690,6 +733,18 @@ export function RegisteredVHCLPage({
             address: vehicle.carToken.address,
             ticker: vehicle.carToken.ticker,
           }}
+        />
+      )}
+
+      {vehicle.carToken && (
+        <CreateSponsorshipCollectionModal
+          isOpen={showCreateCollectionModal}
+          onClose={() => setShowCreateCollectionModal(false)}
+          vehicleId={vehicle._id}
+          vehicleName={vehicleDisplayName}
+          vehicleTicker={vehicle.carToken.ticker}
+          onCreationComplete={handleCollectionCreated}
+          connectedPlatforms={connectedPlatforms}
         />
       )}
     </div>

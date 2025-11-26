@@ -1,0 +1,36 @@
+### **3. Sponsorship NFT Collection Creation**
+
+3.1 - From the registered vehicle details page, a sponsorship module is displayed containing info about the feature and a button to create the NFT collection.
+
+3.2 - Upon clicking, a modal window opens with more details about the feature, and 3 selectable collection options, along with the tokens needed to wrap and the fee. User selects the option and clicks “continue” button.
+
+- **Stage 1:**
+    - Wrap: 1M $CRtoken + 100K $CRtoken + 10K $BSTR | $25 USDC Upgrade Fee
+    - Mint Price: $250/nft ($3,500 - $175 royalty = $3,325 to the CRNFT owner)
+- **Stage 2:**
+    - Wrap: 5M $CRtoken + 1M $CRtoken + 50K $BSTR | $100 USDC Upgrade Fee
+    - Mint Price: $1,000/nft ($14,000 - $700 royalty = $13,300 to the CRNFT owner)
+- **Stage 3:**
+    - Wrap: 10M $CRtoken + 10M $CRtoken + 100K $BSTR | $250 USDC Upgrade Fee
+    - Mint Price: $2,500/nft ($35,000 - $1,750 royalty = $33,250 to the CRNFT owner)
+- Custom Configuration: If out of scope this can be included in the next update.
+
+3.3 - User describes what they will offer their sponsors. This page includes a list of pre-checked standard options, which can be un-checked, and a custom input builder. When “+ add offer”  button is clicked two new fields are displayed. Title & Description. The user can add as many offers as they want by continuing to click the “+ add offer” button.
+
+Standard Options:
+
+- Logo decal on car
+- Mention in posts
+- Brand promotion posts
+
+3.3 - User wraps the needed tokens and pays the mint fee to create the dRyft sponsorship NFT collection with a max supply of 14 NFTs.
+
+3.4 - Upon completion a modal notification is displayed confirming success, and prompting the user to share the newly created collection on their social account. When the modal is closed the registered vehicle page reloads displaying the active sponsorship collection module. 
+
+3.5 - Within the module there is a share button they can use to post about the collection at any time.
+
+Fees: Collection creation fee + 5% of each mint + 5% of secondary market NFT sales (once sponsorship marketplace is live)
+
+Secondary Market Royalties: Royalties enforced when purchasing NFTs in the in-app marketplace. This should be 50%, with 45% going to the CRNFT account, and 5% to project treasury. This will incentivize the seller to list the NFT for 2x the mint price to break even, thereby increasing the value of the NFT with each sale. 
+
+We may want to consider implementing marketplace restrictions at the smart contract level for those that do not enforce royalties.
