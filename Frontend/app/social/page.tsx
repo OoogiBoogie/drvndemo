@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ContentFeed } from "@/app/components/social/ContentFeed";
 import { HeroHeader } from "@/app/components/ui/hero-header";
 import { Button } from "@/app/components/ui/button";

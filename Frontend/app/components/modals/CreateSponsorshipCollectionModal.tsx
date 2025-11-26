@@ -3,10 +3,9 @@
 import { useState } from "react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
-import { Checkbox } from "@/app/components/ui/checkbox";
 import { 
-    Loader2, Sparkles, Trophy, Check, Plus, X, 
-    ChevronRight, Share2, ExternalLink, Coins, Car
+    Loader2, Trophy, Check, Plus, X, 
+    ChevronRight, Share2, ExternalLink, Coins
 } from "lucide-react";
 import { useToast } from "@/app/components/ui/toast-context";
 
@@ -112,11 +111,9 @@ function formatNumber(num: number): string {
 export function CreateSponsorshipCollectionModal({
     isOpen,
     onClose,
-    vehicleId,
     vehicleName,
     vehicleTicker,
     onCreationComplete,
-    connectedPlatforms = [],
 }: CreateSponsorshipCollectionModalProps) {
     const { addToast } = useToast();
     const [step, setStep] = useState<Step>("select-stage");
@@ -358,11 +355,16 @@ export function CreateSponsorshipCollectionModal({
                                                 : "bg-white/5 border-2 border-transparent hover:bg-white/10"
                                         }`}
                                     >
-                                        <Checkbox
-                                            checked={offer.checked}
-                                            onCheckedChange={() => handleToggleStandardOffer(offer.id)}
-                                            className="w-5 h-5 border-2 border-white/30 data-[state=checked]:bg-yellow-500 data-[state=checked]:border-yellow-500"
-                                        />
+                                        <div 
+                                            onClick={() => handleToggleStandardOffer(offer.id)}
+                                            className={`w-5 h-5 rounded border-2 flex items-center justify-center cursor-pointer transition-all ${
+                                                offer.checked 
+                                                    ? "bg-yellow-500 border-yellow-500" 
+                                                    : "border-white/30"
+                                            }`}
+                                        >
+                                            {offer.checked && <Check className="w-3 h-3 text-white" />}
+                                        </div>
                                         <span className="text-white font-medium text-sm">{offer.label}</span>
                                     </label>
                                 ))}

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/app/components/ui/button";
-import { Trophy, Plus, Sparkles, Users, DollarSign, Share2, Settings, Car, Zap, TrendingUp, ChevronRight } from "lucide-react";
+import { Trophy, Plus, Sparkles, DollarSign, Share2, Settings, Car, Zap, TrendingUp, ChevronRight } from "lucide-react";
 import Image from "next/image";
 
 interface Sponsor {

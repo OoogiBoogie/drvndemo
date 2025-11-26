@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Upload, Save, Loader2, Check, Trash2, Plus, Link2, Instagram, Youtube, Settings, ExternalLink } from "lucide-react";
+import { X, Upload, Save, Loader2, Trash2, Plus, Link2, Instagram, Youtube, Settings, ExternalLink } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Textarea } from "@/app/components/ui/textarea";

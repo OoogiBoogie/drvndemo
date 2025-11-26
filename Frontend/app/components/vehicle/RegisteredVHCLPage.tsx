@@ -7,7 +7,7 @@ import { Input } from "@/app/components/ui/input";
 import { Textarea } from "@/app/components/ui/textarea";
 import { 
   ArrowLeft, Users, Zap, Coins, TrendingUp, Shield, Share2, 
-  Plus, X, Edit2, Save, ImagePlus, Trash2, Wrench 
+  Plus, X, Edit2, Save, ImagePlus, Wrench 
 } from "lucide-react";
 import Image from "next/image";
 import { SwipeableGallery } from "./SwipeableGallery";
@@ -129,7 +129,7 @@ export function RegisteredVHCLPage({
   const [showProfileEditor, setShowProfileEditor] = useState(false);
   const [showSponsorDetailsModal, setShowSponsorDetailsModal] = useState(false);
   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState<number | undefined>(undefined);
+  const [, setSelectedSlot] = useState<number | undefined>(undefined);
   const [selectedSponsor, setSelectedSponsor] = useState<Sponsor | null>(null);
   const [viewingSponsor, setViewingSponsor] = useState<FullSponsor | null>(null);
   
@@ -249,10 +249,6 @@ export function RegisteredVHCLPage({
     : [];
   const vehicleDisplayName = vehicle.nickname || `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
 
-  const handleSponsorClick = () => {
-    setShowSponsorModal(true);
-  };
-
   const handleUpgradeComplete = () => {
     setShowUpgradeModal(false);
   };
@@ -330,7 +326,7 @@ export function RegisteredVHCLPage({
     setShowSponsorDetailsModal(true);
   };
 
-  const handleSaveProfile = (profile: Partial<Sponsor>) => {
+  const handleSaveProfile = () => {
     setShowProfileEditor(false);
     setSelectedSponsor(null);
   };

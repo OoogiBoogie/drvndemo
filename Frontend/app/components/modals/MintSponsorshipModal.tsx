@@ -24,7 +24,6 @@ type Step = "select" | "confirm" | "processing" | "success";
 export function MintSponsorshipModal({
   isOpen,
   onClose,
-  vehicleId,
   vehicleName,
   vehicleImage,
   mintPrice,
