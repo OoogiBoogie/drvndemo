@@ -3,13 +3,15 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
-import { ArrowLeft, Users } from "lucide-react";
+import { ArrowLeft, Users, Zap, Coins, TrendingUp, Shield, Share2 } from "lucide-react";
 import Image from "next/image";
 import { SwipeableGallery } from "./SwipeableGallery";
 import { CarProfileCard } from "./CarProfileCard";
 import { SponsorshipModule } from "./SponsorshipModule";
 import { TokenDetails } from "./TokenDetails";
 import { BuySponsorshipModal } from "../modals/BuySponsorshipModal";
+import { UpgradeVehicleModal } from "../modals/UpgradeVehicleModal";
+import { TokenSwapModal } from "../modals/TokenSwapModal";
 
 interface VehicleImage {
   url: string;
@@ -72,12 +74,21 @@ interface RegisteredVHCLPageProps {
   vehicleId: string;
   onBack: () => void;
   currentUserAddress?: string;
+  isOwner?: boolean;
+  connectedPlatforms?: string[];
 }
 
-export function RegisteredVHCLPage({ vehicleId, onBack }: RegisteredVHCLPageProps) {
+export function RegisteredVHCLPage({ 
+  vehicleId, 
+  onBack, 
+  currentUserAddress,
+  isOwner = false,
+  connectedPlatforms = []
+}: RegisteredVHCLPageProps) {
   const [showSponsorModal, setShowSponsorModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showSwapModal, setShowSwapModal] = useState(false);
 
-  // Mock data - will be replaced with API call
   const vehicle: RegisteredVehicle = {
     _id: vehicleId,
     nickname: "Project Midnight",
@@ -99,7 +110,7 @@ export function RegisteredVHCLPage({ vehicleId, onBack }: RegisteredVHCLPageProp
     },
     followerCount: 1234,
     carToken: {
-      address: "0x1234...5678",
+      address: "0x1234567890abcdef1234567890abcdef12345678",
       ticker: "MDNGHT",
       price: 0.000045,
       change24h: 5.2,
@@ -112,11 +123,11 @@ export function RegisteredVHCLPage({ vehicleId, onBack }: RegisteredVHCLPageProp
       mintedCount: 3,
     },
     sponsors: [
-      { tokenId: "1", name: "BSTR", logo: "/icons/bstr-icon.svg", holderAddress: "0xsp1..." },
-      { tokenId: "2", name: "Base", logo: "/icons/base-icon.svg", holderAddress: "0xsp2..." },
-      { tokenId: "3", name: "Coinbase", logo: "/icons/coinbase-icon.svg", holderAddress: "0xsp3..." },
+      { tokenId: "1", name: "BSTR", logo: "/Cars/BSTR-Logo-Official.png", holderAddress: "0xsp1..." },
+      { tokenId: "2", name: "Base", logo: "/Cars/DCWhtV4.png", holderAddress: "0xsp2..." },
+      { tokenId: "3", name: "Coinbase", logo: "/Cars/DRVNLaboLogoDrk.png", holderAddress: "0xsp3..." },
     ],
-    ownerAddress: "0x1234...5678",
+    ownerAddress: currentUserAddress || "0x1234...5678",
   };
 
   const taggedPosts: TaggedPost[] = [
@@ -141,31 +152,54 @@ export function RegisteredVHCLPage({ vehicleId, onBack }: RegisteredVHCLPageProp
   const availableSlots = vehicle.sponsorshipCollection 
     ? vehicle.sponsorshipCollection.maxSupply - (vehicle.sponsorshipCollection.mintedCount || 0)
     : 0;
+  const vehicleDisplayName = vehicle.nickname || `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
 
   const handleSponsorClick = () => {
     setShowSponsorModal(true);
   };
 
+  const handleUpgradeComplete = () => {
+    setShowUpgradeModal(false);
+  };
+
+  const handleShare = () => {
+    const text = vehicle.carToken
+      ? `Check out ${vehicleDisplayName} on @DRVN_VHCLS! Trading as $${vehicle.carToken.ticker} 🚗`
+      : `Check out ${vehicleDisplayName} on @DRVN_VHCLS! 🚗`;
+    
+    window.open(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`,
+      '_blank'
+    );
+  };
+
   return (
     <div className="space-y-6">
-      {/* Back Button */}
-      <Button
-        variant="ghost"
-        onClick={onBack}
-        className="text-zinc-400 hover:text-white hover:bg-white/10 -ml-2"
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to Garage
-      </Button>
+      <div className="flex items-center justify-between">
+        <Button
+          variant="ghost"
+          onClick={onBack}
+          className="text-zinc-400 hover:text-white hover:bg-white/10 -ml-2"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Garage
+        </Button>
+        
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleShare}
+          className="text-zinc-400 hover:text-white hover:bg-white/10"
+        >
+          <Share2 className="w-4 h-4 mr-2" />
+          Share
+        </Button>
+      </div>
 
-      {/* Module 1: Swipeable Gallery */}
       <SwipeableGallery images={vehicle.images} />
 
-      {/* Two Column Layout for Desktop */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Column */}
         <div className="space-y-6">
-          {/* Module 2: Car Profile Card */}
           <CarProfileCard
             vehicle={{
               nickname: vehicle.nickname,
@@ -186,7 +220,6 @@ export function RegisteredVHCLPage({ vehicleId, onBack }: RegisteredVHCLPageProp
             }}
           />
 
-          {/* Module 3: Sponsorship Module */}
           {vehicle.isUpgraded && vehicle.sponsorshipCollection && (
             <SponsorshipModule
               vehicleName={vehicle.nickname || vehicle.model}
@@ -195,11 +228,54 @@ export function RegisteredVHCLPage({ vehicleId, onBack }: RegisteredVHCLPageProp
               onSponsorClick={handleSponsorClick}
             />
           )}
+
+          {!vehicle.isUpgraded && isOwner && (
+            <Card className="bg-gradient-to-br from-primary/20 to-yellow-500/10 border-primary/30 backdrop-blur-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-yellow-500" />
+                  Upgrade to Monetize
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-zinc-300 mb-4">
+                  Create a tradeable token for your vehicle and unlock sponsorship opportunities.
+                </p>
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="flex items-center gap-2 text-xs text-zinc-400">
+                    <Coins className="w-4 h-4 text-primary" />
+                    <span>ERC20 Car Token</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-zinc-400">
+                    <Users className="w-4 h-4 text-primary" />
+                    <span>14 Sponsor Slots</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-zinc-400">
+                    <TrendingUp className="w-4 h-4 text-primary" />
+                    <span>Trading Revenue</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-zinc-400">
+                    <Shield className="w-4 h-4 text-primary" />
+                    <span>10% Creator Reserve</span>
+                  </div>
+                </div>
+                <div className="flex items-baseline gap-2 mb-4">
+                  <span className="text-2xl font-bold text-primary">$5</span>
+                  <span className="text-zinc-400">+ 5% token supply</span>
+                </div>
+                <Button 
+                  onClick={() => setShowUpgradeModal(true)}
+                  className="w-full bg-primary hover:bg-primary/90 text-black font-bold"
+                >
+                  <Zap className="w-4 h-4 mr-2" />
+                  Upgrade Vehicle
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
-        {/* Right Column */}
         <div className="space-y-6">
-          {/* Module 4: Token Details */}
           {vehicle.carToken && (
             <TokenDetails
               token={{
@@ -209,10 +285,11 @@ export function RegisteredVHCLPage({ vehicleId, onBack }: RegisteredVHCLPageProp
                 mcap: vehicle.carToken.mcap,
                 change24h: vehicle.carToken.change24h,
               }}
+              vehicleName={vehicleDisplayName}
+              onSwapClick={() => setShowSwapModal(true)}
             />
           )}
 
-          {/* Module 5: Content Feed */}
           <Card className="bg-black/40 border-white/10 backdrop-blur-md">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
@@ -270,7 +347,6 @@ export function RegisteredVHCLPage({ vehicleId, onBack }: RegisteredVHCLPageProp
         </div>
       </div>
 
-      {/* Sponsor Modal */}
       <BuySponsorshipModal
         isOpen={showSponsorModal}
         onClose={() => setShowSponsorModal(false)}
@@ -284,6 +360,27 @@ export function RegisteredVHCLPage({ vehicleId, onBack }: RegisteredVHCLPageProp
           setShowSponsorModal(false);
         }}
       />
+
+      <UpgradeVehicleModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        vehicleId={vehicle._id}
+        vehicleName={vehicleDisplayName}
+        vehicleImage={nftImage}
+        onUpgradeComplete={() => handleUpgradeComplete()}
+        connectedPlatforms={connectedPlatforms}
+      />
+
+      {vehicle.carToken && (
+        <TokenSwapModal
+          isOpen={showSwapModal}
+          onClose={() => setShowSwapModal(false)}
+          token={{
+            address: vehicle.carToken.address,
+            ticker: vehicle.carToken.ticker,
+          }}
+        />
+      )}
     </div>
   );
 }
