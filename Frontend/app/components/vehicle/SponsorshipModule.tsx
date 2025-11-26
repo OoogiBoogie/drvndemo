@@ -170,7 +170,7 @@ export function SponsorshipModule({
                                 className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold shadow-lg shadow-yellow-500/20"
                                 onClick={() => onSponsorClick()}
                             >
-                                Become a Sponsor
+                                Sponsor {vehicleName}
                             </Button>
                         )}
                     </div>
