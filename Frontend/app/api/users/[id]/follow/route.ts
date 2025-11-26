@@ -47,6 +47,7 @@ export async function POST(
 
         if (action === "follow") {
             // Check if already following
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             if (followerUser.following.includes(targetUserId as any)) {
                 return NextResponse.json(
                     { error: "Already following this user" },
@@ -55,9 +56,11 @@ export async function POST(
             }
 
             // Add to following/followers
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             followerUser.following.push(targetUserId as any);
             followerUser.followingCount = (followerUser.followingCount || 0) + 1;
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             targetUser.followers.push(followerId as any);
             targetUser.followerCount = (targetUser.followerCount || 0) + 1;
         } else if (action === "unfollow") {

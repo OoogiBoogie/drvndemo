@@ -7,7 +7,7 @@ import { Button } from "@/app/components/ui/button";
 import { Heart, MessageCircle, Repeat, Share, Car, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { SocialPost, SocialPlatform } from "./types";
+import { SocialPost } from "./types";
 
 interface PostCardProps {
     post: SocialPost;

@@ -24,7 +24,7 @@ interface DigitalCollectiblesProps {
 }
 
 export function DigitalCollectibles({ profileAddress, isOwner = true }: DigitalCollectiblesProps) {
-    const { address: connectedAddress, isConnected } = useAccount();
+    const { address: connectedAddress } = useAccount();
     
     // For public profile viewing, use the profile's address
     // Only fall back to connected wallet if this is the owner's view (no profileAddress specified)

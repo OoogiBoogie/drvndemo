@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
 import { Textarea } from "@/app/components/ui/textarea";
-import { Loader2, CheckCircle, AlertCircle, Image as ImageIcon, Tag, Handshake, Check, Send, Globe } from "lucide-react";
+import { Loader2, CheckCircle, AlertCircle, Image as ImageIcon, Tag, Handshake, Check, Globe } from "lucide-react";
 import Image from "next/image";
 import { SocialPost, CrossPostSettings, SocialPlatform } from "@/app/components/social/types";
 

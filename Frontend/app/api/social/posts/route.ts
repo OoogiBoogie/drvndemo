@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
         const limit = parseInt(searchParams.get("limit") || "20");
         const skip = parseInt(searchParams.get("skip") || "0");
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const filter: any = {};
         if (vehicleId) filter.taggedVehicles = vehicleId;
         if (userId) filter.author = userId;

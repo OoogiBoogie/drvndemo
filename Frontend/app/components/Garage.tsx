@@ -25,7 +25,7 @@ import { DigitalCollectibles } from "./profile/DigitalCollectibles";
 import { RegisterVehicleModal } from "./modals/RegisterVehicleModal";
 import { VehicleDetailModal } from "./modals/VehicleDetailModal";
 import type { VehicleRegistrationResult } from "@/hooks/useVehicleLifecycle";
-import { vehicles, type Vehicle } from "@/app/data/vehicleData";
+import { type Vehicle } from "@/app/data/vehicleData";
 
 /**
  * Garage Component (Public Profile)

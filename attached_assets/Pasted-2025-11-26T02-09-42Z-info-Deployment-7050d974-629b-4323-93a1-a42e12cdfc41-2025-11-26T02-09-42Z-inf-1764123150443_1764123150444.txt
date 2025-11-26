@@ -1,0 +1,108 @@
+2025-11-26T02:09:42Z info: Deployment: 7050d974-629b-4323-93a1-a42e12cdfc41
+2025-11-26T02:09:42Z info: Build: e12675b8-b152-46c8-8ae1-40fb8dd55f21
+2025-11-26T02:09:42Z info: Connecting to builder
+2025-11-26T02:09:43Z info: Builder connected
+2025-11-26T02:09:43Z info: Installing packages
+--> npm install
+
+
+> drvn-mini-app-monorepo@0.1.0 prepare
+> husky install
+
+
+husky - install command is DEPRECATED
+
+
+added 56 packages, and audited 57 packages in 3s
+
+npm notice
+npm notice New major version of npm available! 10.9.2 -> 11.6.4
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.6.4
+npm notice To update run: npm install -g npm@11.6.4
+npm notice
+
+2025-11-26T02:09:46Z info: Starting Build
+
+> drvn-mini-app@0.1.0 build
+> next build
+
+
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /home/runner/workspace/package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * /home/runner/workspace/Frontend/package-lock.json
+
+
+   ▲ Next.js 15.5.2
+
+   Creating an optimized production build ...
+
+ ✓ Compiled successfully in 68s
+
+   Linting and checking validity of types ...
+
+
+Failed to compile.
+
+./app/api/social/posts/route.ts
+25:23  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/users/[id]/follow/route.ts
+50:65  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+58:57  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+61:53  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/users/[id]/profile/route.ts
+58:27  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/components/DRVNDashboard.tsx
+5:8  Error: 'Link' is defined but never used.  @typescript-eslint/no-unused-vars
+53:10  Error: 'CreatePostButton' is defined but never used.  @typescript-eslint/no-unused-vars
+58:10  Error: 'VehicleDetailModal' is defined but never used.  @typescript-eslint/no-unused-vars
+60:10  Error: 'vehicles' is defined but never used.  @typescript-eslint/no-unused-vars
+60:25  Error: 'Vehicle' is defined but never used.  @typescript-eslint/no-unused-vars
+64:9  Error: 'router' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+108:11  Error: 'canAccessProtectedFeature' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+369:28  Error: 'page' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/components/Garage.tsx
+28:10  Error: 'vehicles' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/components/modals/BuySponsorshipModal.tsx
+82:18  Error: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/components/modals/CreatePostModal.tsx
+7:88  Error: 'Send' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/components/modals/EditProfileModal.tsx
+92:18  Error: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/components/modals/ManageSponsorshipModal.tsx
+142:18  Error: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/components/modals/RegisterVehicleModal.tsx
+24:52  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+59:18  Error: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+118:18  Error: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/components/modals/UpgradeVehicleModal.tsx
+116:18  Error: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/components/profile/DigitalCollectibles.tsx
+27:40  Error: 'isConnected' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/components/profile/UserProfileCard.tsx
+6:10  Error: 'Badge' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/components/profile/VHCLRegistry.tsx
+186:107  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+
+./app/components/social/PostCard.tsx
+10:22  Error: 'SocialPlatform' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/components/ui/textarea.tsx
+6:18  Error: An interface declaring no members is equivalent to its supertype.  @typescript-eslint/no-empty-object-type
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules

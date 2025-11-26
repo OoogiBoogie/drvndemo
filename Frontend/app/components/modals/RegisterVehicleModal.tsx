@@ -21,6 +21,7 @@ type Step = "upload" | "review" | "confirm" | "processing" | "success";
 export function RegisterVehicleModal({ isOpen, onClose, userId, onSuccess }: RegisterVehicleModalProps) {
     const [step, setStep] = useState<Step>("upload");
     const [images, setImages] = useState<File[]>([]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [decodedData, setDecodedData] = useState<any>(null);
     const [nickname, setNickname] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -56,7 +57,7 @@ export function RegisterVehicleModal({ isOpen, onClose, userId, onSuccess }: Reg
 
             setDecodedData(data);
             setStep("review");
-        } catch (err) {
+        } catch (_err) {
             setError("Failed to decode VIN. Please try again or enter manually.");
         } finally {
             setIsLoading(false);
@@ -115,7 +116,7 @@ export function RegisterVehicleModal({ isOpen, onClose, userId, onSuccess }: Reg
             onSuccess?.(mintedVehicle);
 
             setStep("success");
-        } catch (err) {
+        } catch (_err) {
             setError("Registration failed. Please try again.");
             setStep("confirm");
         } finally {

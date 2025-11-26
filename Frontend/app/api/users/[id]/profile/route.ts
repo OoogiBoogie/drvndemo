@@ -55,6 +55,7 @@ export async function PATCH(
         const body = await req.json();
         const { displayName, bio, profileImage, socialLinks } = body;
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const updateData: any = {};
         if (displayName !== undefined) updateData.displayName = displayName;
         if (bio !== undefined) updateData.bio = bio;

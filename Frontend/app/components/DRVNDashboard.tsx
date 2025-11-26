@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { MarketplaceCard, marketplaceItems } from "./ui/marketplace-card";
 import { TopStoriesSection } from "./ui/top-stories-section";
@@ -44,24 +42,19 @@ import { useFarcasterSDK } from "../../hooks/useFarcasterSDK";
 import { useAutoWalletAuth } from "../../hooks/useAutoWalletAuth";
 import { useMiniKitNavigation } from "../../hooks/useMiniKitNavigation";
 import { useOptimizedOnboarding } from "../../hooks/useOptimizedOnboarding";
-// import { ImmediateValueDisplay } from "./ImmediateValueDisplay";
 import { ProgressiveActionButton } from "./ProgressiveActionButton";
 import { ConnectButton } from "./web3/ConnectButton";
 import TotalKeysMinted from "./web3/TotalKeysMinted";
 import { HeroHeader } from "./ui/hero-header";
 import { ContentFeed } from "./social/ContentFeed";
-import { CreatePostButton } from "./social/CreatePostButton";
 import { CreatePostModal } from "./modals/CreatePostModal";
 import { SocialPost, PlatformConnection, CrossPostSettings } from "./social/types";
 import { MOCK_SOCIAL_POSTS } from "./social/mockPosts";
 import { Globe, Check, Plus, Zap, Users, Shield, ExternalLink, Sparkles, Trophy } from "lucide-react";
-import { VehicleDetailModal } from "./modals/VehicleDetailModal";
 import { MarketplaceDetailModal } from "./modals/MarketplaceDetailModal";
-import { vehicles, type Vehicle } from "@/app/data/vehicleData";
 
 export function DRVNDashboard() {
   const { address } = useAccount();
-  const router = useRouter();
   const [showNotification, setShowNotification] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -105,7 +98,7 @@ export function DRVNDashboard() {
   const { handleExternalLink, handleShare } = useMiniKitNavigation();
 
   // Optimized onboarding
-  const { canAccessProtectedFeature, isLoading: isContextLoading } =
+  const { isLoading: isContextLoading } =
     useOptimizedOnboarding();
 
   // Social Hub handlers
