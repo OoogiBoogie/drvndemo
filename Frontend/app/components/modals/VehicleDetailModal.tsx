@@ -138,7 +138,7 @@ export function VehicleDetailModal({ isOpen, onClose, vehicle, isOwner = false }
     <>
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
         <DialogContent 
-          className="max-w-6xl w-[95vw] h-[90vh] p-0 bg-black/60 backdrop-blur-2xl border border-white/10 overflow-hidden shadow-2xl shadow-black/50"
+          className="max-w-6xl w-[95vw] h-[90vh] p-0 bg-white/[0.03] backdrop-blur-2xl border border-white/10 overflow-hidden shadow-2xl shadow-black/50"
           aria-describedby="vehicle-detail-description"
         >
           {/* Accessibility: Hidden title and description for screen readers */}
@@ -248,99 +248,114 @@ export function VehicleDetailModal({ isOpen, onClose, vehicle, isOwner = false }
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Left Column */}
               <div className="space-y-6">
-                {/* Module 2: Car Profile Card with Sponsor Preview */}
-                <Card className="bg-white/5 backdrop-blur-lg border-white/10 rounded-2xl shadow-xl">
-                  <CardContent className="p-4 md:p-6">
-                    <div className="flex flex-col sm:flex-row gap-4 items-start">
-                      {/* NFT Image */}
-                      <div className="flex-shrink-0 relative">
-                        <Avatar className="w-20 h-20 md:w-24 md:h-24 border-2 border-white/20 rounded-2xl shadow-lg">
-                          <AvatarImage src={nftImage} className="object-cover" />
-                          <AvatarFallback className="bg-white/10 backdrop-blur rounded-2xl text-xs">
-                            {vehicle.year}
-                          </AvatarFallback>
-                        </Avatar>
-                        {vehicle.isUpgraded && vehicle.carToken && (
-                          <div className="absolute -bottom-2 -right-2 bg-primary/90 backdrop-blur-sm text-black text-[10px] font-bold px-2 py-0.5 rounded-full border border-primary/50 shadow-lg">
-                            ${vehicle.carToken.ticker}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Info */}
-                      <div className="flex-grow space-y-2 w-full">
-                        <div>
-                          <h3 className="text-xl font-bold text-white">
-                            {vehicle.nickname || `${vehicle.year} ${vehicle.model}`}
-                          </h3>
-                          <p className="text-sm text-zinc-400">
-                            {vehicle.year} {vehicle.make} {vehicle.model}
-                          </p>
+                {/* Module 2: Car Profile Card - Clean Layout */}
+                <Card className="bg-white/5 backdrop-blur-lg border-white/10 rounded-2xl shadow-xl overflow-hidden">
+                  <CardContent className="p-0">
+                    {/* Vehicle Identity Section */}
+                    <div className="p-5 md:p-6">
+                      <div className="flex items-start gap-5">
+                        {/* Large Vehicle Avatar */}
+                        <div className="flex-shrink-0">
+                          <Avatar className="w-28 h-28 md:w-32 md:h-32 border-2 border-white/10 rounded-2xl shadow-xl">
+                            <AvatarImage src={nftImage} className="object-cover" />
+                            <AvatarFallback className="bg-white/5 backdrop-blur rounded-2xl text-lg font-bold text-white/50">
+                              {vehicle.year}
+                            </AvatarFallback>
+                          </Avatar>
                         </div>
 
-                        {/* Owner & Location */}
-                        <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-400">
-                          {vehicle.owner && (
-                            <div className="flex items-center gap-2">
-                              <Avatar className="w-5 h-5">
-                                <AvatarImage src={vehicle.owner.avatar} />
-                                <AvatarFallback>{vehicle.owner.name[0]}</AvatarFallback>
-                              </Avatar>
-                              <span>@{vehicle.owner.username || vehicle.owner.name}</span>
+                        {/* Vehicle Info - Clean vertical stack */}
+                        <div className="flex-grow min-w-0 space-y-3">
+                          {/* Name & Token */}
+                          <div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="text-2xl font-bold text-white truncate">
+                                {vehicle.nickname || vehicle.model}
+                              </h3>
+                              {vehicle.isUpgraded && vehicle.carToken && (
+                                <Badge className="bg-primary/20 text-primary border border-primary/30 text-xs">
+                                  ${vehicle.carToken.ticker}
+                                </Badge>
+                              )}
                             </div>
-                          )}
-                          {vehicle.location && (
-                            <span>📍 {vehicle.location}</span>
-                          )}
+                            <p className="text-sm text-zinc-400 mt-1">
+                              {vehicle.year} {vehicle.make} {vehicle.model}
+                            </p>
+                          </div>
+
+                          {/* Registry ID */}
                           {vehicle.registryId && (
-                            <Badge variant="secondary" className="bg-white/10 backdrop-blur-sm text-white/80 text-[10px] border border-white/10">
-                              #{vehicle.registryId}
+                            <Badge variant="secondary" className="bg-white/5 backdrop-blur-sm text-white/60 text-xs border border-white/10 w-fit">
+                              Registry #{vehicle.registryId}
                             </Badge>
                           )}
-                        </div>
 
-                        {/* Sponsor Preview - Only if upgraded */}
-                        {vehicle.isUpgraded && vehicle.sponsorshipCollection && (
-                          <div className="pt-3 border-t border-white/10 mt-3">
-                            <p className="text-xs text-zinc-500 mb-2">Sponsored by</p>
-                            <div className="flex items-center gap-2">
-                              {/* Overlapping sponsor logos (max 5) */}
-                              <div className="flex -space-x-2">
-                                {vehicle.sponsors.slice(0, 5).map((sponsor, i) => (
-                                  <div
-                                    key={sponsor.tokenId}
-                                    className="w-8 h-8 rounded-full bg-zinc-800 border-2 border-zinc-950 flex items-center justify-center overflow-hidden"
-                                    style={{ zIndex: 5 - i }}
-                                  >
-                                    {sponsor.logo ? (
-                                      <Image src={sponsor.logo} alt={sponsor.name || ""} width={32} height={32} className="object-cover" />
-                                    ) : (
-                                      <span className="text-[10px] text-white font-bold">
-                                        {sponsor.name?.substring(0, 2) || `S${i + 1}`}
-                                      </span>
-                                    )}
-                                  </div>
-                                ))}
-                                {/* Overflow count */}
-                                {vehicle.sponsors.length > 5 && (
-                                  <div className="w-8 h-8 rounded-full bg-zinc-700 border-2 border-zinc-950 flex items-center justify-center">
-                                    <span className="text-[10px] text-white font-bold">
-                                      +{vehicle.sponsors.length - 5}
+                          {/* Location */}
+                          {vehicle.location && (
+                            <p className="text-sm text-zinc-500 flex items-center gap-1.5">
+                              <span className="text-base">📍</span> {vehicle.location}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Owner Section - Separate row */}
+                    {vehicle.owner && (
+                      <div className="px-5 md:px-6 py-4 border-t border-white/5 bg-white/[0.02]">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="w-10 h-10 border border-white/10">
+                              <AvatarImage src={vehicle.owner.avatar} />
+                              <AvatarFallback className="bg-white/10 text-sm">{vehicle.owner.name[0]}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="text-sm font-medium text-white">{vehicle.owner.name}</p>
+                              <p className="text-xs text-zinc-500">@{vehicle.owner.username || vehicle.owner.name}</p>
+                            </div>
+                          </div>
+                          <Button variant="outline" size="sm" className="border-white/10 hover:bg-white/5 text-xs rounded-full">
+                            Follow
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Sponsors Preview Section - Separate row */}
+                    {vehicle.isUpgraded && vehicle.sponsorshipCollection && vehicle.sponsors.length > 0 && (
+                      <div className="px-5 md:px-6 py-4 border-t border-white/5">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs text-zinc-500 uppercase tracking-wide">Sponsors</span>
+                            <div className="flex -space-x-2">
+                              {vehicle.sponsors.slice(0, 4).map((sponsor, i) => (
+                                <div
+                                  key={sponsor.tokenId}
+                                  className="w-7 h-7 rounded-full bg-white/10 border border-white/20 flex items-center justify-center overflow-hidden"
+                                  style={{ zIndex: 4 - i }}
+                                >
+                                  {sponsor.logo ? (
+                                    <Image src={sponsor.logo} alt={sponsor.name || ""} width={28} height={28} className="object-cover" />
+                                  ) : (
+                                    <span className="text-[9px] text-white/70 font-medium">
+                                      {sponsor.name?.substring(0, 2) || `S${i + 1}`}
                                     </span>
-                                  </div>
-                                )}
-                              </div>
-                              {/* Remaining slots */}
-                              {availableSlots > 0 && (
-                                <span className="text-xs text-primary font-semibold">
-                                  | {availableSlots} remaining
-                                </span>
+                                  )}
+                                </div>
+                              ))}
+                              {vehicle.sponsors.length > 4 && (
+                                <div className="w-7 h-7 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
+                                  <span className="text-[9px] text-white/70 font-medium">+{vehicle.sponsors.length - 4}</span>
+                                </div>
                               )}
                             </div>
                           </div>
-                        )}
+                          {availableSlots > 0 && (
+                            <span className="text-xs text-primary/80">{availableSlots} slots available</span>
+                          )}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </CardContent>
                 </Card>
 
