@@ -1,0 +1,25 @@
+## Vehicle Page
+
+I assume this page is what a user sees when they click on a specific vehicle asset. We currently have a page that is specifically for our RWA collection cars. Let’s focus on tailoring this one for VHCL Registry cars.
+
+Must have an owner view and a user view so buttons and modules are displayed differently based on who’s viewing the page. These considerations are spelled out according to their associated section.
+
+- Top bar
+    - Change “Back to Garage” to just “Back” as the user may not access this page strictly from the garage.
+- Hero image carousel: Make sure that it is properly sized for mobile as a horizontal image in 2:1 ratio. Allow for swipe navigation.
+    - Owner view includes the Edit Vehicle button where they can upload more images, change the car details, and set the associated social links.
+    - User view does not display the Edit Vehicle button
+- Title module: This is the content that’s directly below the images. I would like to combine it with the vehicle token module, with the NFT image, vehicle title, and vehicle token on the left, with the token details on the right.
+    - Add the owner information below the vehicle token ticker. This should be a clickable object that displays the car owner’s PFP, username, and abbreviated wallet address. When clicked it opens the user’s public Garage profile.
+    - Below the owner info display social icons for accounts that are associated with the car. These are editable by the owner.
+- Sponsorship module: This will come after the aforementioned modules.
+    - Owner view
+        - Sponsorship Module: Short title and description with “Learn More” and “Enable Sponsorships” buttons. Learn more opens a modal window that explains the purpose and process of purchasing the sponsorship upgrade.
+        - If activated, show the same view as the user, but include an edit button so the owner can update the sponsorship details.
+    - User view
+        - If no sponsorships are available, do not display the module at all.
+        - If sponsorships are activated, display the sponsorship stats and a 7 x 2 grid of the sponsor logos and/or unclaimed sponsorship slots.
+            - Stats:
+                - Available sponsorships: “X of 14 Available”
+                - Price Tier: 1 through 3 or “Custom” - Include a clickable info icon that opens a modal window with a breakdown of the cost of the sponsorship. USDC fee + Wrap (BSTR + Vehicle Token)
+                - Sponsorship “Offer” button. When clicked a modal window is displayed that explains what the car owner is willing to offer to their sponsors.

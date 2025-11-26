@@ -12,6 +12,8 @@ interface SwipeableGalleryProps {
 
 export function SwipeableGallery({ images }: SwipeableGalleryProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [touchStartX, setTouchStartX] = useState<number | null>(null);
+    const [touchEndX, setTouchEndX] = useState<number | null>(null);
 
     const nextSlide = () => {
         setCurrentIndex((prev) => (prev + 1) % images.length);
@@ -21,16 +23,42 @@ export function SwipeableGallery({ images }: SwipeableGalleryProps) {
         setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
     };
 
+    const handleTouchStart = (e: React.TouchEvent) => {
+        setTouchStartX(e.touches[0].clientX);
+        setTouchEndX(null);
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        setTouchEndX(e.touches[0].clientX);
+    };
+
+    const handleTouchEnd = () => {
+        if (touchStartX === null || touchEndX === null) return;
+        const distance = touchStartX - touchEndX;
+        if (distance > 50) {
+            nextSlide();
+        } else if (distance < -50) {
+            prevSlide();
+        }
+        setTouchStartX(null);
+        setTouchEndX(null);
+    };
+
     if (!images || images.length === 0) {
         return (
-            <div className="w-full aspect-video bg-zinc-900 rounded-lg flex items-center justify-center text-zinc-600">
+            <div className="w-full aspect-[2/1] bg-zinc-900 rounded-lg flex items-center justify-center text-zinc-600">
                 No Images Available
             </div>
         );
     }
 
     return (
-        <div className="relative w-full aspect-video group rounded-lg overflow-hidden border border-white/10 bg-black">
+        <div 
+            className="relative w-full aspect-[2/1] group rounded-xl overflow-hidden border border-white/10 bg-black"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+        >
             {/* Main Image */}
             <div className="relative w-full h-full">
                 <Image

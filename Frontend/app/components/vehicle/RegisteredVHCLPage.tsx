@@ -11,9 +11,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { SwipeableGallery } from "./SwipeableGallery";
-import { CarProfileCard } from "./CarProfileCard";
+import { VehicleTitleModule } from "./VehicleTitleModule";
 import { SponsorshipModule } from "./SponsorshipModule";
-import { TokenDetails } from "./TokenDetails";
 import { BuySponsorshipModal } from "../modals/BuySponsorshipModal";
 import { UpgradeVehicleModal } from "../modals/UpgradeVehicleModal";
 import { TokenSwapModal } from "../modals/TokenSwapModal";
@@ -36,6 +35,15 @@ interface Sponsor {
   logo?: string;
   name?: string;
   holderAddress: string;
+}
+
+interface SocialLinks {
+  x?: string;
+  instagram?: string;
+  youtube?: string;
+  tiktok?: string;
+  farcaster?: string;
+  base?: string;
 }
 
 interface RegisteredVehicle {
@@ -71,6 +79,7 @@ interface RegisteredVehicle {
   };
   sponsors: Sponsor[];
   ownerAddress: string;
+  socialLinks?: SocialLinks;
 }
 
 interface TaggedPost {
@@ -406,7 +415,7 @@ export function RegisteredVHCLPage({
           className="text-zinc-400 hover:text-white hover:bg-white/10 -ml-2"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Garage
+          Back
         </Button>
         
         <div className="flex items-center gap-2">
@@ -502,27 +511,41 @@ export function RegisteredVHCLPage({
         </Card>
       )}
 
+      {/* Vehicle Title Module - Combined Title + Token Details */}
+      <VehicleTitleModule
+        vehicle={{
+          nickname: vehicle.nickname,
+          make: vehicle.make,
+          model: vehicle.model,
+          year: vehicle.year,
+          nftImage: nftImage,
+          isUpgraded: vehicle.isUpgraded,
+          registryId: vehicle.registryId,
+          carToken: vehicle.carToken,
+          socialLinks: vehicle.socialLinks,
+        }}
+        owner={vehicle.owner ? {
+          name: vehicle.owner.name,
+          username: vehicle.owner.username,
+          avatar: vehicle.owner.avatar,
+          walletAddress: vehicle.ownerAddress,
+        } : undefined}
+        isOwner={isOwner}
+        onOwnerClick={() => {
+          window.location.href = `/?page=garage&address=${vehicle.ownerAddress}`;
+        }}
+        onSwapClick={() => setShowSwapModal(true)}
+        onEditSocialLinks={() => {
+          addToast({
+            type: "info",
+            title: "Coming Soon",
+            message: "Social links editing will be available soon",
+          });
+        }}
+      />
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-6">
-          <CarProfileCard
-            vehicle={{
-              nickname: vehicle.nickname,
-              make: vehicle.make,
-              model: vehicle.model,
-              year: vehicle.year,
-              nftImage: nftImage,
-              isUpgraded: vehicle.isUpgraded,
-              location: vehicle.location,
-              registryId: vehicle.registryId,
-              owner: vehicle.owner,
-              followerCount: vehicle.followerCount,
-              carToken: vehicle.carToken ? { ticker: vehicle.carToken.ticker } : undefined,
-              sponsorshipCollection: vehicle.sponsorshipCollection ? {
-                maxSupply: vehicle.sponsorshipCollection.maxSupply,
-                mintedCount: vehicle.sponsorshipCollection.mintedCount || 0,
-              } : undefined,
-            }}
-          />
 
           <Card className="bg-black/40 border-white/10 backdrop-blur-md">
             <CardHeader className="pb-2">
@@ -756,20 +779,6 @@ export function RegisteredVHCLPage({
         </div>
 
         <div className="space-y-6">
-          {vehicle.carToken && (
-            <TokenDetails
-              token={{
-                address: vehicle.carToken.address,
-                ticker: vehicle.carToken.ticker,
-                price: vehicle.carToken.price,
-                mcap: vehicle.carToken.mcap,
-                change24h: vehicle.carToken.change24h,
-              }}
-              vehicleName={vehicleDisplayName}
-              onSwapClick={() => setShowSwapModal(true)}
-            />
-          )}
-
           <Card className="bg-black/40 border-white/10 backdrop-blur-md">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-bold text-white flex items-center gap-2">

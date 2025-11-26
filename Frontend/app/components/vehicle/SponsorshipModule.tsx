@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/app/components/ui/button";
-import { Trophy, Plus, Sparkles, DollarSign, Share2, Settings, Car, Zap, TrendingUp, ChevronRight } from "lucide-react";
+import { Trophy, Plus, Sparkles, DollarSign, Share2, Settings, Car, Zap, TrendingUp, ChevronRight, Info, HelpCircle, Edit2, Gift } from "lucide-react";
 import Image from "next/image";
 
 interface Sponsor {
@@ -22,6 +23,8 @@ interface SponsorshipModuleProps {
         maxSupply: number;
         mintPrice: number;
         mintedCount?: number;
+        priceTier?: number;
+        sponsorOffer?: string;
     };
     sponsors: Sponsor[];
     onSponsorClick: (slotId?: number) => void;
@@ -29,6 +32,9 @@ interface SponsorshipModuleProps {
     onShare?: () => void;
     onManageSponsor?: (sponsor: Sponsor) => void;
     onViewSponsor?: (sponsor: Sponsor) => void;
+    onLearnMore?: () => void;
+    onEditSponsorship?: () => void;
+    onViewOffer?: () => void;
 }
 
 export function SponsorshipModule({
@@ -43,84 +49,67 @@ export function SponsorshipModule({
     onCreateCollection,
     onShare,
     onManageSponsor,
-    onViewSponsor
+    onViewSponsor,
+    onLearnMore,
+    onEditSponsorship,
+    onViewOffer
 }: SponsorshipModuleProps) {
+    const [showPricingInfo, setShowPricingInfo] = useState(false);
     
+    const getPriceTierLabel = (tier?: number) => {
+        if (!tier) return "Custom";
+        if (tier === 1) return "Tier 1";
+        if (tier === 2) return "Tier 2";
+        if (tier === 3) return "Tier 3";
+        return "Custom";
+    };
+
     if (!sponsorshipCollection && isOwner && isUpgraded) {
         return (
             <div className="relative overflow-hidden rounded-2xl border border-yellow-500/30 bg-gradient-to-br from-yellow-500/5 via-orange-500/5 to-red-500/5">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-yellow-500/10 via-transparent to-transparent" />
                 
                 <div className="relative p-6">
-                    <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/20">
                                 <Trophy className="w-6 h-6 text-white" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold text-white">Sponsorship Collection</h3>
-                                <p className="text-sm text-yellow-500/80">Unlock revenue from your {vehicleName}</p>
+                                <h3 className="text-xl font-bold text-white">Vehicle Sponsorships</h3>
+                                <p className="text-sm text-zinc-400">Monetize your vehicle with sponsor slots</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                        <div className="bg-black/40 backdrop-blur-sm rounded-xl p-4 border border-white/5">
-                            <Car className="w-5 h-5 text-yellow-500 mb-2" />
-                            <p className="text-2xl font-bold text-white">14</p>
-                            <p className="text-xs text-zinc-400">Sponsor Slots</p>
-                        </div>
-                        <div className="bg-black/40 backdrop-blur-sm rounded-xl p-4 border border-white/5">
-                            <DollarSign className="w-5 h-5 text-green-500 mb-2" />
-                            <p className="text-2xl font-bold text-white">$250+</p>
-                            <p className="text-xs text-zinc-400">Per Mint</p>
-                        </div>
-                        <div className="bg-black/40 backdrop-blur-sm rounded-xl p-4 border border-white/5">
-                            <TrendingUp className="w-5 h-5 text-blue-500 mb-2" />
-                            <p className="text-2xl font-bold text-white">$3.3K+</p>
-                            <p className="text-xs text-zinc-400">Total Revenue</p>
-                        </div>
-                        <div className="bg-black/40 backdrop-blur-sm rounded-xl p-4 border border-white/5">
-                            <Zap className="w-5 h-5 text-purple-500 mb-2" />
-                            <p className="text-2xl font-bold text-white">5%</p>
-                            <p className="text-xs text-zinc-400">Secondary Sales</p>
-                        </div>
-                    </div>
+                    <p className="text-sm text-zinc-300 mb-6">
+                        Enable sponsorships to let brands and enthusiasts claim slots on your vehicle. 
+                        Sponsors can display their logo, link their socials, and connect with your audience.
+                    </p>
 
-                    <div className="bg-black/30 backdrop-blur-sm rounded-xl p-4 mb-6 border border-white/5">
-                        <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-                            <Sparkles className="w-4 h-4 text-yellow-500" />
-                            How It Works
-                        </h4>
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-3">
-                                <div className="w-6 h-6 rounded-full bg-yellow-500/20 flex items-center justify-center text-xs font-bold text-yellow-500">1</div>
-                                <p className="text-sm text-zinc-300">Wrap ${vehicleTicker || "tokens"} + $BSTR to create collection</p>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="w-6 h-6 rounded-full bg-yellow-500/20 flex items-center justify-center text-xs font-bold text-yellow-500">2</div>
-                                <p className="text-sm text-zinc-300">Sponsors mint NFTs to claim slots</p>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="w-6 h-6 rounded-full bg-yellow-500/20 flex items-center justify-center text-xs font-bold text-yellow-500">3</div>
-                                <p className="text-sm text-zinc-300">Earn from mints + secondary sales</p>
-                            </div>
-                        </div>
+                    <div className="flex gap-3">
+                        <Button
+                            variant="outline"
+                            onClick={onLearnMore}
+                            className="flex-1 border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10"
+                        >
+                            <HelpCircle className="w-4 h-4 mr-2" />
+                            Learn More
+                        </Button>
+                        <Button
+                            onClick={onCreateCollection}
+                            className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold shadow-lg shadow-yellow-500/20"
+                        >
+                            <Sparkles className="w-4 h-4 mr-2" />
+                            Enable Sponsorships
+                        </Button>
                     </div>
-
-                    <Button
-                        onClick={onCreateCollection}
-                        className="w-full h-14 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold text-lg shadow-lg shadow-yellow-500/20 transition-all hover:shadow-xl hover:shadow-yellow-500/30"
-                    >
-                        <Sparkles className="w-5 h-5 mr-2" />
-                        Create Sponsorship Collection
-                        <ChevronRight className="w-5 h-5 ml-2" />
-                    </Button>
                 </div>
             </div>
         );
     }
     
+    if (!sponsorshipCollection && !isOwner) return null;
     if (!sponsorshipCollection) return null;
 
     const mintedCount = sponsorshipCollection.mintedCount ?? sponsors.length;
@@ -141,6 +130,7 @@ export function SponsorshipModule({
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-yellow-500/5 via-transparent to-transparent" />
             
             <div className="relative p-6">
+                {/* Header */}
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center">
@@ -148,46 +138,117 @@ export function SponsorshipModule({
                         </div>
                         <div>
                             <h3 className="text-lg font-bold text-white">Sponsors</h3>
-                            <p className="text-xs text-zinc-400">
-                                {mintedCount}/{sponsorshipCollection.maxSupply} claimed • {availableSlots} available
-                            </p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        {isOwner && onShare && (
-                            <Button
-                                size="sm"
-                                variant="ghost"
-                                className="text-zinc-400 hover:text-white hover:bg-white/10"
-                                onClick={onShare}
-                            >
-                                <Share2 className="w-4 h-4" />
-                            </Button>
-                        )}
-                        {!isOwner && !isSoldOut && (
-                            <Button
-                                size="sm"
-                                className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold shadow-lg shadow-yellow-500/20"
-                                onClick={() => onSponsorClick()}
-                            >
-                                Sponsor {vehicleName}
-                            </Button>
+                        {isOwner && (
+                            <>
+                                {onEditSponsorship && (
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="text-zinc-400 hover:text-white hover:bg-white/10"
+                                        onClick={onEditSponsorship}
+                                    >
+                                        <Edit2 className="w-4 h-4" />
+                                    </Button>
+                                )}
+                                {onShare && (
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="text-zinc-400 hover:text-white hover:bg-white/10"
+                                        onClick={onShare}
+                                    >
+                                        <Share2 className="w-4 h-4" />
+                                    </Button>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>
 
-                <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                        <span className="text-2xl font-bold text-white">${sponsorshipCollection.mintPrice}</span>
-                        <span className="text-sm text-zinc-400">USDC / slot</span>
+                {/* Stats Row */}
+                <div className="grid grid-cols-3 gap-3 mb-4">
+                    <div className="bg-black/40 rounded-xl p-3 border border-white/5">
+                        <p className="text-xs text-zinc-500 uppercase mb-1">Available</p>
+                        <p className="text-lg font-bold text-white">
+                            {availableSlots} <span className="text-sm text-zinc-400 font-normal">of {sponsorshipCollection.maxSupply}</span>
+                        </p>
                     </div>
-                    <div className="h-2 flex-1 mx-4 rounded-full bg-white/10 overflow-hidden">
-                        <div
-                            className="h-full bg-gradient-to-r from-yellow-500 to-orange-500 transition-all"
-                            style={{ width: `${(mintedCount / sponsorshipCollection.maxSupply) * 100}%` }}
-                        />
+                    <div className="bg-black/40 rounded-xl p-3 border border-white/5">
+                        <div className="flex items-center gap-1 mb-1">
+                            <p className="text-xs text-zinc-500 uppercase">Price Tier</p>
+                            <button 
+                                onClick={() => setShowPricingInfo(!showPricingInfo)}
+                                className="text-zinc-500 hover:text-primary transition-colors"
+                            >
+                                <Info className="w-3 h-3" />
+                            </button>
+                        </div>
+                        <p className="text-lg font-bold text-yellow-500">
+                            {getPriceTierLabel(sponsorshipCollection.priceTier)}
+                        </p>
+                    </div>
+                    <div className="bg-black/40 rounded-xl p-3 border border-white/5 flex flex-col justify-between">
+                        <p className="text-xs text-zinc-500 uppercase mb-1">Sponsor Offer</p>
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={onViewOffer}
+                            className="h-7 text-xs border-primary/50 text-primary hover:bg-primary/10"
+                        >
+                            <Gift className="w-3 h-3 mr-1" />
+                            View Offer
+                        </Button>
                     </div>
                 </div>
+
+                {/* Pricing Info Modal */}
+                {showPricingInfo && (
+                    <div className="mb-4 p-4 bg-black/60 rounded-xl border border-yellow-500/20">
+                        <div className="flex items-center justify-between mb-3">
+                            <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                <DollarSign className="w-4 h-4 text-yellow-500" />
+                                Sponsorship Cost Breakdown
+                            </h4>
+                            <button 
+                                onClick={() => setShowPricingInfo(false)}
+                                className="text-zinc-500 hover:text-white"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                                <span className="text-zinc-400">USDC Fee</span>
+                                <span className="text-white font-medium">${sponsorshipCollection.mintPrice}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-zinc-400">Token Wrap (BSTR + ${vehicleTicker || "VHCL"})</span>
+                                <span className="text-white font-medium">Required</span>
+                            </div>
+                            <div className="border-t border-white/10 pt-2 mt-2">
+                                <p className="text-xs text-zinc-500">
+                                    Wrapping tokens ensures commitment and can be unwrapped after sponsorship ends.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Sponsor CTA for non-owners */}
+                {!isOwner && !isSoldOut && (
+                    <div className="mb-4">
+                        <Button
+                            className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold shadow-lg shadow-yellow-500/20"
+                            onClick={() => onSponsorClick()}
+                        >
+                            <Trophy className="w-4 h-4 mr-2" />
+                            Become a Sponsor - ${sponsorshipCollection.mintPrice} USDC
+                        </Button>
+                    </div>
+                )}
 
                 <div className="grid grid-cols-7 gap-2">
                     {slots.map((slot) => (
