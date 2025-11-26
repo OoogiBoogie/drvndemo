@@ -21,8 +21,10 @@ import { CreateSponsorshipCollectionModal } from "../modals/CreateSponsorshipCol
 import { MintSponsorshipModal } from "../modals/MintSponsorshipModal";
 import { SponsorProfileEditorModal } from "../modals/SponsorProfileEditorModal";
 import { SponsorDetailsModal } from "../modals/SponsorDetailsModal";
+import { CreatePostModal } from "../modals/CreatePostModal";
 import { useToast } from "@/app/components/ui/toast-context";
 import { type Sponsor as FullSponsor } from "@/app/data/vehicleData";
+import { PenSquare } from "lucide-react";
 
 interface VehicleImage {
   url: string;
@@ -126,6 +128,7 @@ export function RegisteredVHCLPage({
   const [showMintModal, setShowMintModal] = useState(false);
   const [showProfileEditor, setShowProfileEditor] = useState(false);
   const [showSponsorDetailsModal, setShowSponsorDetailsModal] = useState(false);
+  const [showCreatePostModal, setShowCreatePostModal] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<number | undefined>(undefined);
   const [selectedSponsor, setSelectedSponsor] = useState<Sponsor | null>(null);
   const [viewingSponsor, setViewingSponsor] = useState<FullSponsor | null>(null);
@@ -410,15 +413,26 @@ export function RegisteredVHCLPage({
           Back to Garage
         </Button>
         
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleShare}
-          className="text-zinc-400 hover:text-white hover:bg-white/10"
-        >
-          <Share2 className="w-4 h-4 mr-2" />
-          Share
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowCreatePostModal(true)}
+            className="text-primary hover:text-primary hover:bg-primary/10"
+          >
+            <PenSquare className="w-4 h-4 mr-2" />
+            Post
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleShare}
+            className="text-zinc-400 hover:text-white hover:bg-white/10"
+          >
+            <Share2 className="w-4 h-4 mr-2" />
+            Share
+          </Button>
+        </div>
       </div>
 
       <SwipeableGallery images={vehicle.images} />
@@ -913,6 +927,35 @@ export function RegisteredVHCLPage({
         }}
         sponsor={viewingSponsor}
         vehicleName={vehicleDisplayName}
+      />
+
+      <CreatePostModal
+        isOpen={showCreatePostModal}
+        onClose={() => setShowCreatePostModal(false)}
+        userId={currentUserAddress || ""}
+        currentUser={{
+          name: vehicle.owner?.name || "User",
+          username: vehicle.owner?.username || "user",
+          avatar: vehicle.owner?.avatar || "/Cars/Avatar2.png",
+        }}
+        registeredVehicles={[{
+          id: vehicle._id,
+          nickname: vehicle.nickname,
+          make: vehicle.make,
+          model: vehicle.model,
+        }]}
+        initialTaggedVehicles={[vehicle._id]}
+        sponsors={vehicle.sponsors.map(s => ({
+          id: s.tokenId,
+          name: s.name || `Sponsor #${s.tokenId}`,
+          logo: s.logo,
+        }))}
+        connectedPlatforms={connectedPlatforms as Array<"farcaster" | "base" | "x">}
+        initialCrossPostSettings={{
+          farcaster: connectedPlatforms.includes("farcaster"),
+          base: connectedPlatforms.includes("base"),
+          x: connectedPlatforms.includes("x"),
+        }}
       />
     </div>
   );

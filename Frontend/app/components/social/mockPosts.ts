@@ -18,12 +18,16 @@ export const MOCK_SOCIAL_POSTS: SocialPost[] = [
         vehicleTag: {
             id: "1",
             label: "Black Widow",
+            ticker: "GT3RS",
         },
-        sponsorTag: {
-            id: "rb-1",
-            name: "Red Bull Racing",
-            logo: "https://avatars.githubusercontent.com/u/108554348?s=200&v=4",
-            url: "/sponsors/1",
+        sponsorsInfo: {
+            vehicleId: "1",
+            sponsors: [
+                { id: "1", name: "Coinbase", logo: "/Cars/DCWhtV4.png", url: "/vehicles/1/sponsors/1" },
+                { id: "2", name: "Clanker", logo: "/Cars/BSTR-Logo-Official.png", url: "/vehicles/1/sponsors/2" },
+                { id: "3", name: "Num Num Boba", url: "/vehicles/1/sponsors/3" },
+            ],
+            availableSlots: 11,
         },
         source: "in-app",
         crossPostedTo: ["farcaster", "base"],
@@ -67,6 +71,7 @@ export const MOCK_SOCIAL_POSTS: SocialPost[] = [
         vehicleTag: {
             id: "1",
             label: "Black Widow",
+            ticker: "GT3RS",
         },
         source: "in-app",
         crossPostedTo: ["farcaster"],
@@ -87,6 +92,14 @@ export const MOCK_SOCIAL_POSTS: SocialPost[] = [
         vehicleTag: {
             id: "2",
             label: "Ghost",
+            ticker: "NSXTS",
+        },
+        sponsorsInfo: {
+            vehicleId: "2",
+            sponsors: [
+                { id: "1", name: "Base", logo: "/Cars/DCWhtV4.png", url: "/vehicles/2/sponsors/1" },
+            ],
+            availableSlots: 13,
         },
         source: "in-app",
         crossPostedTo: ["base", "x"],

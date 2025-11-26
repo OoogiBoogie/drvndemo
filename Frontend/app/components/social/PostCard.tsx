@@ -77,14 +77,52 @@ export function PostCard({ post }: PostCardProps) {
                         {post.vehicleTag && (
                             <Link
                                 href={`/vehicles/${post.vehicleTag.id}`}
-                                className="inline-flex items-center gap-2 text-xs text-primary bg-primary/10 border border-primary/20 rounded-full px-2 py-1 mb-3"
+                                className="inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:text-primary/80 transition-colors mb-1"
                             >
-                                <Car className="w-3.5 h-3.5" />
-                                Tagged: {post.vehicleTag.label}
+                                {post.vehicleTag.ticker ? (
+                                    <span className="bg-primary/10 border border-primary/20 rounded-full px-2.5 py-0.5">
+                                        ${post.vehicleTag.ticker}
+                                    </span>
+                                ) : (
+                                    <>
+                                        <Car className="w-3.5 h-3.5" />
+                                        <span>{post.vehicleTag.label}</span>
+                                    </>
+                                )}
                             </Link>
                         )}
 
-                        {post.sponsorTag && (
+                        {post.sponsorsInfo && post.sponsorsInfo.sponsors.length > 0 && (
+                            <div className="text-xs text-zinc-400 mb-3 flex flex-wrap items-center gap-1">
+                                <span className="text-yellow-500">Sponsored by:</span>
+                                {post.sponsorsInfo.sponsors.map((sponsor, index) => (
+                                    <span key={sponsor.id} className="inline-flex items-center">
+                                        <Link
+                                            href={sponsor.url || `/vehicles/${post.sponsorsInfo!.vehicleId}/sponsors/${sponsor.id}`}
+                                            className="text-white hover:text-yellow-500 transition-colors font-medium"
+                                        >
+                                            {sponsor.name}
+                                        </Link>
+                                        {index < post.sponsorsInfo!.sponsors.length - 1 && (
+                                            <span className="text-zinc-600 mx-1">/</span>
+                                        )}
+                                    </span>
+                                ))}
+                                {post.sponsorsInfo.availableSlots > 0 && (
+                                    <>
+                                        <span className="text-zinc-600 mx-1">|</span>
+                                        <Link
+                                            href={`/vehicles/${post.sponsorsInfo.vehicleId}`}
+                                            className="text-yellow-500 hover:text-yellow-400"
+                                        >
+                                            {post.sponsorsInfo.availableSlots} sponsorship{post.sponsorsInfo.availableSlots !== 1 ? 's' : ''} available
+                                        </Link>
+                                    </>
+                                )}
+                            </div>
+                        )}
+
+                        {post.sponsorTag && !post.sponsorsInfo && (
                             <Link
                                 href={post.sponsorTag.url || `/sponsors/${post.sponsorTag.id}`}
                                 className="flex items-center gap-3 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-3 py-2 mb-3"

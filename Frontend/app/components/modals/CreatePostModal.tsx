@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
 import { Textarea } from "@/app/components/ui/textarea";
@@ -22,6 +22,7 @@ interface CreatePostModalProps {
     onPostCreated?: (post: SocialPost, crossPostTo: CrossPostSettings) => void;
     connectedPlatforms?: SocialPlatform[];
     initialCrossPostSettings?: CrossPostSettings;
+    initialTaggedVehicles?: string[];
 }
 
 export function CreatePostModal({
@@ -34,10 +35,11 @@ export function CreatePostModal({
     onPostCreated,
     connectedPlatforms = [],
     initialCrossPostSettings,
+    initialTaggedVehicles = [],
 }: CreatePostModalProps) {
     const [content, setContent] = useState("");
     const [images, setImages] = useState<File[]>([]);
-    const [taggedVehicles, setTaggedVehicles] = useState<string[]>([]);
+    const [taggedVehicles, setTaggedVehicles] = useState<string[]>(initialTaggedVehicles);
     const [showVehicleSelector, setShowVehicleSelector] = useState(false);
     const [selectedSponsor, setSelectedSponsor] = useState<string | null>(null);
     const [showSponsorSelector, setShowSponsorSelector] = useState(false);
@@ -51,6 +53,20 @@ export function CreatePostModal({
             x: connectedPlatforms.includes("x"),
         }
     );
+    
+    const wasOpen = useRef(false);
+
+    useEffect(() => {
+        if (isOpen && !wasOpen.current) {
+            setTaggedVehicles(initialTaggedVehicles);
+            setContent("");
+            setImages([]);
+            setSelectedSponsor(null);
+            setError("");
+            setSuccess(false);
+        }
+        wasOpen.current = isOpen;
+    }, [isOpen, initialTaggedVehicles]);
 
     const platformInfo: Record<SocialPlatform, { icon: string; name: string; color: string }> = {
         farcaster: { icon: "🟣", name: "Farcaster", color: "purple" },

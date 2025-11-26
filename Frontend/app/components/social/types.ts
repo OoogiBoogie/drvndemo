@@ -13,6 +13,7 @@ export interface SocialAuthor {
 export interface SocialVehicleTag {
     id: string;
     label: string;
+    ticker?: string;
 }
 
 export interface SocialSponsorTag {
@@ -20,6 +21,12 @@ export interface SocialSponsorTag {
     name: string;
     logo?: string;
     url?: string;
+}
+
+export interface SocialSponsorsInfo {
+    sponsors: Array<{ id: string; name: string; logo?: string; url?: string }>;
+    availableSlots: number;
+    vehicleId: string;
 }
 
 export interface SocialPost {
@@ -33,6 +40,7 @@ export interface SocialPost {
     recasts: number;
     vehicleTag?: SocialVehicleTag;
     sponsorTag?: SocialSponsorTag;
+    sponsorsInfo?: SocialSponsorsInfo;
     source: SocialPostSource;
     crossPostedTo?: SocialPlatform[];
     externalUrl?: string;
