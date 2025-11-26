@@ -138,7 +138,7 @@ export function RegisteredVHCLPage({
   
   const initialDescription = vehicleData?.description || "";
   const initialMods = vehicleData?.modifications || [];
-  const initialImages = vehicleData?.images || [{ url: "/Cars/R34GTR.jpg", isNftImage: true }];
+  const initialImages = vehicleData?.images || [{ url: "/Cars/GtrDemo1.png", isNftImage: true }];
   
   const [description, setDescription] = useState(initialDescription);
   const [modifications, setModifications] = useState<string[]>(initialMods);
@@ -162,7 +162,7 @@ export function RegisteredVHCLPage({
     owner: {
       name: "gearhead_mike",
       username: "gearhead_mike",
-      avatar: "/avatars/default.png",
+      avatar: "/Cars/Avatar2.png",
     },
     followerCount: 1234,
     carToken: vehicleData?.carToken ? {
@@ -184,15 +184,15 @@ export function RegisteredVHCLPage({
   const taggedPosts: TaggedPost[] = [
     {
       id: "p1",
-      author: { username: "gearhead", avatar: "/avatars/default.png" },
+      author: { username: "gearhead", avatar: "/Cars/Avatar2.png" },
       content: "Just spotted this beauty at the local meet! 🔥",
-      image: "/Cars/R34GTR.jpg",
+      image: "/Cars/GtrDemo2.png",
       timestamp: "2h ago",
       likes: 45,
     },
     {
       id: "p2",
-      author: { username: "jdm_lover", avatar: "/avatars/default.png" },
+      author: { username: "jdm_lover", avatar: "/Cars/Avatar2.png" },
       content: "The sound of that RB26 is pure music",
       timestamp: "5h ago",
       likes: 32,

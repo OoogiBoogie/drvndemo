@@ -86,8 +86,8 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
       vin: "JN1GANR34Z0000042",
       registryId: "DRVN-0042",
       images: [
-        { url: "/Cars/R34GTR.jpg", isNftImage: true },
-        { url: "/Cars/R34Garage.jpg", isNftImage: false },
+        { url: "/Cars/GtrDemo1.png", isNftImage: true },
+        { url: "/Cars/GtrDemo2.png", isNftImage: false },
       ],
       isUpgraded: true,
       carToken: {
@@ -105,7 +105,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
       vin: "19UNC1B03NY000123",
       registryId: "DRVN-0123",
       images: [
-        { url: "/Cars/NSXGarage.jpg", isNftImage: true },
+        { url: "/Cars/nsx-ts-2.jpg", isNftImage: true },
       ],
       isUpgraded: false,
       createdAt: "2024-02-20T14:45:00Z",
@@ -136,7 +136,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
       totalShares: 10000,
       usdValue: 27500,
       change24h: 2.4,
-      image: "/Cars/Porsche911.jpg",
+      image: "/Cars/modena1.jpg",
       location: "Los Angeles, CA",
     },
     {
@@ -147,7 +147,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
       totalShares: 8000,
       usdValue: 18200,
       change24h: -1.1,
-      image: "/Cars/R34Garage.jpg",
+      image: "/Cars/GtrHero1.jpg",
       location: "Tokyo, JP",
     },
     {
@@ -158,7 +158,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
       totalShares: 7500,
       usdValue: 15980,
       change24h: 0.9,
-      image: "/Cars/NSXGarage.jpg",
+      image: "/Cars/nsx-ts-2.jpg",
       location: "Miami, FL",
     },
   ];
