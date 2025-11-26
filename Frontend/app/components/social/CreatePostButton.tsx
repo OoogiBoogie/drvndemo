@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/app/components/ui/button";
 import { Plus } from "lucide-react";
 
 interface CreatePostButtonProps {
@@ -9,11 +8,12 @@ interface CreatePostButtonProps {
 
 export function CreatePostButton({ onClick }: CreatePostButtonProps) {
     return (
-        <Button
-            className="fixed bottom-20 right-4 md:bottom-8 md:right-8 w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-black shadow-lg z-50 flex items-center justify-center"
+        <button
+            className="fixed bottom-24 right-6 md:bottom-10 md:right-10 w-16 h-16 rounded-full bg-[#00daa2] hover:bg-[#00daa2]/80 text-black shadow-2xl z-[9999] flex items-center justify-center transition-all hover:scale-105"
             onClick={onClick}
+            aria-label="Create Post"
         >
-            <Plus className="w-8 h-8" />
-        </Button>
+            <Plus className="w-8 h-8 stroke-[3]" />
+        </button>
     );
 }
