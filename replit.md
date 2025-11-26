@@ -38,7 +38,12 @@ The application utilizes TailwindCSS for utility-first styling and Radix UI for 
 - **Manage Sponsorship Modal**: Allows NFT holders to update sponsor branding (name, logo, bio, website, social links, gallery photos). Accessible only when connected wallet matches sponsor's holderAddress.
 - **Garage Page**: Functions as a public profile, separating public and private sections based on `isOwner` detection. Enhanced User Profile Card with extensive social links.
 - **DRVN Culture Page**: A content hub with category filters, featured content, stats bar, latest episodes grid, browse-by-category, and a "Coming Soon" section for originals.
-- **Social Hub**: Redesigned `/social` page with platform connection cards (Farcaster, Base, X), multi-platform feed filtering, and cross-posting functionality.
+- **Feed (Social Hub)**: Accessible via "Feed" nav item (renamed from Social). Features platform connection cards (Farcaster, Base, X), multi-platform feed filtering, and cross-posting functionality.
+- **Arcade Section**: Expandable navigation section with three subsections:
+  - Games: Onchain gaming hub (Coming Soon)
+  - Apps: Automotive tools and utilities (Coming Soon)
+  - Predictions: Market prediction games (Coming Soon)
+- **Navigation Order**: Dashboard, Feed, DRVN Culture, Marketplace, Garage, Buster Club, Arcade (expandable), Settings, X/Twitter, Discord
 
 ### Data Architecture
 - **Shared Vehicle Data**: All vehicle information is centralized in `Frontend/app/data/vehicleData.ts`. This single source of truth exports:
