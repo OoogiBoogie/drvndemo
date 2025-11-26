@@ -290,7 +290,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
     ? formatUnits(ethBalanceData.value, 18)
     : "0";
 
-  const ethPrice = 3000;
+  // const ethPrice = 3000; // Reserved for ETH value calculations
   const totalCollectionValue = rwaHoldings.reduce(
     (sum, holding) => sum + holding.usdValue,
     0,

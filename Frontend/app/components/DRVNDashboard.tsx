@@ -16,7 +16,6 @@ import {
   Coins,
   Car,
   Tag,
-  MessageSquare,
   Play,
   Clock,
   Bell,

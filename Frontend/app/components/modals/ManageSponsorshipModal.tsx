@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
@@ -46,6 +46,7 @@ export function ManageSponsorshipModal({
     sponsorshipId,
     currentBranding,
     onBrandingUpdate,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isVehicleOwner = false,
 }: ManageSponsorshipModalProps) {
     const [name, setName] = useState(currentBranding?.name || "");

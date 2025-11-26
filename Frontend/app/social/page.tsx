@@ -57,9 +57,8 @@ export default function SocialFeedPage() {
 
     const connectedCount = platformConnections.filter(p => p.connected).length;
 
-    const userOwnedVehicleTickers = ["SUPRA", "GTR", "NSX"];
-
     const filteredPosts = useMemo(() => {
+        const userTickers = ["SUPRA", "GTR", "NSX"];
         switch (activeTab) {
             case "all":
                 return feedPosts;
@@ -67,7 +66,7 @@ export default function SocialFeedPage() {
                 return feedPosts.filter(post => post.author?.isFollowing);
             case "vhcls":
                 return feedPosts.filter(post => 
-                    post.vehicleTag && userOwnedVehicleTickers.includes(post.vehicleTag.ticker || "")
+                    post.vehicleTag && userTickers.includes(post.vehicleTag.ticker || "")
                 );
             default:
                 return feedPosts;

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
-import { Plus, ShieldCheck, Wallet, Trophy, Car, Zap, Settings, ExternalLink } from "lucide-react";
+import { Plus, ShieldCheck, Wallet, Trophy, Car, Settings, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { vehicles, formatCurrency, type Vehicle, type Sponsor } from "@/app/data/vehicleData";
 

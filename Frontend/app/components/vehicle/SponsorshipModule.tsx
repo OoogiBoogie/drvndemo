@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/app/components/ui/button";
-import { Trophy, Plus, Sparkles, DollarSign, Share2, Settings, Car, Zap, TrendingUp, ChevronRight, Info, HelpCircle, Edit2, Gift } from "lucide-react";
+import { Trophy, Plus, Sparkles, DollarSign, Share2, Settings, Info, HelpCircle, Edit2, Gift } from "lucide-react";
 import Image from "next/image";
 
 interface Sponsor {
@@ -38,6 +38,7 @@ interface SponsorshipModuleProps {
 }
 
 export function SponsorshipModule({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     vehicleName,
     vehicleTicker,
     isOwner = false,
