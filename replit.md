@@ -36,6 +36,16 @@ The application utilizes TailwindCSS for utility-first styling and Radix UI for 
   Opens from Marketplace section for shopping/buying experience.
 - **Sponsor Details Modal**: Opens when clicking claimed sponsorship slots. Displays sponsor logo (large), website + promo links, social accounts row (Base, X, Instagram, Facebook, YouTube, TikTok, LinkedIn), bio section, photo gallery with navigation, and OpenSea NFT link. Includes wallet-gated "Manage Sponsorship" button (only visible to holder).
 - **Manage Sponsorship Modal**: Allows NFT holders to update sponsor branding (name, logo, bio, website, social links, gallery photos). Accessible only when connected wallet matches sponsor's holderAddress.
+- **VehicleTitleModule**: Combined component for vehicle detail pages featuring:
+  - Left side: NFT image (80x80), vehicle title (nickname or make/model/year), token ticker badge
+  - Right side: Token stats (price, 24h change, mcap) with Swap button
+  - Owner row: Clickable PFP + username + abbreviated wallet linking to owner's Garage
+  - Social icons: Car-associated social links (X, Instagram, etc.) with edit capability for owners
+- **SponsorshipModule Enhancements**:
+  - Owner view (pre-activation): "Learn More" and "Enable Sponsorships" buttons with clear explanation
+  - Active view: Stats row showing Available slots (X of 14), Price Tier with expandable info modal, and View Offer button
+  - 7x2 grid layout for 14 sponsor slots with hover states and claimed/available indicators
+  - Edit button for owners to manage sponsorship settings
 - **Garage Page**: Functions as a public profile, separating public and private sections based on `isOwner` detection. Structure:
   - **User Profile Card** (above Hero on desktop): Two-column compact layout with:
     - Left: PFP, username, Farcaster/Base handles, follower counts
