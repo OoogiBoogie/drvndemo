@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import { 
-    Loader2, CheckCircle, AlertCircle, Sparkles, Coins, 
-    Trophy, Users, HelpCircle, Share2, Plus, X, Check
+    Loader2, Sparkles, Trophy, Check, Plus, X, 
+    ChevronRight, Share2, ExternalLink, Coins, Car
 } from "lucide-react";
 import { useToast } from "@/app/components/ui/toast-context";
 
@@ -27,11 +25,12 @@ interface CreateSponsorshipCollectionModalProps {
     connectedPlatforms?: string[];
 }
 
-type Step = "select-stage" | "customize-offers" | "confirm" | "processing" | "success";
+type Step = "select-stage" | "customize-offers" | "processing" | "success";
 
 interface StageOption {
     id: number;
     name: string;
+    description: string;
     wrapCarToken: number;
     wrapCarTokenBonus: number;
     wrapBSTR: number;
@@ -40,6 +39,7 @@ interface StageOption {
     totalRevenue: number;
     royalty: number;
     netRevenue: number;
+    color: string;
 }
 
 interface CustomOffer {
@@ -51,7 +51,8 @@ interface CustomOffer {
 const STAGE_OPTIONS: StageOption[] = [
     {
         id: 1,
-        name: "Stage 1",
+        name: "Starter",
+        description: "Perfect for getting started",
         wrapCarToken: 1_000_000,
         wrapCarTokenBonus: 100_000,
         wrapBSTR: 10_000,
@@ -60,10 +61,12 @@ const STAGE_OPTIONS: StageOption[] = [
         totalRevenue: 3500,
         royalty: 175,
         netRevenue: 3325,
+        color: "from-blue-500 to-cyan-500",
     },
     {
         id: 2,
-        name: "Stage 2",
+        name: "Pro",
+        description: "For serious car enthusiasts",
         wrapCarToken: 5_000_000,
         wrapCarTokenBonus: 1_000_000,
         wrapBSTR: 50_000,
@@ -72,10 +75,12 @@ const STAGE_OPTIONS: StageOption[] = [
         totalRevenue: 14000,
         royalty: 700,
         netRevenue: 13300,
+        color: "from-purple-500 to-pink-500",
     },
     {
         id: 3,
-        name: "Stage 3",
+        name: "Elite",
+        description: "Maximum earning potential",
         wrapCarToken: 10_000_000,
         wrapCarTokenBonus: 10_000_000,
         wrapBSTR: 100_000,
@@ -84,6 +89,7 @@ const STAGE_OPTIONS: StageOption[] = [
         totalRevenue: 35000,
         royalty: 1750,
         netRevenue: 33250,
+        color: "from-yellow-500 to-orange-500",
     },
 ];
 
@@ -120,15 +126,13 @@ export function CreateSponsorshipCollectionModal({
     const [newOfferTitle, setNewOfferTitle] = useState("");
     const [newOfferDescription, setNewOfferDescription] = useState("");
     const [showAddOffer, setShowAddOffer] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState("");
+    const [processingStep, setProcessingStep] = useState(0);
     const [createdCollection, setCreatedCollection] = useState<{
         contractAddress: string;
         mintPrice: number;
     } | null>(null);
-    
-    const [shareToFarcaster, setShareToFarcaster] = useState(true);
-    const [shareToBase, setShareToBase] = useState(true);
+
+    if (!isOpen) return null;
 
     const handleStageSelect = (stage: StageOption) => {
         setSelectedStage(stage);
@@ -161,85 +165,56 @@ export function CreateSponsorshipCollectionModal({
         if (!selectedStage) return;
 
         setStep("processing");
-        setIsLoading(true);
-        setError("");
+        setProcessingStep(0);
 
-        try {
-            await new Promise((resolve) => setTimeout(resolve, 3000));
+        const steps = [
+            "Approving token wrap...",
+            "Wrapping tokens...",
+            "Paying creation fee...",
+            "Deploying collection...",
+        ];
 
-            const mockCollection = {
-                contractAddress: `0x${Math.random().toString(16).slice(2, 42)}`,
-                maxSupply: 14,
-                mintPrice: selectedStage.mintPrice,
-                stage: selectedStage.id,
-            };
-
-            try {
-                await fetch(`/api/vehicles/${vehicleId}/sponsorship`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        stage: selectedStage.id,
-                        collection: mockCollection,
-                        offers: {
-                            standard: standardOffers.filter(o => o.checked).map(o => o.label),
-                            custom: customOffers,
-                        },
-                    }),
-                });
-            } catch (apiError) {
-                console.warn("Create sponsorship collection fallback", apiError);
-            }
-
-            setCreatedCollection({
-                contractAddress: mockCollection.contractAddress,
-                mintPrice: mockCollection.mintPrice,
-            });
-
-            onCreationComplete?.(mockCollection);
-
-            addToast({
-                type: "success",
-                title: "Collection Created!",
-                message: `Sponsorship collection for ${vehicleName} is live`,
-            });
-
-            setStep("success");
-        } catch {
-            setError("Failed to create collection. Please try again.");
-            addToast({
-                type: "error",
-                title: "Creation Failed",
-                message: "Something went wrong. Please try again.",
-            });
-            setStep("confirm");
-        } finally {
-            setIsLoading(false);
+        for (let i = 0; i < steps.length; i++) {
+            setProcessingStep(i);
+            await new Promise(resolve => setTimeout(resolve, 1200));
         }
+
+        const mockCollection = {
+            contractAddress: `0x${Math.random().toString(16).slice(2, 42)}`,
+            maxSupply: 14,
+            mintPrice: selectedStage.mintPrice,
+            stage: selectedStage.id,
+        };
+
+        setCreatedCollection({
+            contractAddress: mockCollection.contractAddress,
+            mintPrice: mockCollection.mintPrice,
+        });
+
+        onCreationComplete?.(mockCollection);
+
+        addToast({
+            type: "success",
+            title: "Collection Created!",
+            message: `Sponsorship collection for ${vehicleName} is live`,
+        });
+
+        setStep("success");
     };
 
-    const handleShare = () => {
-        const shareText = `Just launched a sponsorship collection for my ${vehicleName}! Mint a spot for $${createdCollection?.mintPrice} USDC and become an official sponsor.`;
+    const handleShare = (platform: string) => {
+        const text = `Just launched a sponsorship collection for my ${vehicleName}! Mint a spot for $${createdCollection?.mintPrice} USDC on @DRVN_VHCLS`;
         
-        const platforms: string[] = [];
-        if (shareToFarcaster) {
-            platforms.push("Farcaster");
-            console.log("Sharing to Farcaster:", shareText);
-        }
-        if (shareToBase) {
-            platforms.push("Base");
-            console.log("Sharing to Base:", shareText);
+        let url = "";
+        if (platform === "farcaster") {
+            url = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`;
+        } else if (platform === "x") {
+            url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
         }
         
-        if (platforms.length > 0) {
-            addToast({
-                type: "info",
-                title: "Shared!",
-                message: `Posted to ${platforms.join(" & ")}`,
-            });
+        if (url) {
+            window.open(url, "_blank");
         }
-        
-        handleClose();
     };
 
     const handleClose = () => {
@@ -247,8 +222,8 @@ export function CreateSponsorshipCollectionModal({
         setSelectedStage(null);
         setStandardOffers(STANDARD_OFFERS);
         setCustomOffers([]);
-        setError("");
         setCreatedCollection(null);
+        setProcessingStep(0);
         onClose();
     };
 
@@ -256,82 +231,89 @@ export function CreateSponsorshipCollectionModal({
         return standardOffers.filter(o => o.checked).length + customOffers.length;
     };
 
+    const processingSteps = [
+        { label: "Approving tokens", icon: "🔓" },
+        { label: "Wrapping tokens", icon: "🔄" },
+        { label: "Paying fee", icon: "💳" },
+        { label: "Deploying", icon: "🚀" },
+    ];
+
     return (
-        <Dialog
-            open={isOpen}
-            onOpenChange={(open) => {
-                if (!open) handleClose();
-            }}
-        >
-            <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-zinc-900 border-white/10">
-                <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold text-white flex items-center gap-2">
-                        <Sparkles className="w-6 h-6 text-yellow-500" />
-                        Create Sponsorship Collection
-                    </DialogTitle>
-                    <p className="text-sm text-zinc-400">
-                        {vehicleName} • {vehicleTicker}
-                    </p>
-                </DialogHeader>
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={handleClose} />
+            
+            <div className="relative w-full max-w-2xl mx-4 bg-gradient-to-b from-zinc-900 to-black border border-white/10 rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-yellow-500/10 via-transparent to-transparent pointer-events-none" />
+                
+                <button
+                    onClick={handleClose}
+                    className="absolute top-4 right-4 p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors z-10"
+                >
+                    <X className="w-5 h-5 text-zinc-400" />
+                </button>
 
                 {step === "select-stage" && (
-                    <div className="space-y-6">
-                        <div className="space-y-3">
+                    <div className="relative p-8">
+                        <div className="text-center mb-8">
+                            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/30">
+                                <Trophy className="w-8 h-8 text-white" />
+                            </div>
+                            <h2 className="text-2xl font-bold text-white mb-2">Create Sponsorship Collection</h2>
+                            <p className="text-zinc-400">{vehicleName} • ${vehicleTicker}</p>
+                        </div>
+
+                        <p className="text-center text-sm text-zinc-400 mb-6">
+                            Choose a tier that matches your goals. Higher tiers mean higher mint prices and more revenue.
+                        </p>
+
+                        <div className="space-y-4 mb-8">
                             {STAGE_OPTIONS.map((stage) => (
                                 <button
                                     key={stage.id}
                                     onClick={() => handleStageSelect(stage)}
-                                    className={`w-full text-left p-4 rounded-xl border transition-all ${
+                                    className={`w-full text-left p-5 rounded-2xl border-2 transition-all ${
                                         selectedStage?.id === stage.id
-                                            ? "border-yellow-500 bg-yellow-500/10"
-                                            : "border-white/10 bg-zinc-800/50 hover:border-white/30"
+                                            ? "border-yellow-500 bg-yellow-500/10 shadow-lg shadow-yellow-500/10"
+                                            : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
                                     }`}
                                 >
-                                    <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-start justify-between mb-4">
                                         <div className="flex items-center gap-3">
-                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                                                selectedStage?.id === stage.id
-                                                    ? "bg-yellow-500 text-black"
-                                                    : "bg-zinc-700 text-white"
-                                            }`}>
+                                            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stage.color} flex items-center justify-center shadow-lg`}>
                                                 {selectedStage?.id === stage.id ? (
-                                                    <Check className="w-5 h-5" />
+                                                    <Check className="w-6 h-6 text-white" />
                                                 ) : (
-                                                    <span className="font-bold">{stage.id}</span>
+                                                    <span className="text-xl font-bold text-white">{stage.id}</span>
                                                 )}
                                             </div>
-                                            <span className="text-lg font-bold text-white">{stage.name}</span>
+                                            <div>
+                                                <h3 className="text-lg font-bold text-white">{stage.name}</h3>
+                                                <p className="text-sm text-zinc-400">{stage.description}</p>
+                                            </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-yellow-500 font-bold text-lg">${stage.mintPrice}</p>
-                                            <p className="text-xs text-zinc-500">per mint</p>
+                                            <p className="text-2xl font-bold text-white">${stage.mintPrice}</p>
+                                            <p className="text-xs text-zinc-500">per sponsor</p>
                                         </div>
                                     </div>
                                     
-                                    <div className="grid grid-cols-2 gap-4 text-sm">
-                                        <div className="space-y-1">
-                                            <p className="text-zinc-400">Wrap Required:</p>
-                                            <p className="text-white">
-                                                {formatNumber(stage.wrapCarToken)} + {formatNumber(stage.wrapCarTokenBonus)} {vehicleTicker}
+                                    <div className="grid grid-cols-3 gap-4 p-3 rounded-xl bg-black/30">
+                                        <div>
+                                            <p className="text-xs text-zinc-500 mb-1">Wrap Required</p>
+                                            <p className="text-sm text-white font-medium">
+                                                {formatNumber(stage.wrapCarToken + stage.wrapCarTokenBonus)} ${vehicleTicker}
                                             </p>
-                                            <p className="text-white">
-                                                {formatNumber(stage.wrapBSTR)} $BSTR
-                                            </p>
+                                            <p className="text-xs text-zinc-400">+ {formatNumber(stage.wrapBSTR)} $BSTR</p>
                                         </div>
-                                        <div className="space-y-1">
-                                            <p className="text-zinc-400">Upgrade Fee:</p>
-                                            <p className="text-white font-bold">${stage.upgradeFee} USDC</p>
+                                        <div>
+                                            <p className="text-xs text-zinc-500 mb-1">Creation Fee</p>
+                                            <p className="text-sm text-white font-medium">${stage.upgradeFee} USDC</p>
                                         </div>
-                                    </div>
-                                    
-                                    <div className="mt-3 pt-3 border-t border-white/10">
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-zinc-400">Total Revenue (14 mints):</span>
-                                            <span className="text-green-400 font-bold">${stage.netRevenue.toLocaleString()}</span>
+                                        <div>
+                                            <p className="text-xs text-zinc-500 mb-1">Potential Revenue</p>
+                                            <p className="text-sm text-green-400 font-bold">${stage.netRevenue.toLocaleString()}</p>
+                                            <p className="text-xs text-zinc-500">from 14 mints</p>
                                         </div>
-                                        <p className="text-xs text-zinc-500 mt-1">
-                                            ${stage.totalRevenue.toLocaleString()} - ${stage.royalty} royalty (5%)
-                                        </p>
                                     </div>
                                 </button>
                             ))}
@@ -340,87 +322,95 @@ export function CreateSponsorshipCollectionModal({
                         <Button
                             onClick={() => setStep("customize-offers")}
                             disabled={!selectedStage}
-                            className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold"
+                            className="w-full h-14 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Continue
+                            <ChevronRight className="w-5 h-5 ml-2" />
                         </Button>
                     </div>
                 )}
 
-                {step === "customize-offers" && (
-                    <div className="space-y-6">
-                        <div>
-                            <h3 className="text-white font-bold mb-2">What will you offer sponsors?</h3>
-                            <p className="text-sm text-zinc-400 mb-4">
-                                Select or add offerings that sponsors will receive
-                            </p>
-                            
-                            <div className="space-y-2">
-                                {standardOffers.map((offer) => (
-                                    <label
-                                        key={offer.id}
-                                        className="flex items-center gap-3 p-3 rounded-lg bg-zinc-800/50 border border-white/10 cursor-pointer hover:bg-zinc-800"
-                                    >
-                                        <Checkbox
-                                            checked={offer.checked}
-                                            onCheckedChange={() => handleToggleStandardOffer(offer.id)}
-                                            className="border-white/30 data-[state=checked]:bg-yellow-500 data-[state=checked]:border-yellow-500"
-                                        />
-                                        <span className="text-white">{offer.label}</span>
-                                    </label>
-                                ))}
-                                
-                                {customOffers.map((offer) => (
-                                    <div
-                                        key={offer.id}
-                                        className="flex items-center gap-3 p-3 rounded-lg bg-zinc-800/50 border border-yellow-500/30"
-                                    >
-                                        <Check className="w-5 h-5 text-yellow-500" />
-                                        <div className="flex-1">
-                                            <p className="text-white font-medium">{offer.title}</p>
-                                            {offer.description && (
-                                                <p className="text-xs text-zinc-400">{offer.description}</p>
-                                            )}
-                                        </div>
-                                        <button
-                                            onClick={() => handleRemoveCustomOffer(offer.id)}
-                                            className="text-zinc-500 hover:text-red-400"
-                                        >
-                                            <X className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                ))}
+                {step === "customize-offers" && selectedStage && (
+                    <div className="relative p-8">
+                        <div className="flex items-center gap-4 mb-8">
+                            <button
+                                onClick={() => setStep("select-stage")}
+                                className="p-2 rounded-full bg-white/5 hover:bg-white/10"
+                            >
+                                <ChevronRight className="w-5 h-5 text-zinc-400 rotate-180" />
+                            </button>
+                            <div>
+                                <h2 className="text-xl font-bold text-white">Customize Sponsor Offerings</h2>
+                                <p className="text-sm text-zinc-400">What will sponsors receive?</p>
                             </div>
                         </div>
 
+                        <div className="space-y-3 mb-6">
+                            {standardOffers.map((offer) => (
+                                <label
+                                    key={offer.id}
+                                    className={`flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all ${
+                                        offer.checked 
+                                            ? "bg-yellow-500/10 border-2 border-yellow-500/30" 
+                                            : "bg-white/5 border-2 border-transparent hover:bg-white/10"
+                                    }`}
+                                >
+                                    <Checkbox
+                                        checked={offer.checked}
+                                        onCheckedChange={() => handleToggleStandardOffer(offer.id)}
+                                        className="w-5 h-5 border-2 border-white/30 data-[state=checked]:bg-yellow-500 data-[state=checked]:border-yellow-500"
+                                    />
+                                    <span className="text-white font-medium">{offer.label}</span>
+                                </label>
+                            ))}
+                            
+                            {customOffers.map((offer) => (
+                                <div
+                                    key={offer.id}
+                                    className="flex items-center gap-4 p-4 rounded-xl bg-green-500/10 border-2 border-green-500/30"
+                                >
+                                    <div className="w-5 h-5 rounded bg-green-500 flex items-center justify-center">
+                                        <Check className="w-3 h-3 text-white" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-white font-medium">{offer.title}</p>
+                                        {offer.description && (
+                                            <p className="text-sm text-zinc-400">{offer.description}</p>
+                                        )}
+                                    </div>
+                                    <button
+                                        onClick={() => handleRemoveCustomOffer(offer.id)}
+                                        className="p-1 rounded-full hover:bg-white/10"
+                                    >
+                                        <X className="w-4 h-4 text-zinc-400" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+
                         {showAddOffer ? (
-                            <div className="space-y-3 p-4 rounded-lg bg-zinc-800/50 border border-white/10">
-                                <div>
-                                    <Label className="text-white text-sm">Offer Title</Label>
-                                    <Input
-                                        value={newOfferTitle}
-                                        onChange={(e) => setNewOfferTitle(e.target.value)}
-                                        placeholder="e.g., Exclusive event invites"
-                                        className="bg-zinc-900 border-white/10 text-white mt-1"
-                                    />
-                                </div>
-                                <div>
-                                    <Label className="text-white text-sm">Description (optional)</Label>
-                                    <Input
-                                        value={newOfferDescription}
-                                        onChange={(e) => setNewOfferDescription(e.target.value)}
-                                        placeholder="Brief description of the offer"
-                                        className="bg-zinc-900 border-white/10 text-white mt-1"
-                                    />
-                                </div>
+                            <div className="space-y-4 p-5 rounded-xl bg-white/5 border border-white/10 mb-6">
+                                <Input
+                                    value={newOfferTitle}
+                                    onChange={(e) => setNewOfferTitle(e.target.value)}
+                                    placeholder="Offer title (e.g., VIP event access)"
+                                    className="bg-black/30 border-white/10 text-white placeholder:text-zinc-500"
+                                />
+                                <Input
+                                    value={newOfferDescription}
+                                    onChange={(e) => setNewOfferDescription(e.target.value)}
+                                    placeholder="Description (optional)"
+                                    className="bg-black/30 border-white/10 text-white placeholder:text-zinc-500"
+                                />
                                 <div className="flex gap-2">
                                     <Button
                                         onClick={handleAddCustomOffer}
                                         disabled={!newOfferTitle.trim()}
                                         size="sm"
-                                        className="bg-yellow-500 hover:bg-yellow-600 text-black"
+                                        className="bg-green-500 hover:bg-green-600 text-white"
                                     >
-                                        Add Offer
+                                        <Check className="w-4 h-4 mr-1" />
+                                        Add
                                     </Button>
                                     <Button
                                         onClick={() => {
@@ -429,225 +419,154 @@ export function CreateSponsorshipCollectionModal({
                                             setNewOfferDescription("");
                                         }}
                                         size="sm"
-                                        variant="outline"
-                                        className="border-white/10"
+                                        variant="ghost"
+                                        className="text-zinc-400"
                                     >
                                         Cancel
                                     </Button>
                                 </div>
                             </div>
                         ) : (
-                            <Button
+                            <button
                                 onClick={() => setShowAddOffer(true)}
-                                variant="outline"
-                                className="w-full border-dashed border-white/20 hover:border-yellow-500/50 hover:bg-yellow-500/5"
+                                className="w-full p-4 rounded-xl border-2 border-dashed border-white/20 hover:border-yellow-500/50 hover:bg-yellow-500/5 transition-all flex items-center justify-center gap-2 text-zinc-400 hover:text-yellow-500 mb-6"
                             >
-                                <Plus className="w-4 h-4 mr-2" />
+                                <Plus className="w-5 h-5" />
                                 Add Custom Offer
-                            </Button>
+                            </button>
                         )}
 
-                        <div className="flex gap-3">
-                            <Button
-                                onClick={() => setStep("select-stage")}
-                                variant="outline"
-                                className="flex-1 border-white/10 hover:bg-white/5"
-                            >
-                                Back
-                            </Button>
-                            <Button
-                                onClick={() => setStep("confirm")}
-                                disabled={getSelectedOfferCount() === 0}
-                                className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black font-bold"
-                            >
-                                Continue ({getSelectedOfferCount()} offers)
-                            </Button>
-                        </div>
-                    </div>
-                )}
-
-                {step === "confirm" && selectedStage && (
-                    <div className="space-y-6">
-                        <div className="bg-zinc-800/50 rounded-lg p-4">
-                            <h3 className="text-white font-bold mb-3">Collection Summary</h3>
-                            <div className="space-y-2 text-sm">
-                                <div className="flex justify-between">
-                                    <span className="text-zinc-400">Vehicle:</span>
-                                    <span className="text-white">{vehicleName}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-zinc-400">Stage:</span>
-                                    <span className="text-yellow-500 font-bold">{selectedStage.name}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-zinc-400">Max Supply:</span>
-                                    <span className="text-white">14 NFTs</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-zinc-400">Mint Price:</span>
-                                    <span className="text-white font-bold">${selectedStage.mintPrice} USDC</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-zinc-400">Sponsor Offerings:</span>
-                                    <span className="text-white">{getSelectedOfferCount()} items</span>
-                                </div>
+                        <div className="p-4 rounded-xl bg-black/30 border border-white/10 mb-6">
+                            <div className="flex items-center justify-between text-sm mb-2">
+                                <span className="text-zinc-400">Selected tier:</span>
+                                <span className="text-white font-bold">{selectedStage.name} - ${selectedStage.mintPrice}/mint</span>
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                                <span className="text-zinc-400">Total offers:</span>
+                                <span className="text-white font-bold">{getSelectedOfferCount()} items</span>
                             </div>
                         </div>
 
-                        <div className="bg-zinc-800/50 rounded-lg p-4">
-                            <h3 className="text-white font-bold mb-3">Tokens to Wrap</h3>
-                            <div className="space-y-2 text-sm">
-                                <div className="flex justify-between">
-                                    <span className="text-zinc-400">{vehicleTicker}:</span>
-                                    <span className="text-white">
-                                        {formatNumber(selectedStage.wrapCarToken)} + {formatNumber(selectedStage.wrapCarTokenBonus)}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-zinc-400">$BSTR:</span>
-                                    <span className="text-white">{formatNumber(selectedStage.wrapBSTR)}</span>
-                                </div>
-                                <div className="border-t border-white/10 pt-2 mt-2">
-                                    <div className="flex justify-between">
-                                        <span className="text-zinc-400">Creation Fee:</span>
-                                        <span className="text-white font-bold">${selectedStage.upgradeFee} USDC</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
-                            <div className="flex items-start gap-3">
-                                <Coins className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                                <div className="text-sm text-green-400">
-                                    <p className="font-bold mb-1">Potential Earnings:</p>
-                                    <p className="text-xs">
-                                        If all 14 slots are minted, you earn <strong>${selectedStage.netRevenue.toLocaleString()}</strong> (minus 5% platform fee per mint)
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {error && (
-                            <div className="flex items-center gap-2 text-red-500 text-sm">
-                                <AlertCircle className="w-4 h-4" />
-                                {error}
-                            </div>
-                        )}
-
-                        <div className="flex gap-3">
-                            <Button
-                                onClick={() => setStep("customize-offers")}
-                                variant="outline"
-                                className="flex-1 border-white/10 hover:bg-white/5"
-                                disabled={isLoading}
-                            >
-                                Back
-                            </Button>
-                            <Button
-                                onClick={handleCreate}
-                                disabled={isLoading}
-                                className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black font-bold"
-                            >
-                                Wrap & Create
-                            </Button>
-                        </div>
+                        <Button
+                            onClick={handleCreate}
+                            disabled={getSelectedOfferCount() === 0}
+                            className="w-full h-14 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold text-lg"
+                        >
+                            <Coins className="w-5 h-5 mr-2" />
+                            Create Collection for ${selectedStage.upgradeFee}
+                        </Button>
                     </div>
                 )}
 
                 {step === "processing" && (
-                    <div className="py-12 text-center">
-                        <Loader2 className="w-16 h-16 mx-auto mb-4 animate-spin text-yellow-500" />
-                        <h3 className="text-xl font-bold text-white mb-2">
-                            Creating Collection...
-                        </h3>
-                        <p className="text-zinc-400 mb-4">
-                            Please confirm the transactions in your wallet
-                        </p>
-                        <div className="text-xs text-zinc-500 space-y-1">
-                            <p>1. Approving token wrap...</p>
-                            <p>2. Wrapping {vehicleTicker} + $BSTR...</p>
-                            <p>3. Deploying sponsorship collection...</p>
-                            <p>4. Setting up sponsor offerings...</p>
+                    <div className="relative p-8">
+                        <div className="text-center mb-8">
+                            <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center animate-pulse shadow-lg shadow-yellow-500/30">
+                                <Loader2 className="w-10 h-10 text-white animate-spin" />
+                            </div>
+                            <h2 className="text-2xl font-bold text-white mb-2">Creating Collection</h2>
+                            <p className="text-zinc-400">Please wait while we set everything up...</p>
+                        </div>
+
+                        <div className="space-y-3">
+                            {processingSteps.map((pStep, index) => (
+                                <div
+                                    key={index}
+                                    className={`flex items-center gap-4 p-4 rounded-xl transition-all ${
+                                        index < processingStep
+                                            ? "bg-green-500/10 border border-green-500/30"
+                                            : index === processingStep
+                                            ? "bg-yellow-500/10 border border-yellow-500/30"
+                                            : "bg-white/5 border border-transparent"
+                                    }`}
+                                >
+                                    <span className="text-2xl">{pStep.icon}</span>
+                                    <span className={`flex-1 font-medium ${
+                                        index <= processingStep ? "text-white" : "text-zinc-500"
+                                    }`}>
+                                        {pStep.label}
+                                    </span>
+                                    {index < processingStep && (
+                                        <Check className="w-5 h-5 text-green-500" />
+                                    )}
+                                    {index === processingStep && (
+                                        <Loader2 className="w-5 h-5 text-yellow-500 animate-spin" />
+                                    )}
+                                </div>
+                            ))}
                         </div>
                     </div>
                 )}
 
                 {step === "success" && createdCollection && (
-                    <div className="py-8 text-center">
-                        <CheckCircle className="w-16 h-16 mx-auto mb-4 text-green-500" />
-                        <h3 className="text-xl font-bold text-white mb-2">
-                            Collection Created!
-                        </h3>
-                        <p className="text-zinc-400 mb-4">
-                            {vehicleName} sponsorship is now live
+                    <div className="relative p-8">
+                        <div className="text-center mb-8">
+                            <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/30">
+                                <Check className="w-10 h-10 text-white" />
+                            </div>
+                            <h2 className="text-2xl font-bold text-white mb-2">Collection Created!</h2>
+                            <p className="text-zinc-400">Your sponsorship collection is now live</p>
+                        </div>
+
+                        <div className="p-5 rounded-xl bg-black/30 border border-white/10 mb-6 space-y-3">
+                            <div className="flex items-center justify-between">
+                                <span className="text-zinc-400">Vehicle</span>
+                                <span className="text-white font-medium">{vehicleName}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-zinc-400">Mint Price</span>
+                                <span className="text-white font-bold">${createdCollection.mintPrice} USDC</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-zinc-400">Max Supply</span>
+                                <span className="text-white font-medium">14 NFTs</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-zinc-400">Contract</span>
+                                <a
+                                    href={`https://basescan.org/address/${createdCollection.contractAddress}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-yellow-500 hover:underline flex items-center gap-1 font-mono text-sm"
+                                >
+                                    {createdCollection.contractAddress.slice(0, 8)}...
+                                    <ExternalLink className="w-3 h-3" />
+                                </a>
+                            </div>
+                        </div>
+
+                        <p className="text-center text-sm text-zinc-400 mb-4">
+                            Share your collection to attract sponsors!
                         </p>
 
-                        <div className="bg-zinc-800/50 rounded-lg p-4 mb-6 text-left">
-                            <div className="flex justify-between items-center mb-2">
-                                <span className="text-zinc-400">Mint Price:</span>
-                                <span className="text-yellow-500 font-bold text-lg">
-                                    ${createdCollection.mintPrice} USDC
-                                </span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <span className="text-zinc-400">Contract:</span>
-                                <span className="text-white font-mono text-xs truncate max-w-[200px]">
-                                    {createdCollection.contractAddress}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className="bg-zinc-800/50 rounded-lg p-4 mb-6 text-left">
-                            <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
-                                <Share2 className="w-4 h-4 text-yellow-500" />
-                                Share Your Collection
-                            </h4>
-                            <div className="space-y-2">
-                                {connectedPlatforms.includes("farcaster") && (
-                                    <label className="flex items-center gap-3 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={shareToFarcaster}
-                                            onChange={(e) => setShareToFarcaster(e.target.checked)}
-                                            className="rounded border-white/20 bg-zinc-800"
-                                        />
-                                        <span className="text-white text-sm">Share on Farcaster</span>
-                                    </label>
-                                )}
-                                {connectedPlatforms.includes("base") && (
-                                    <label className="flex items-center gap-3 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={shareToBase}
-                                            onChange={(e) => setShareToBase(e.target.checked)}
-                                            className="rounded border-white/20 bg-zinc-800"
-                                        />
-                                        <span className="text-white text-sm">Share on Base</span>
-                                    </label>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3">
+                        <div className="grid grid-cols-2 gap-3 mb-6">
                             <Button
-                                onClick={handleClose}
+                                onClick={() => handleShare("farcaster")}
                                 variant="outline"
-                                className="flex-1 border-white/10 hover:bg-white/5"
+                                className="h-12 border-purple-500/30 hover:bg-purple-500/10 hover:border-purple-500/50"
                             >
-                                View Collection
+                                <Share2 className="w-4 h-4 mr-2 text-purple-500" />
+                                Farcaster
                             </Button>
                             <Button
-                                onClick={handleShare}
-                                className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black font-bold"
+                                onClick={() => handleShare("x")}
+                                variant="outline"
+                                className="h-12 border-white/20 hover:bg-white/10"
                             >
                                 <Share2 className="w-4 h-4 mr-2" />
-                                Share & Close
+                                X / Twitter
                             </Button>
                         </div>
+
+                        <Button
+                            onClick={handleClose}
+                            className="w-full h-12 bg-white/10 hover:bg-white/20 text-white font-medium"
+                        >
+                            View Collection
+                        </Button>
                     </div>
                 )}
-            </DialogContent>
-        </Dialog>
+            </div>
+        </div>
     );
 }

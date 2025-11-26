@@ -635,48 +635,68 @@ export function RegisteredVHCLPage({
           )}
 
           {!vehicle.isUpgraded && isOwner && (
-            <Card className="bg-gradient-to-br from-primary/20 to-yellow-500/10 border-primary/30 backdrop-blur-md">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-yellow-500" />
-                  Upgrade to Monetize
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-zinc-300 mb-4">
-                  Create a tradeable token for your vehicle and unlock sponsorship opportunities.
-                </p>
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="flex items-center gap-2 text-xs text-zinc-400">
-                    <Coins className="w-4 h-4 text-primary" />
-                    <span>ERC20 Car Token</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-zinc-400">
-                    <Users className="w-4 h-4 text-primary" />
-                    <span>14 Sponsor Slots</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-zinc-400">
-                    <TrendingUp className="w-4 h-4 text-primary" />
-                    <span>Trading Revenue</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-zinc-400">
-                    <Shield className="w-4 h-4 text-primary" />
-                    <span>10% Creator Reserve</span>
+            <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 via-yellow-500/5 to-orange-500/5">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
+              
+              <div className="relative p-6">
+                <div className="flex items-start justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-yellow-500 flex items-center justify-center shadow-lg shadow-primary/20">
+                      <Zap className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-white">Upgrade to Monetize</h3>
+                      <p className="text-sm text-primary/80">Unlock your vehicle&apos;s earning potential</p>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-baseline gap-2 mb-4">
-                  <span className="text-2xl font-bold text-primary">$5</span>
-                  <span className="text-zinc-400">+ 5% token supply</span>
+
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  <div className="bg-black/40 backdrop-blur-sm rounded-xl p-4 border border-white/5">
+                    <Coins className="w-5 h-5 text-primary mb-2" />
+                    <p className="text-sm font-medium text-white">ERC20 Token</p>
+                    <p className="text-xs text-zinc-400">Tradeable car token</p>
+                  </div>
+                  <div className="bg-black/40 backdrop-blur-sm rounded-xl p-4 border border-white/5">
+                    <Users className="w-5 h-5 text-yellow-500 mb-2" />
+                    <p className="text-sm font-medium text-white">14 Sponsor Slots</p>
+                    <p className="text-xs text-zinc-400">NFT sponsorships</p>
+                  </div>
+                  <div className="bg-black/40 backdrop-blur-sm rounded-xl p-4 border border-white/5">
+                    <TrendingUp className="w-5 h-5 text-green-500 mb-2" />
+                    <p className="text-sm font-medium text-white">Trading Revenue</p>
+                    <p className="text-xs text-zinc-400">Earn from volume</p>
+                  </div>
+                  <div className="bg-black/40 backdrop-blur-sm rounded-xl p-4 border border-white/5">
+                    <Shield className="w-5 h-5 text-blue-500 mb-2" />
+                    <p className="text-sm font-medium text-white">10% Reserve</p>
+                    <p className="text-xs text-zinc-400">Creator allocation</p>
+                  </div>
                 </div>
+
+                <div className="flex items-center justify-between p-4 rounded-xl bg-black/30 border border-white/5 mb-6">
+                  <div>
+                    <p className="text-sm text-zinc-400">Upgrade Cost</p>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold text-white">$5</span>
+                      <span className="text-sm text-zinc-400">USDC</span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-zinc-400">Platform Fee</p>
+                    <p className="text-lg font-bold text-yellow-500">5% token supply</p>
+                  </div>
+                </div>
+
                 <Button 
                   onClick={() => setShowUpgradeModal(true)}
-                  className="w-full bg-primary hover:bg-primary/90 text-black font-bold"
+                  className="w-full h-14 bg-gradient-to-r from-primary to-yellow-500 hover:from-primary/90 hover:to-yellow-400 text-black font-bold text-lg shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30"
                 >
-                  <Zap className="w-4 h-4 mr-2" />
+                  <Zap className="w-5 h-5 mr-2" />
                   Upgrade Vehicle
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
         </div>
 
