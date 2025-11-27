@@ -439,7 +439,7 @@ export function AssetVaultTabs({
     };
 
     return (
-        <Card className="w-full bg-black/40 border-white/10 backdrop-blur-md relative overflow-hidden">
+        <Card className="w-full max-w-full bg-black/40 border-white/10 backdrop-blur-md relative overflow-hidden box-border">
             {/* Private Badge */}
             <div className="absolute top-3 right-3 z-10">
                 <span className="bg-purple-500/20 text-purple-400 text-xs px-2 py-1 rounded-full font-mono border border-purple-500/30 flex items-center gap-1">

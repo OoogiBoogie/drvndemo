@@ -106,9 +106,9 @@ export function UserProfileCard({
     };
 
     return (
-        <Card className="w-full bg-black/40 border-white/10 backdrop-blur-md mb-6 overflow-hidden">
-            <CardContent className="p-3 md:p-6 overflow-hidden">
-                <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+        <Card className="w-full max-w-full bg-black/40 border-white/10 backdrop-blur-md mb-6 overflow-hidden box-border">
+            <CardContent className="p-3 md:p-6 overflow-hidden w-full max-w-full">
+                <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full max-w-full">
                     {/* LEFT COLUMN: PFP, username, handles, followers */}
                     <div className="flex flex-row md:flex-col gap-4 md:gap-3 items-center md:items-start flex-shrink-0">
                         {/* Profile Image */}
@@ -169,7 +169,7 @@ export function UserProfileCard({
                     </div>
 
                     {/* RIGHT COLUMN: Social icons + Follow, Bio, Token tickers */}
-                    <div className="flex-grow space-y-3">
+                    <div className="flex-grow space-y-3 min-w-0 overflow-hidden">
                         {/* Row 1: Social Icons + Follow/Edit Button */}
                         <div className="flex items-center justify-between gap-3">
                             {/* Social Links */}
@@ -256,7 +256,7 @@ export function UserProfileCard({
 
                         {/* Row 2: Bio with clickable links */}
                         {user.bio && (
-                            <p className="text-zinc-300 text-sm leading-relaxed">
+                            <p className="text-zinc-300 text-sm leading-relaxed break-words overflow-hidden">
                                 {parseLinksInBio(user.bio)}
                             </p>
                         )}

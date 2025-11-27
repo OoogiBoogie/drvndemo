@@ -311,8 +311,8 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
     });
 
   return (
-    <div className="w-full overflow-x-hidden">
-      <div className="max-w-6xl mx-auto space-y-6 px-0">
+    <div className="w-full max-w-full overflow-x-hidden box-border">
+      <div className="w-full max-w-6xl mx-auto space-y-6">
 
         {/* Module 1: User Profile Card - ABOVE Hero on desktop */}
         <UserProfileCard
@@ -337,7 +337,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
         />
 
         {/* Module 3: Portfolio Snapshot */}
-        <Card className="bg-gradient-to-br from-gray-900 to-black border border-gray-700 backdrop-blur-sm">
+        <Card className="bg-gradient-to-br from-gray-900 to-black border border-gray-700 backdrop-blur-sm w-full max-w-full overflow-hidden">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-white font-mono">Portfolio Snapshot</h2>
