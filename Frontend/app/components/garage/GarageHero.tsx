@@ -113,20 +113,20 @@ export function GarageHero({
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-white/5 rounded-3xl p-4 md:p-6">
-      {/* Main Hero Container - 16:11 aspect ratio per reference measurements */}
+      {/* Main Hero Container - 4:3 (16:12) aspect ratio to show mezzanine + floor outline */}
       <div
-        className="hero-container relative w-full aspect-[16/11] rounded-2xl overflow-hidden"
+        className="hero-container relative w-full aspect-[4/3] rounded-2xl overflow-hidden"
         onTouchStart={(e) => handleSwipeStart(e.touches[0].clientX)}
         onTouchEnd={(e) => handleSwipeEnd(e.changedTouches[0].clientX)}
       >
-        {/* Layer 1: Background (Full width, positioned to show mezzanine + floor outline) */}
+        {/* Layer 1: Background (positioned to show mezzanine top + floor outline bottom) */}
         <div className="hero-bg absolute inset-0 z-[1] bg-gray-950">
           <img
             src={activeBackground.src}
             alt={activeBackground.name}
             className="w-full h-full object-cover"
             style={{
-              objectPosition: "center 52%",
+              objectPosition: "center 55%",
             }}
           />
         </div>
