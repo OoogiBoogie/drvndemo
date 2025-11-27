@@ -132,18 +132,18 @@ export function GarageHero({
         </div>
 
         {/* Layer 2: Car Overlay (Transparent PNG) */}
-        <div className="hero-car-layer absolute inset-0 z-[2] flex items-end justify-center pointer-events-none">
+        <div className="hero-car-layer absolute inset-0 z-[2] flex items-end justify-center">
           <img
             src={activeCar.src}
             alt={activeCar.name}
-            className="hero-car pointer-events-auto"
+            className="hero-car drop-shadow-2xl"
             style={{
-              height: "clamp(120px, 50%, 300px)",
+              height: "clamp(140px, 55%, 320px)",
               width: "auto",
-              maxWidth: "85%",
+              maxWidth: "90%",
               objectFit: "contain",
               transform: activeCar.offsetX ? `translateX(${activeCar.offsetX}%)` : undefined,
-              marginBottom: "-2%",
+              marginBottom: "2%",
             }}
           />
         </div>

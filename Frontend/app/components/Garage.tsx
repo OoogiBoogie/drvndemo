@@ -4,12 +4,6 @@
 import { useAccount, useBalance } from "wagmi";
 import { formatUnits } from "viem";
 import { Card, CardContent } from "./ui/card";
-import { Button } from "./ui/button";
-import {
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BusterSwapModal } from "./modals/token-swap-modal";
@@ -20,6 +14,8 @@ import { RegisterVehicleModal } from "./modals/RegisterVehicleModal";
 import { VehicleDetailModal } from "./modals/VehicleDetailModal";
 import { SponsorProfileEditorModal } from "./modals/SponsorProfileEditorModal";
 import { RegisteredVHCLPage } from "./vehicle/RegisteredVHCLPage";
+import { GarageHero } from "./garage/GarageHero";
+import { GarageCustomizeModal } from "./modals/GarageCustomizeModal";
 import type { VehicleRegistrationResult } from "@/hooks/useVehicleLifecycle";
 import { type Vehicle, type Sponsor } from "@/app/data/vehicleData";
 
@@ -69,8 +65,8 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
   const [selectedRegisteredVehicle, setSelectedRegisteredVehicle] = useState<RegisteredVehicle | null>(null);
   const [selectedSponsor, setSelectedSponsor] = useState<{ sponsor: Sponsor; vehicleName: string } | null>(null);
   const [activeHoldingIndex, setActiveHoldingIndex] = useState(0);
-  const [touchStartX, setTouchStartX] = useState<number | null>(null);
-  const [touchEndX, setTouchEndX] = useState<number | null>(null);
+  const [showGarageCustomize, setShowGarageCustomize] = useState(false);
+  const [selectedBackgroundId, setSelectedBackgroundId] = useState("bg-default-1");
   const [registeredVehicles, setRegisteredVehicles] = useState<RegisteredVehicle[]>([
     {
       _id: "reg-1",
@@ -157,6 +153,43 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
     rwaHoldings.length > 0
       ? rwaHoldings[activeHoldingIndex % rwaHoldings.length]
       : null;
+
+  const garageBackgrounds = [
+    {
+      id: "bg-default-1",
+      src: "/garage-backgrounds/default-garage-1.jpg",
+      name: "JDM Warehouse",
+      focusY: 65,
+      isNft: false,
+    },
+    {
+      id: "bg-garage-2",
+      src: "/garage-backgrounds/garage-2.png",
+      name: "Industrial Shop",
+      focusY: 60,
+      isNft: false,
+    },
+  ];
+
+  const carOverlays = rwaHoldings.map((holding) => ({
+    id: holding.id,
+    src: holding.id === "rwa-gt3" 
+      ? "/car-overlays/ferrari-360.png" 
+      : holding.id === "rwa-r34"
+        ? "/car-overlays/gtr-r34.png"
+        : holding.image,
+    name: holding.name,
+    collection: holding.collection,
+    ticker: holding.ticker,
+    location: holding.location,
+    sharesOwned: holding.sharesOwned,
+    totalShares: holding.totalShares,
+    usdValue: holding.usdValue,
+    change24h: holding.change24h,
+    offsetX: 0,
+  }));
+
+  const selectedBackground = garageBackgrounds.find(bg => bg.id === selectedBackgroundId) || garageBackgrounds[0];
 
   const displayWalletAddress = profileAddress || address || "0x0000000000000000000000000000000000000000";
   
@@ -248,37 +281,6 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
     }
   };
 
-  const showPreviousHolding = () => {
-    setActiveHoldingIndex((prev) =>
-      prev === 0 ? rwaHoldings.length - 1 : prev - 1,
-    );
-  };
-
-  const showNextHolding = () => {
-    setActiveHoldingIndex((prev) => (prev + 1) % rwaHoldings.length);
-  };
-
-  const handleSwipeStart = (clientX: number) => {
-    setTouchStartX(clientX);
-    setTouchEndX(null);
-  };
-
-  const handleSwipeMove = (clientX: number) => {
-    setTouchEndX(clientX);
-  };
-
-  const handleSwipeEnd = () => {
-    if (touchStartX === null || touchEndX === null) return;
-    const distance = touchStartX - touchEndX;
-    if (distance > 50) {
-      showNextHolding();
-    } else if (distance < -50) {
-      showPreviousHolding();
-    }
-    setTouchStartX(null);
-    setTouchEndX(null);
-  };
-
   const { data: ethBalanceData } = useBalance({
     address: address,
     query: {
@@ -322,127 +324,17 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
           onTokenClick={handleTokenClick}
         />
 
-        {/* Module 2: Swipeable Garage Graphic (Hero Section) */}
-        {activeHolding ? (
-          <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-white/5 rounded-3xl p-4 md:p-6">
-            <div
-              className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden"
-              onTouchStart={(event) =>
-                handleSwipeStart(event.touches[0].clientX)
-              }
-              onTouchMove={(event) =>
-                handleSwipeMove(event.touches[0].clientX)
-              }
-              onTouchEnd={handleSwipeEnd}
-            >
-              <Image
-                src={activeHolding.image}
-                alt={activeHolding.name}
-                fill
-                className="object-cover"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent p-6 flex flex-col justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm uppercase tracking-wide text-white/70 font-mono">
-                    {activeHolding.collection}
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-2xl md:text-4xl font-bold text-white font-mono">
-                      {activeHolding.name}
-                    </h2>
-                    {activeHolding.ticker && (
-                      <span className="text-sm font-bold text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-                        ${activeHolding.ticker}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-white/70 text-sm font-sans">
-                    {activeHolding.location}
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div>
-                    <p className="text-xs uppercase text-white/60 font-mono">
-                      Shares Owned
-                    </p>
-                    <p className="text-xl text-white font-semibold font-mono">
-                      {activeHolding.sharesOwned.toLocaleString()}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase text-white/60 font-mono">
-                      Ownership
-                    </p>
-                    <p className="text-xl text-white font-semibold font-mono">
-                      {((activeHolding.sharesOwned / activeHolding.totalShares) * 100).toFixed(2)}%
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase text-white/60 font-mono">
-                      USD Value
-                    </p>
-                    <p className="text-xl text-white font-semibold font-mono">
-                      {formatUsd(activeHolding.usdValue)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase text-white/60 font-mono">
-                      24h Move
-                    </p>
-                    <p
-                      className={`text-xl font-semibold font-mono ${activeHolding.change24h >= 0 ? "text-[#00daa2]" : "text-red-400"}`}
-                    >
-                      {activeHolding.change24h >= 0 ? "+" : ""}
-                      {activeHolding.change24h}%
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between flex-wrap gap-4 mt-4">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="border border-white/20 text-white/80 hover:text-white"
-                  onClick={showPreviousHolding}
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="border border-white/20 text-white/80 hover:text-white"
-                  onClick={showNextHolding}
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </Button>
-              </div>
-              <div className="flex items-center gap-2">
-                {rwaHoldings.map((holding, index) => (
-                  <button
-                    key={holding.id}
-                    aria-label={`View ${holding.name}`}
-                    className={`h-2 rounded-full transition-all ${
-                      index === activeHoldingIndex
-                        ? "bg-[#00daa2] w-8"
-                        : "bg-white/30 w-4"
-                    }`}
-                    onClick={() => setActiveHoldingIndex(index)}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <Card className="bg-black/40 border-white/10">
-            <CardContent className="p-6 text-center text-white/70">
-              <p>No RWA holdings yet. Explore the marketplace to grab your first shares.</p>
-            </CardContent>
-          </Card>
-        )}
+        {/* Module 2: Swipeable Garage Graphic (Hero Section) - Dual Layer */}
+        <GarageHero
+          backgrounds={garageBackgrounds}
+          cars={carOverlays}
+          activeBackgroundIndex={garageBackgrounds.findIndex(bg => bg.id === selectedBackgroundId)}
+          activeCarIndex={activeHoldingIndex}
+          onBackgroundChange={(index) => setSelectedBackgroundId(garageBackgrounds[index].id)}
+          onCarChange={setActiveHoldingIndex}
+          onCustomize={() => setShowGarageCustomize(true)}
+          isOwner={isOwner}
+        />
 
         {/* Module 3: Portfolio Snapshot */}
         <Card className="bg-gradient-to-br from-gray-900 to-black border border-gray-700 backdrop-blur-sm">
@@ -572,6 +464,21 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
           </div>
         </div>
       )}
+
+      {/* Garage Customize Modal */}
+      <GarageCustomizeModal
+        isOpen={showGarageCustomize}
+        onClose={() => setShowGarageCustomize(false)}
+        backgrounds={garageBackgrounds}
+        cars={carOverlays}
+        selectedBackgroundId={selectedBackgroundId}
+        selectedCarId={carOverlays[activeHoldingIndex]?.id || ""}
+        onBackgroundSelect={(id) => setSelectedBackgroundId(id)}
+        onCarSelect={(id) => {
+          const index = carOverlays.findIndex(c => c.id === id);
+          if (index >= 0) setActiveHoldingIndex(index);
+        }}
+      />
 
     </div>
   );
