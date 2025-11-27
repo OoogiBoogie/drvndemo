@@ -131,12 +131,24 @@ export function GarageHero({
           />
         </div>
 
-        {/* Layer 2: Car Overlay - Slight offset for proper positioning */}
-        <div className="hero-car-layer absolute inset-0 z-[2] flex items-end justify-center">
+        {/* Layer 2: Glow Effect Behind Car */}
+        <div className="absolute inset-0 z-[2] flex items-end justify-center pointer-events-none">
+          <div 
+            className="absolute bottom-0 w-[70%] h-[40%] opacity-60"
+            style={{
+              background: "radial-gradient(ellipse at center bottom, rgba(59, 130, 246, 0.4) 0%, rgba(139, 92, 246, 0.2) 30%, transparent 70%)",
+              filter: "blur(40px)",
+              transform: "translateY(10%)",
+            }}
+          />
+        </div>
+
+        {/* Layer 3: Car Overlay - Reactive with glow */}
+        <div className="hero-car-layer absolute inset-0 z-[3] flex items-end justify-center group">
           <img
             src={activeCar.src}
             alt={activeCar.name}
-            className="hero-car"
+            className="hero-car transition-all duration-500 ease-out hover:scale-105 cursor-pointer"
             style={{
               height: "clamp(100px, 49%, 285px)",
               width: "auto",
@@ -144,16 +156,16 @@ export function GarageHero({
               objectFit: "contain",
               transform: activeCar.offsetX ? `translateX(${activeCar.offsetX}%)` : undefined,
               marginBottom: "0%",
-              filter: "drop-shadow(0 10px 30px rgba(0,0,0,0.8))",
+              filter: "drop-shadow(0 0 20px rgba(59, 130, 246, 0.5)) drop-shadow(0 0 40px rgba(139, 92, 246, 0.3)) drop-shadow(0 10px 30px rgba(0,0,0,0.8))",
             }}
           />
         </div>
 
-        {/* Layer 3: Gradient Overlay for Text Readability */}
-        <div className="absolute inset-0 z-[3] bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
+        {/* Layer 4: Gradient Overlay for Text Readability */}
+        <div className="absolute inset-0 z-[4] bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
 
-        {/* Layer 4: Content Overlay */}
-        <div className="absolute inset-0 z-[4] p-4 md:p-6 flex flex-col justify-between pointer-events-none">
+        {/* Layer 5: Content Overlay */}
+        <div className="absolute inset-0 z-[5] p-4 md:p-6 flex flex-col justify-between pointer-events-none">
           {/* Top Info */}
           <div className="space-y-1">
             <p className="text-sm uppercase tracking-wide text-white/70 font-mono">
