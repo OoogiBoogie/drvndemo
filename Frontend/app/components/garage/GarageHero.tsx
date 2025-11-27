@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Settings } from "lucide-react";
 
 interface GarageBackground {
@@ -51,6 +51,8 @@ export function GarageHero({
   const [localCarIndex, setLocalCarIndex] = useState(activeCarIndex);
   const [localBgIndex, setLocalBgIndex] = useState(activeBackgroundIndex);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const currentCarIdx = onCarChange ? activeCarIndex : localCarIndex;
   const currentBgIdx = onBackgroundChange ? activeBackgroundIndex : localBgIndex;
@@ -60,7 +62,19 @@ export function GarageHero({
     ? backgrounds[currentBgIdx % backgrounds.length] 
     : null;
 
+  useEffect(() => {
+    if (slideDirection) {
+      setIsAnimating(true);
+      const timer = setTimeout(() => {
+        setIsAnimating(false);
+        setSlideDirection(null);
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [currentCarIdx, slideDirection]);
+
   const showNextCar = useCallback(() => {
+    setSlideDirection('left');
     const newIndex = (currentCarIdx + 1) % cars.length;
     if (onCarChange) {
       onCarChange(newIndex);
@@ -70,6 +84,7 @@ export function GarageHero({
   }, [currentCarIdx, cars.length, onCarChange]);
 
   const showPreviousCar = useCallback(() => {
+    setSlideDirection('right');
     const newIndex = (currentCarIdx - 1 + cars.length) % cars.length;
     if (onCarChange) {
       onCarChange(newIndex);
@@ -192,17 +207,24 @@ export function GarageHero({
           </button>
         )}
 
-        {/* Layer 5: Car Overlay - Positioned in lower portion of hero with cyan glow */}
+        {/* Layer 5: Car Overlay - Positioned in lower portion of hero with cyan glow and slide animation */}
         <div 
-          className="absolute inset-0 z-[5] flex items-end justify-center pointer-events-none"
+          className="absolute inset-0 z-[5] flex items-end justify-center pointer-events-none overflow-hidden"
           style={{ paddingBottom: '8%' }}
         >
           <img
+            key={activeCar.id}
             src={activeCar.src}
             alt={activeCar.name}
-            className="max-h-[45%] w-auto max-w-[50%] object-contain pointer-events-auto cursor-pointer transition-transform hover:scale-105"
+            className="max-h-[45%] w-auto max-w-[50%] object-contain pointer-events-auto cursor-pointer hover:scale-105"
             style={{
               filter: "drop-shadow(0 0 35px rgba(0, 255, 255, 1)) drop-shadow(0 0 60px rgba(0, 255, 255, 0.5)) drop-shadow(0 20px 50px rgba(0, 0, 0, 0.8))",
+              animation: isAnimating 
+                ? slideDirection === 'left' 
+                  ? 'slideFromRight 0.4s ease-out forwards'
+                  : 'slideFromLeft 0.4s ease-out forwards'
+                : 'none',
+              transition: 'transform 0.2s ease-out',
             }}
           />
         </div>
