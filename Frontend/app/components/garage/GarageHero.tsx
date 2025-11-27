@@ -119,19 +119,19 @@ export function GarageHero({
         onTouchStart={(e) => handleSwipeStart(e.touches[0].clientX)}
         onTouchEnd={(e) => handleSwipeEnd(e.changedTouches[0].clientX)}
       >
-        {/* Layer 1: Background - Cropped to show middle section (mezzanine + cars, no ceiling/floor) */}
+        {/* Layer 1: Background - Shifted to show Civic (cyan left) and RX-7 (cyan right) */}
         <div className="hero-bg absolute inset-0 z-[1] bg-gray-950">
           <img
             src={activeBackground.src}
             alt={activeBackground.name}
             className="w-full h-full object-cover"
             style={{
-              objectPosition: "center 50%",
+              objectPosition: "center 65%",
             }}
           />
         </div>
 
-        {/* Layer 2: Car Overlay (Yellow box position - bottom center, ~45% height) */}
+        {/* Layer 2: Car Overlay (Yellow box position - bottom center) */}
         <div className="hero-car-layer absolute inset-0 z-[2] flex items-end justify-center">
           <img
             src={activeCar.src}
@@ -143,7 +143,7 @@ export function GarageHero({
               maxWidth: "75%",
               objectFit: "contain",
               transform: activeCar.offsetX ? `translateX(${activeCar.offsetX}%)` : undefined,
-              marginBottom: "-5%",
+              marginBottom: "2%",
               filter: "drop-shadow(0 10px 30px rgba(0,0,0,0.8))",
             }}
           />
