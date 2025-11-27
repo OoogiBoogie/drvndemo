@@ -51,47 +51,79 @@ export function GarageHero({
   const [localCarIndex, setLocalCarIndex] = useState(activeCarIndex);
   const [localBgIndex, setLocalBgIndex] = useState(activeBackgroundIndex);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
-  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
-  const [isAnimating, setIsAnimating] = useState(false);
+  
+  // Two-phase animation state
+  const [displayedCarIndex, setDisplayedCarIndex] = useState(activeCarIndex);
+  const [animationPhase, setAnimationPhase] = useState<'idle' | 'exit' | 'enter'>('idle');
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('left');
+  const [pendingCarIndex, setPendingCarIndex] = useState<number | null>(null);
 
   const currentCarIdx = onCarChange ? activeCarIndex : localCarIndex;
   const currentBgIdx = onBackgroundChange ? activeBackgroundIndex : localBgIndex;
 
-  const activeCar = cars.length > 0 ? cars[currentCarIdx % cars.length] : null;
+  // Use displayedCarIndex for rendering during animations
+  const activeCar = cars.length > 0 ? cars[displayedCarIndex % cars.length] : null;
   const activeBackground = backgrounds.length > 0 
     ? backgrounds[currentBgIdx % backgrounds.length] 
     : null;
 
+  // Handle animation phases
   useEffect(() => {
-    if (slideDirection) {
-      setIsAnimating(true);
-      const timer = setTimeout(() => {
-        setIsAnimating(false);
-        setSlideDirection(null);
-      }, 400);
-      return () => clearTimeout(timer);
+    if (animationPhase === 'exit' && pendingCarIndex !== null) {
+      // After exit animation completes, switch to new car and start enter animation
+      const exitTimer = setTimeout(() => {
+        setDisplayedCarIndex(pendingCarIndex);
+        setAnimationPhase('enter');
+      }, 300); // Exit animation duration
+      return () => clearTimeout(exitTimer);
     }
-  }, [currentCarIdx, slideDirection]);
+    
+    if (animationPhase === 'enter') {
+      // After enter animation completes, reset to idle
+      const enterTimer = setTimeout(() => {
+        setAnimationPhase('idle');
+        setPendingCarIndex(null);
+      }, 400); // Enter animation duration
+      return () => clearTimeout(enterTimer);
+    }
+  }, [animationPhase, pendingCarIndex]);
+
+  // Sync displayedCarIndex with external changes when not animating
+  useEffect(() => {
+    if (animationPhase === 'idle') {
+      setDisplayedCarIndex(currentCarIdx);
+    }
+  }, [currentCarIdx, animationPhase]);
 
   const showNextCar = useCallback(() => {
-    setSlideDirection('left');
-    const newIndex = (currentCarIdx + 1) % cars.length;
+    if (animationPhase !== 'idle') return; // Prevent overlapping animations
+    const newIndex = (displayedCarIndex + 1) % cars.length;
+    setSlideDirection('left'); // Car exits left, new car enters from right
+    setPendingCarIndex(newIndex);
+    setAnimationPhase('exit');
+    
+    // Also update the external/local state
     if (onCarChange) {
       onCarChange(newIndex);
     } else {
       setLocalCarIndex(newIndex);
     }
-  }, [currentCarIdx, cars.length, onCarChange]);
+  }, [displayedCarIndex, cars.length, onCarChange, animationPhase]);
 
   const showPreviousCar = useCallback(() => {
-    setSlideDirection('right');
-    const newIndex = (currentCarIdx - 1 + cars.length) % cars.length;
+    if (animationPhase !== 'idle') return; // Prevent overlapping animations
+    const newIndex = (displayedCarIndex - 1 + cars.length) % cars.length;
+    setSlideDirection('right'); // Car exits right, new car enters from left
+    setPendingCarIndex(newIndex);
+    setAnimationPhase('exit');
+    
+    // Also update the external/local state
     if (onCarChange) {
       onCarChange(newIndex);
     } else {
       setLocalCarIndex(newIndex);
     }
-  }, [currentCarIdx, cars.length, onCarChange]);
+  }, [displayedCarIndex, cars.length, onCarChange, animationPhase]);
 
   const handleSwipeStart = (x: number) => {
     setTouchStartX(x);
@@ -207,24 +239,27 @@ export function GarageHero({
           </button>
         )}
 
-        {/* Layer 5: Car Overlay - Positioned in lower portion of hero with cyan glow and slide animation */}
+        {/* Layer 5: Car Overlay - Positioned in lower portion of hero with cyan glow and two-phase slide animation */}
         <div 
           className="absolute inset-0 z-[5] flex items-end justify-center pointer-events-none overflow-hidden"
           style={{ paddingBottom: '8%' }}
         >
           <img
-            key={activeCar.id}
+            key={`${activeCar.id}-${animationPhase}`}
             src={activeCar.src}
             alt={activeCar.name}
             className="max-h-[45%] w-auto max-w-[50%] object-contain pointer-events-auto cursor-pointer hover:scale-105"
             style={{
               filter: "drop-shadow(0 0 35px rgba(0, 255, 255, 1)) drop-shadow(0 0 60px rgba(0, 255, 255, 0.5)) drop-shadow(0 20px 50px rgba(0, 0, 0, 0.8))",
-              animation: isAnimating 
-                ? slideDirection === 'left' 
-                  ? 'slideFromRight 0.4s ease-out forwards'
-                  : 'slideFromLeft 0.4s ease-out forwards'
-                : 'none',
-              transition: 'transform 0.2s ease-out',
+              animation: animationPhase === 'exit'
+                ? slideDirection === 'left'
+                  ? 'slideOutLeft 0.3s ease-in forwards'
+                  : 'slideOutRight 0.3s ease-in forwards'
+                : animationPhase === 'enter'
+                  ? slideDirection === 'left'
+                    ? 'slideFromRight 0.4s ease-out forwards'
+                    : 'slideFromLeft 0.4s ease-out forwards'
+                  : 'none',
             }}
           />
         </div>
@@ -281,11 +316,18 @@ export function GarageHero({
               key={car.id}
               aria-label={`View ${car.name}`}
               className={`h-2 rounded-full transition-all ${
-                index === currentCarIdx
+                index === displayedCarIndex
                   ? "bg-[#00daa2] w-8"
                   : "bg-white/30 w-4 hover:bg-white/50"
               }`}
               onClick={() => {
+                if (animationPhase !== 'idle' || index === displayedCarIndex) return;
+                // Determine direction based on index difference
+                const direction = index > displayedCarIndex ? 'left' : 'right';
+                setSlideDirection(direction);
+                setPendingCarIndex(index);
+                setAnimationPhase('exit');
+                
                 if (onCarChange) {
                   onCarChange(index);
                 } else {
