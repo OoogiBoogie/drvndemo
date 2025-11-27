@@ -126,7 +126,7 @@ export function GarageHero({
             alt={activeBackground.name}
             className="w-full h-full object-cover"
             style={{
-              objectPosition: "center 70%",
+              objectPosition: "center 85%",
             }}
           />
         </div>
@@ -138,7 +138,7 @@ export function GarageHero({
             alt={activeCar.name}
             className="hero-car"
             style={{
-              height: "clamp(140px, 65%, 380px)",
+              height: "clamp(100px, 49%, 285px)",
               width: "auto",
               maxWidth: "85%",
               objectFit: "contain",
