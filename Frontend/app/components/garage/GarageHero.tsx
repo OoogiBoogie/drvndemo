@@ -143,7 +143,7 @@ export function GarageHero({
               maxWidth: "85%",
               objectFit: "contain",
               transform: activeCar.offsetX ? `translateX(${activeCar.offsetX}%)` : undefined,
-              marginBottom: "-12%",
+              marginBottom: "0%",
               filter: "drop-shadow(0 10px 30px rgba(0,0,0,0.8))",
             }}
           />
