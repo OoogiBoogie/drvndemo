@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Settings } from "lucide-react";
 import { Button } from "../ui/button";
 
@@ -52,9 +52,6 @@ export function GarageHero({
   const [localCarIndex, setLocalCarIndex] = useState(activeCarIndex);
   const [localBgIndex, setLocalBgIndex] = useState(activeBackgroundIndex);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
-  const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(null);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const prevCarIdxRef = useRef(activeCarIndex);
 
   const currentCarIdx = onCarChange ? activeCarIndex : localCarIndex;
   const currentBgIdx = onBackgroundChange ? activeBackgroundIndex : localBgIndex;
@@ -64,24 +61,7 @@ export function GarageHero({
     ? backgrounds[currentBgIdx % backgrounds.length] 
     : null;
 
-  useEffect(() => {
-    if (prevCarIdxRef.current !== currentCarIdx) {
-      const direction = currentCarIdx > prevCarIdxRef.current ? "left" : "right";
-      setSlideDirection(direction);
-      setIsAnimating(true);
-      
-      const timer = setTimeout(() => {
-        setIsAnimating(false);
-        setSlideDirection(null);
-      }, 500);
-      
-      prevCarIdxRef.current = currentCarIdx;
-      return () => clearTimeout(timer);
-    }
-  }, [currentCarIdx]);
-
   const showNextCar = useCallback(() => {
-    setSlideDirection("left");
     const newIndex = (currentCarIdx + 1) % cars.length;
     if (onCarChange) {
       onCarChange(newIndex);
@@ -91,7 +71,6 @@ export function GarageHero({
   }, [currentCarIdx, cars.length, onCarChange]);
 
   const showPreviousCar = useCallback(() => {
-    setSlideDirection("right");
     const newIndex = (currentCarIdx - 1 + cars.length) % cars.length;
     if (onCarChange) {
       onCarChange(newIndex);
@@ -164,29 +143,37 @@ export function GarageHero({
           />
         </div>
 
-        {/* Layer 3: Car Overlay - Reactive with glow and slide animation */}
-        <div className="hero-car-layer absolute inset-0 z-[3] flex items-end justify-center group overflow-hidden">
-          <img
-            key={activeCar.id}
-            src={activeCar.src}
-            alt={activeCar.name}
-            className={`hero-car cursor-pointer ${
-              isAnimating 
-                ? slideDirection === "left" 
-                  ? "animate-slide-in-right" 
-                  : "animate-slide-in-left"
-                : ""
-            }`}
-            style={{
-              height: "clamp(100px, 49%, 285px)",
-              width: "auto",
-              maxWidth: "85%",
-              objectFit: "contain",
-              transform: activeCar.offsetX ? `translateX(${activeCar.offsetX}%)` : undefined,
-              marginBottom: "0%",
-              filter: "brightness(1.1) contrast(1.05) drop-shadow(0 0 4px rgba(0, 255, 255, 0.9)) drop-shadow(0 0 8px rgba(0, 255, 255, 0.7)) drop-shadow(0 0 16px rgba(59, 130, 246, 0.6)) drop-shadow(0 0 24px rgba(59, 130, 246, 0.4)) drop-shadow(0 0 40px rgba(139, 92, 246, 0.5)) drop-shadow(0 0 60px rgba(139, 92, 246, 0.3)) drop-shadow(0 15px 25px rgba(0, 0, 0, 0.6))",
+        {/* Layer 3: Car Carousel - Smooth horizontal slide like camera pan */}
+        <div className="hero-car-layer absolute inset-0 z-[3] overflow-hidden">
+          <div 
+            className="flex items-end h-full transition-transform duration-500 ease-out will-change-transform"
+            style={{ 
+              transform: `translateX(-${currentCarIdx * 100}%)`,
+              width: `${cars.length * 100}%`
             }}
-          />
+          >
+            {cars.map((car) => (
+              <div 
+                key={car.id} 
+                className="flex-shrink-0 flex items-end justify-center"
+                style={{ width: `${100 / cars.length}%`, height: '100%' }}
+              >
+                <img
+                  src={car.src}
+                  alt={car.name}
+                  className="hero-car cursor-pointer"
+                  style={{
+                    height: "clamp(100px, 49%, 285px)",
+                    width: "auto",
+                    maxWidth: "85%",
+                    objectFit: "contain",
+                    marginBottom: "0%",
+                    filter: "brightness(1.1) contrast(1.05) drop-shadow(0 0 4px rgba(0, 255, 255, 0.9)) drop-shadow(0 0 8px rgba(0, 255, 255, 0.7)) drop-shadow(0 0 16px rgba(59, 130, 246, 0.6)) drop-shadow(0 0 24px rgba(59, 130, 246, 0.4)) drop-shadow(0 0 40px rgba(139, 92, 246, 0.5)) drop-shadow(0 0 60px rgba(139, 92, 246, 0.3)) drop-shadow(0 15px 25px rgba(0, 0, 0, 0.6))",
+                  }}
+                />
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Layer 4: Gradient Overlay for Text Readability */}
