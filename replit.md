@@ -50,17 +50,16 @@ The application utilizes TailwindCSS for utility-first styling and Radix UI for 
   - **User Profile Card** (above Hero on desktop): Two-column compact layout with:
     - Left: PFP, username, Farcaster/Base handles, follower counts
     - Right: Social icons + Follow button (same row), bio with clickable links, token ticker quick links
-  - **Hero Section (GarageHero)**: Multi-layer compositing system with fixed-position car overlay:
-    - **Layer 1 - Background**: Garage background images (1:1 ratio cropped to 3:2 display) with object-fit:cover
-    - **Layer 2 - Glow Effect**: Radial gradient blur effect at bottom center for neon glow behind car
+  - **Hero Section (GarageHero)**: Multi-layer compositing system with centered car overlay:
+    - **Layer 1 - Background**: Garage background images (3:2 aspect ratio container) with object-fit:cover and objectPosition at 85%
+    - **Layer 2 - Glow Effect**: Radial gradient blur effect at bottom center (cyan/blue gradient) for neon ambiance
     - **Layer 3 - Gradient**: Dark gradient overlay from bottom for text readability
     - **Layer 4 - Content**: Vehicle info (collection, name, ticker badge, location) positioned at top-left
-    - **Car Overlay**: Uses `position: fixed` with dynamic viewport tracking to escape parent `overflow:auto` clipping from DRVNDashboard.tsx main content area. Position updates on scroll/resize via getBoundingClientRect().
-    - Navigation arrows on left/right sides for switching cars
-    - Customize button (gear icon, owner-only) opens GarageCustomizeModal
+    - **Layer 5 - Car Overlay**: Centered in hero using `absolute inset-0 flex items-center justify-center`. Uses transparent PNG with multiple drop-shadow filters for cyan glow effect: `drop-shadow(0 0 35px rgba(0, 255, 255, 1)) drop-shadow(0 0 60px rgba(0, 255, 255, 0.5))`
+    - **Layer 6 - Controls**: Navigation arrows (z-[6]) on left/right sides for switching cars, customize button (gear icon, owner-only)
     - Transparent PNG assets with drop-shadow filter for glow effect
     - Assets located at: `/public/garage-backgrounds/` and `/public/car-overlays/`
-    - **Technical Note**: Fixed positioning required because DRVNDashboard main content has `overflow-y-auto` which clips absolutely-positioned elements extending outside component bounds
+    - **Technical Note**: Car overlay uses absolute positioning within hero bounds (not fixed positioning) to stay within the 3:2 aspect ratio container. Centered positioning ensures visibility across different viewport sizes.
   - **Portfolio Snapshot**: Summary cards showing total value, 24h change, vehicles owned, ETH balance
   - **VHCL Collection** (4 tabs, public):
     - RWA Collection: List-style view of car tokens held with tickers and ownership %

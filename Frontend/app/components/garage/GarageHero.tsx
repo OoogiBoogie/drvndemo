@@ -111,10 +111,10 @@ export function GarageHero({
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-white/5 rounded-3xl p-4 md:p-6 overflow-visible">
-      {/* Main Hero Container - overflow visible to allow car to extend beyond */}
+    <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-white/5 rounded-3xl p-4 md:p-6">
+      {/* Main Hero Container */}
       <div
-        className="hero-container relative w-full aspect-[3/2] rounded-2xl overflow-visible"
+        className="hero-container relative w-full aspect-[3/2] rounded-2xl overflow-hidden"
         onTouchStart={(e) => handleSwipeStart(e.touches[0].clientX)}
         onTouchEnd={(e) => handleSwipeEnd(e.changedTouches[0].clientX)}
       >
@@ -167,24 +167,6 @@ export function GarageHero({
           </div>
         </div>
 
-        {/* Layer 5: Car Overlay - Positioned at bottom center, extends beyond container */}
-        <div 
-          className="absolute left-1/2 bottom-0 z-[5] pointer-events-none"
-          style={{ 
-            transform: 'translateX(-50%) translateY(15%)',
-          }}
-        >
-          <img
-            src={activeCar.src}
-            alt={activeCar.name}
-            className="w-auto object-contain pointer-events-auto cursor-pointer transition-all duration-300"
-            style={{
-              height: 'clamp(180px, 40vh, 280px)',
-              filter: "drop-shadow(0 0 15px rgba(0, 255, 255, 0.8)) drop-shadow(0 10px 25px rgba(0, 0, 0, 0.5))",
-            }}
-          />
-        </div>
-
         {/* Navigation Arrows - Left & Right sides */}
         <button
           onClick={showPreviousCar}
@@ -210,7 +192,22 @@ export function GarageHero({
           </button>
         )}
 
+        {/* Layer 5: Car Overlay - Centered in hero with cyan glow */}
+        <div 
+          className="absolute inset-0 z-[5] flex items-center justify-center pointer-events-none"
+        >
+          <img
+            src={activeCar.src}
+            alt={activeCar.name}
+            className="max-h-[40%] w-auto max-w-[45%] object-contain pointer-events-auto cursor-pointer transition-transform hover:scale-105"
+            style={{
+              filter: "drop-shadow(0 0 35px rgba(0, 255, 255, 1)) drop-shadow(0 0 60px rgba(0, 255, 255, 0.5)) drop-shadow(0 20px 50px rgba(0, 0, 0, 0.8))",
+            }}
+          />
+        </div>
+
       </div>
+
 
       {/* Stats Row - Below Hero */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 px-2">
