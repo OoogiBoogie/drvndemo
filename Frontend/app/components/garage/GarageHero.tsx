@@ -192,14 +192,15 @@ export function GarageHero({
           </button>
         )}
 
-        {/* Layer 5: Car Overlay - Centered in hero with cyan glow */}
+        {/* Layer 5: Car Overlay - Positioned in lower portion of hero with cyan glow */}
         <div 
-          className="absolute inset-0 z-[5] flex items-center justify-center pointer-events-none"
+          className="absolute inset-0 z-[5] flex items-end justify-center pointer-events-none"
+          style={{ paddingBottom: '8%' }}
         >
           <img
             src={activeCar.src}
             alt={activeCar.name}
-            className="max-h-[40%] w-auto max-w-[45%] object-contain pointer-events-auto cursor-pointer transition-transform hover:scale-105"
+            className="max-h-[45%] w-auto max-w-[50%] object-contain pointer-events-auto cursor-pointer transition-transform hover:scale-105"
             style={{
               filter: "drop-shadow(0 0 35px rgba(0, 255, 255, 1)) drop-shadow(0 0 60px rgba(0, 255, 255, 0.5)) drop-shadow(0 20px 50px rgba(0, 0, 0, 0.8))",
             }}
