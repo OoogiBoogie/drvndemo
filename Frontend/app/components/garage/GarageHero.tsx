@@ -164,8 +164,8 @@ export function GarageHero({
         {/* Layer 4: Gradient Overlay for Text Readability */}
         <div className="absolute inset-0 z-[4] bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
 
-        {/* Layer 5: Content Overlay */}
-        <div className="absolute inset-0 z-[5] p-4 md:p-6 flex flex-col justify-between pointer-events-none">
+        {/* Layer 5: Content Overlay - Top Info Only */}
+        <div className="absolute inset-0 z-[5] p-4 md:p-6 flex flex-col justify-start pointer-events-none">
           {/* Top Info */}
           <div className="space-y-1">
             <p className="text-sm uppercase tracking-wide text-white/70 font-mono">
@@ -185,48 +185,21 @@ export function GarageHero({
               {activeCar.location}
             </p>
           </div>
-
-          {/* Bottom Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div>
-              <p className="text-xs uppercase text-white/60 font-mono">
-                Shares Owned
-              </p>
-              <p className="text-lg md:text-xl text-white font-semibold font-mono">
-                {activeCar.sharesOwned.toLocaleString()}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs uppercase text-white/60 font-mono">
-                Ownership
-              </p>
-              <p className="text-lg md:text-xl text-white font-semibold font-mono">
-                {((activeCar.sharesOwned / activeCar.totalShares) * 100).toFixed(2)}%
-              </p>
-            </div>
-            <div>
-              <p className="text-xs uppercase text-white/60 font-mono">
-                USD Value
-              </p>
-              <p className="text-lg md:text-xl text-white font-semibold font-mono">
-                {formatUsd(activeCar.usdValue)}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs uppercase text-white/60 font-mono">
-                24h Move
-              </p>
-              <p
-                className={`text-lg md:text-xl font-semibold font-mono ${
-                  activeCar.change24h >= 0 ? "text-[#00daa2]" : "text-red-400"
-                }`}
-              >
-                {activeCar.change24h >= 0 ? "+" : ""}
-                {activeCar.change24h}%
-              </p>
-            </div>
-          </div>
         </div>
+
+        {/* Navigation Arrows - Left & Right sides */}
+        <button
+          onClick={showPreviousCar}
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-[6] p-3 bg-black/30 hover:bg-black/50 border border-[#00daa2]/50 hover:border-[#00daa2] rounded-lg transition-all group"
+        >
+          <ChevronLeft className="w-6 h-6 text-[#00daa2] group-hover:scale-110 transition-transform" />
+        </button>
+        <button
+          onClick={showNextCar}
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-[6] p-3 bg-black/30 hover:bg-black/50 border border-[#00daa2]/50 hover:border-[#00daa2] rounded-lg transition-all group"
+        >
+          <ChevronRight className="w-6 h-6 text-[#00daa2] group-hover:scale-110 transition-transform" />
+        </button>
 
         {/* Customize Button (Owner only) */}
         {isOwner && onCustomize && (
@@ -240,8 +213,49 @@ export function GarageHero({
         )}
       </div>
 
-      {/* Navigation Controls */}
-      <div className="flex items-center justify-between flex-wrap gap-4 mt-4">
+      {/* Stats Row - Below Hero */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 px-2">
+        <div>
+          <p className="text-xs uppercase text-white/60 font-mono">
+            Shares Owned
+          </p>
+          <p className="text-lg md:text-xl text-white font-semibold font-mono">
+            {activeCar.sharesOwned.toLocaleString()}
+          </p>
+        </div>
+        <div>
+          <p className="text-xs uppercase text-white/60 font-mono">
+            Ownership
+          </p>
+          <p className="text-lg md:text-xl text-white font-semibold font-mono">
+            {((activeCar.sharesOwned / activeCar.totalShares) * 100).toFixed(2)}%
+          </p>
+        </div>
+        <div>
+          <p className="text-xs uppercase text-white/60 font-mono">
+            USD Value
+          </p>
+          <p className="text-lg md:text-xl text-white font-semibold font-mono">
+            {formatUsd(activeCar.usdValue)}
+          </p>
+        </div>
+        <div>
+          <p className="text-xs uppercase text-white/60 font-mono">
+            24h Move
+          </p>
+          <p
+            className={`text-lg md:text-xl font-semibold font-mono ${
+              activeCar.change24h >= 0 ? "text-[#00daa2]" : "text-red-400"
+            }`}
+          >
+            {activeCar.change24h >= 0 ? "+" : ""}
+            {activeCar.change24h}%
+          </p>
+        </div>
+      </div>
+
+      {/* Navigation Controls - Arrow Buttons & Progress Dots */}
+      <div className="flex items-center justify-between flex-wrap gap-4 mt-4 px-2">
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
