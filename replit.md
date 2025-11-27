@@ -50,15 +50,17 @@ The application utilizes TailwindCSS for utility-first styling and Radix UI for 
   - **User Profile Card** (above Hero on desktop): Two-column compact layout with:
     - Left: PFP, username, Farcaster/Base handles, follower counts
     - Right: Social icons + Follow button (same row), bio with clickable links, token ticker quick links
-  - **Hero Section (GarageHero)**: Dual-layer compositing system with:
-    - **Layer 1 - Background**: Square NFT images (1:1) cropped to 16:9 display using object-fit:cover and configurable focusY for crop position
-    - **Layer 2 - Car Overlay**: Transparent PNG car assets layered on top with responsive sizing (clamp-based height) and centered positioning
-    - **Layer 3 - Gradient**: Text readability overlay
-    - **Layer 4 - Content**: Vehicle info, ticker badge, stats
-    - Swipeable carousel for switching cars with arrow navigation and progress dots
+  - **Hero Section (GarageHero)**: Multi-layer compositing system with fixed-position car overlay:
+    - **Layer 1 - Background**: Garage background images (1:1 ratio cropped to 3:2 display) with object-fit:cover
+    - **Layer 2 - Glow Effect**: Radial gradient blur effect at bottom center for neon glow behind car
+    - **Layer 3 - Gradient**: Dark gradient overlay from bottom for text readability
+    - **Layer 4 - Content**: Vehicle info (collection, name, ticker badge, location) positioned at top-left
+    - **Car Overlay**: Uses `position: fixed` with dynamic viewport tracking to escape parent `overflow:auto` clipping from DRVNDashboard.tsx main content area. Position updates on scroll/resize via getBoundingClientRect().
+    - Navigation arrows on left/right sides for switching cars
     - Customize button (gear icon, owner-only) opens GarageCustomizeModal
-    - Data structure supports future NFT metadata (isNft, nftContract, nftTokenId)
+    - Transparent PNG assets with drop-shadow filter for glow effect
     - Assets located at: `/public/garage-backgrounds/` and `/public/car-overlays/`
+    - **Technical Note**: Fixed positioning required because DRVNDashboard main content has `overflow-y-auto` which clips absolutely-positioned elements extending outside component bounds
   - **Portfolio Snapshot**: Summary cards showing total value, 24h change, vehicles owned, ETH balance
   - **VHCL Collection** (4 tabs, public):
     - RWA Collection: List-style view of car tokens held with tickers and ownership %

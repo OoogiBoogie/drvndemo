@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, Settings } from "lucide-react";
 import { Button } from "../ui/button";
 
@@ -52,6 +52,11 @@ export function GarageHero({
   const [localCarIndex, setLocalCarIndex] = useState(activeCarIndex);
   const [localBgIndex, setLocalBgIndex] = useState(activeBackgroundIndex);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [slideOffset, setSlideOffset] = useState(activeCarIndex + 1);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const [carPosition, setCarPosition] = useState<{ top: number; left: number; width: number } | null>(null);
 
   const currentCarIdx = onCarChange ? activeCarIndex : localCarIndex;
   const currentBgIdx = onBackgroundChange ? activeBackgroundIndex : localBgIndex;
@@ -61,23 +66,87 @@ export function GarageHero({
     ? backgrounds[currentBgIdx % backgrounds.length] 
     : null;
 
-  const showNextCar = useCallback(() => {
-    const newIndex = (currentCarIdx + 1) % cars.length;
-    if (onCarChange) {
-      onCarChange(newIndex);
-    } else {
-      setLocalCarIndex(newIndex);
+  const extendedCars = cars.length > 0 ? [
+    cars[cars.length - 1],
+    ...cars,
+    cars[0],
+  ] : [];
+
+  useEffect(() => {
+    setSlideOffset(currentCarIdx + 1);
+  }, [currentCarIdx]);
+
+  // Track hero position for fixed car overlay
+  useEffect(() => {
+    if (!activeCar || !activeBackground) return;
+    
+    const updateCarPosition = () => {
+      if (heroRef.current) {
+        const rect = heroRef.current.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        // Position car at the bottom of the hero, clamping to viewport if needed
+        const heroBottom = Math.min(rect.bottom, viewportHeight - 50);
+        setCarPosition({
+          top: heroBottom - 80,
+          left: rect.left + rect.width / 2,
+          width: rect.width,
+        });
+      }
+    };
+    
+    // Delay initial update to ensure ref is attached
+    const timeoutId = setTimeout(updateCarPosition, 50);
+    
+    // Update on scroll and resize
+    const handleScroll = () => requestAnimationFrame(updateCarPosition);
+    window.addEventListener('resize', handleScroll);
+    window.addEventListener('scroll', handleScroll, true);
+    
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', handleScroll);
+      window.removeEventListener('scroll', handleScroll, true);
+    };
+  }, [activeCar, activeBackground]);
+
+  const handleTransitionEnd = useCallback(() => {
+    setIsTransitioning(false);
+    if (slideOffset === 0) {
+      setSlideOffset(cars.length);
+    } else if (slideOffset === cars.length + 1) {
+      setSlideOffset(1);
     }
-  }, [currentCarIdx, cars.length, onCarChange]);
+  }, [slideOffset, cars.length]);
+
+  const showNextCar = useCallback(() => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    const newIndex = (currentCarIdx + 1) % cars.length;
+    setSlideOffset(prev => prev + 1);
+    
+    setTimeout(() => {
+      if (onCarChange) {
+        onCarChange(newIndex);
+      } else {
+        setLocalCarIndex(newIndex);
+      }
+    }, 50);
+  }, [currentCarIdx, cars.length, onCarChange, isTransitioning]);
 
   const showPreviousCar = useCallback(() => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
     const newIndex = (currentCarIdx - 1 + cars.length) % cars.length;
-    if (onCarChange) {
-      onCarChange(newIndex);
-    } else {
-      setLocalCarIndex(newIndex);
-    }
-  }, [currentCarIdx, cars.length, onCarChange]);
+    setSlideOffset(prev => prev - 1);
+    
+    setTimeout(() => {
+      if (onCarChange) {
+        onCarChange(newIndex);
+      } else {
+        setLocalCarIndex(newIndex);
+      }
+    }, 50);
+  }, [currentCarIdx, cars.length, onCarChange, isTransitioning]);
 
   const handleSwipeStart = (x: number) => {
     setTouchStartX(x);
@@ -113,14 +182,15 @@ export function GarageHero({
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-white/5 rounded-3xl p-4 md:p-6">
-      {/* Main Hero Container - Wide crop showing mezzanine + mid-ground (red box region) */}
+      {/* Main Hero Container */}
       <div
+        ref={heroRef}
         className="hero-container relative w-full aspect-[3/2] rounded-2xl overflow-hidden"
         onTouchStart={(e) => handleSwipeStart(e.touches[0].clientX)}
         onTouchEnd={(e) => handleSwipeEnd(e.changedTouches[0].clientX)}
       >
-        {/* Layer 1: Background - Balanced to show mezzanine + floor */}
-        <div className="hero-bg absolute inset-0 z-[1] bg-gray-950">
+        {/* Layer 1: Background with rounded corners and clipping */}
+        <div className="absolute inset-0 z-[1] rounded-2xl overflow-hidden bg-gray-950">
           <img
             src={activeBackground.src}
             alt={activeBackground.name}
@@ -131,57 +201,23 @@ export function GarageHero({
           />
         </div>
 
-        {/* Layer 2: Intense Glow Effect Behind Car */}
+        {/* Layer 2: Glow Effect Behind Car */}
         <div className="absolute inset-0 z-[2] flex items-end justify-center pointer-events-none">
           <div 
-            className="absolute bottom-0 w-[80%] h-[50%] animate-pulse"
+            className="absolute bottom-0 w-[80%] h-[50%]"
             style={{
-              background: "radial-gradient(ellipse at center bottom, rgba(0, 255, 255, 0.6) 0%, rgba(59, 130, 246, 0.4) 25%, rgba(139, 92, 246, 0.3) 50%, transparent 80%)",
-              filter: "blur(50px)",
-              transform: "translateY(15%)",
+              background: "radial-gradient(ellipse at center bottom, rgba(0, 255, 255, 0.5) 0%, rgba(59, 130, 246, 0.3) 30%, transparent 70%)",
+              filter: "blur(40px)",
+              transform: "translateY(10%)",
             }}
           />
         </div>
 
-        {/* Layer 3: Car Carousel - Smooth horizontal slide like camera pan */}
-        <div className="hero-car-layer absolute inset-0 z-[3] overflow-hidden">
-          <div 
-            className="flex items-end h-full transition-transform duration-500 ease-out will-change-transform"
-            style={{ 
-              transform: `translateX(-${currentCarIdx * 100}%)`,
-              width: `${cars.length * 100}%`
-            }}
-          >
-            {cars.map((car) => (
-              <div 
-                key={car.id} 
-                className="flex-shrink-0 flex items-end justify-center"
-                style={{ width: `${100 / cars.length}%`, height: '100%' }}
-              >
-                <img
-                  src={car.src}
-                  alt={car.name}
-                  className="hero-car cursor-pointer"
-                  style={{
-                    height: "clamp(100px, 49%, 285px)",
-                    width: "auto",
-                    maxWidth: "85%",
-                    objectFit: "contain",
-                    marginBottom: "0%",
-                    filter: "brightness(1.1) contrast(1.05) drop-shadow(0 0 4px rgba(0, 255, 255, 0.9)) drop-shadow(0 0 8px rgba(0, 255, 255, 0.7)) drop-shadow(0 0 16px rgba(59, 130, 246, 0.6)) drop-shadow(0 0 24px rgba(59, 130, 246, 0.4)) drop-shadow(0 0 40px rgba(139, 92, 246, 0.5)) drop-shadow(0 0 60px rgba(139, 92, 246, 0.3)) drop-shadow(0 15px 25px rgba(0, 0, 0, 0.6))",
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Layer 3: Gradient Overlay for Text Readability */}
+        <div className="absolute inset-0 z-[3] rounded-2xl bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
 
-        {/* Layer 4: Gradient Overlay for Text Readability */}
-        <div className="absolute inset-0 z-[4] bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
-
-        {/* Layer 5: Content Overlay - Top Info Only */}
-        <div className="absolute inset-0 z-[5] p-4 md:p-6 flex flex-col justify-start pointer-events-none">
-          {/* Top Info */}
+        {/* Layer 4: Content Overlay - Top Info Only */}
+        <div className="absolute inset-0 z-[4] p-4 md:p-6 flex flex-col justify-start pointer-events-none">
           <div className="space-y-1">
             <p className="text-sm uppercase tracking-wide text-white/70 font-mono">
               {activeCar.collection}
@@ -220,12 +256,31 @@ export function GarageHero({
         {isOwner && onCustomize && (
           <button
             onClick={onCustomize}
-            className="absolute top-4 right-4 z-[5] p-2 bg-black/50 hover:bg-black/70 rounded-lg border border-white/20 transition-colors"
+            className="absolute top-4 right-4 z-[6] p-2 bg-black/50 hover:bg-black/70 rounded-lg border border-white/20 transition-colors"
             title="Customize Garage"
           >
             <Settings className="w-5 h-5 text-white/80" />
           </button>
         )}
+
+      </div>
+
+      {/* Car Overlay - Fixed position with transform to center on hero bottom */}
+      <div 
+        className="fixed -translate-x-1/2 -translate-y-1/2 z-[9999] pointer-events-none"
+        style={{ 
+          top: carPosition ? carPosition.top + 50 : 500,
+          left: carPosition ? carPosition.left : 640,
+        }}
+      >
+        <img
+          src={activeCar.src}
+          alt={activeCar.name}
+          className="h-40 md:h-52 lg:h-60 w-auto object-contain pointer-events-auto cursor-pointer transition-all duration-300"
+          style={{
+            filter: "drop-shadow(0 0 15px rgba(0, 255, 255, 0.8)) drop-shadow(0 10px 25px rgba(0, 0, 0, 0.5))",
+          }}
+        />
       </div>
 
       {/* Stats Row - Below Hero */}
