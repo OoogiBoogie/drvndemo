@@ -113,20 +113,20 @@ export function GarageHero({
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-white/5 rounded-3xl p-4 md:p-6">
-      {/* Main Hero Container - 16:9 aspect ratio with overflow hidden for cropping */}
+      {/* Main Hero Container - 16:10 aspect ratio to show more of scene */}
       <div
-        className="hero-container relative w-full aspect-[16/9] rounded-2xl overflow-hidden"
+        className="hero-container relative w-full aspect-[16/10] rounded-2xl overflow-hidden"
         onTouchStart={(e) => handleSwipeStart(e.touches[0].clientX)}
         onTouchEnd={(e) => handleSwipeEnd(e.changedTouches[0].clientX)}
       >
-        {/* Layer 1: Background (Square NFT cropped to 16:9) */}
-        <div className="hero-bg absolute inset-0 z-[1]">
+        {/* Layer 1: Background (Full width, positioned to show key elements) */}
+        <div className="hero-bg absolute inset-0 z-[1] bg-gray-950">
           <img
             src={activeBackground.src}
             alt={activeBackground.name}
             className="w-full h-full object-cover"
             style={{
-              objectPosition: `50% ${activeBackground.focusY ?? 35}%`,
+              objectPosition: "center 60%",
             }}
           />
         </div>
