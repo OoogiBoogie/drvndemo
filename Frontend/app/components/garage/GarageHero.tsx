@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Settings } from "lucide-react";
-import { Button } from "../ui/button";
 
 interface GarageBackground {
   id: string;
@@ -52,11 +51,6 @@ export function GarageHero({
   const [localCarIndex, setLocalCarIndex] = useState(activeCarIndex);
   const [localBgIndex, setLocalBgIndex] = useState(activeBackgroundIndex);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [slideOffset, setSlideOffset] = useState(activeCarIndex + 1);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const heroRef = useRef<HTMLDivElement>(null);
-  const [carPosition, setCarPosition] = useState<{ top: number; left: number; width: number } | null>(null);
 
   const currentCarIdx = onCarChange ? activeCarIndex : localCarIndex;
   const currentBgIdx = onBackgroundChange ? activeBackgroundIndex : localBgIndex;
@@ -66,87 +60,23 @@ export function GarageHero({
     ? backgrounds[currentBgIdx % backgrounds.length] 
     : null;
 
-  const extendedCars = cars.length > 0 ? [
-    cars[cars.length - 1],
-    ...cars,
-    cars[0],
-  ] : [];
-
-  useEffect(() => {
-    setSlideOffset(currentCarIdx + 1);
-  }, [currentCarIdx]);
-
-  // Track hero position for fixed car overlay
-  useEffect(() => {
-    if (!activeCar || !activeBackground) return;
-    
-    const updateCarPosition = () => {
-      if (heroRef.current) {
-        const rect = heroRef.current.getBoundingClientRect();
-        const viewportHeight = window.innerHeight;
-        // Position car at the bottom of the hero, clamping to viewport if needed
-        const heroBottom = Math.min(rect.bottom, viewportHeight - 50);
-        setCarPosition({
-          top: heroBottom - 80,
-          left: rect.left + rect.width / 2,
-          width: rect.width,
-        });
-      }
-    };
-    
-    // Delay initial update to ensure ref is attached
-    const timeoutId = setTimeout(updateCarPosition, 50);
-    
-    // Update on scroll and resize
-    const handleScroll = () => requestAnimationFrame(updateCarPosition);
-    window.addEventListener('resize', handleScroll);
-    window.addEventListener('scroll', handleScroll, true);
-    
-    return () => {
-      clearTimeout(timeoutId);
-      window.removeEventListener('resize', handleScroll);
-      window.removeEventListener('scroll', handleScroll, true);
-    };
-  }, [activeCar, activeBackground]);
-
-  const handleTransitionEnd = useCallback(() => {
-    setIsTransitioning(false);
-    if (slideOffset === 0) {
-      setSlideOffset(cars.length);
-    } else if (slideOffset === cars.length + 1) {
-      setSlideOffset(1);
-    }
-  }, [slideOffset, cars.length]);
-
   const showNextCar = useCallback(() => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
     const newIndex = (currentCarIdx + 1) % cars.length;
-    setSlideOffset(prev => prev + 1);
-    
-    setTimeout(() => {
-      if (onCarChange) {
-        onCarChange(newIndex);
-      } else {
-        setLocalCarIndex(newIndex);
-      }
-    }, 50);
-  }, [currentCarIdx, cars.length, onCarChange, isTransitioning]);
+    if (onCarChange) {
+      onCarChange(newIndex);
+    } else {
+      setLocalCarIndex(newIndex);
+    }
+  }, [currentCarIdx, cars.length, onCarChange]);
 
   const showPreviousCar = useCallback(() => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
     const newIndex = (currentCarIdx - 1 + cars.length) % cars.length;
-    setSlideOffset(prev => prev - 1);
-    
-    setTimeout(() => {
-      if (onCarChange) {
-        onCarChange(newIndex);
-      } else {
-        setLocalCarIndex(newIndex);
-      }
-    }, 50);
-  }, [currentCarIdx, cars.length, onCarChange, isTransitioning]);
+    if (onCarChange) {
+      onCarChange(newIndex);
+    } else {
+      setLocalCarIndex(newIndex);
+    }
+  }, [currentCarIdx, cars.length, onCarChange]);
 
   const handleSwipeStart = (x: number) => {
     setTouchStartX(x);
@@ -181,11 +111,10 @@ export function GarageHero({
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-white/5 rounded-3xl p-4 md:p-6">
-      {/* Main Hero Container */}
+    <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-white/5 rounded-3xl p-4 md:p-6 overflow-visible">
+      {/* Main Hero Container - overflow visible to allow car to extend beyond */}
       <div
-        ref={heroRef}
-        className="hero-container relative w-full aspect-[3/2] rounded-2xl overflow-hidden"
+        className="hero-container relative w-full aspect-[3/2] rounded-2xl overflow-visible"
         onTouchStart={(e) => handleSwipeStart(e.touches[0].clientX)}
         onTouchEnd={(e) => handleSwipeEnd(e.changedTouches[0].clientX)}
       >
@@ -202,7 +131,7 @@ export function GarageHero({
         </div>
 
         {/* Layer 2: Glow Effect Behind Car */}
-        <div className="absolute inset-0 z-[2] flex items-end justify-center pointer-events-none">
+        <div className="absolute inset-0 z-[2] flex items-end justify-center pointer-events-none overflow-hidden rounded-2xl">
           <div 
             className="absolute bottom-0 w-[80%] h-[50%]"
             style={{
@@ -238,6 +167,24 @@ export function GarageHero({
           </div>
         </div>
 
+        {/* Layer 5: Car Overlay - Positioned at bottom center, extends beyond container */}
+        <div 
+          className="absolute left-1/2 bottom-0 z-[5] pointer-events-none"
+          style={{ 
+            transform: 'translateX(-50%) translateY(15%)',
+          }}
+        >
+          <img
+            src={activeCar.src}
+            alt={activeCar.name}
+            className="w-auto object-contain pointer-events-auto cursor-pointer transition-all duration-300"
+            style={{
+              height: 'clamp(180px, 40vh, 280px)',
+              filter: "drop-shadow(0 0 15px rgba(0, 255, 255, 0.8)) drop-shadow(0 10px 25px rgba(0, 0, 0, 0.5))",
+            }}
+          />
+        </div>
+
         {/* Navigation Arrows - Left & Right sides */}
         <button
           onClick={showPreviousCar}
@@ -263,24 +210,6 @@ export function GarageHero({
           </button>
         )}
 
-      </div>
-
-      {/* Car Overlay - Fixed position with transform to center on hero bottom */}
-      <div 
-        className="fixed -translate-x-1/2 -translate-y-1/2 z-[9999] pointer-events-none"
-        style={{ 
-          top: carPosition ? carPosition.top + 50 : 500,
-          left: carPosition ? carPosition.left : 640,
-        }}
-      >
-        <img
-          src={activeCar.src}
-          alt={activeCar.name}
-          className="h-40 md:h-52 lg:h-60 w-auto object-contain pointer-events-auto cursor-pointer transition-all duration-300"
-          style={{
-            filter: "drop-shadow(0 0 15px rgba(0, 255, 255, 0.8)) drop-shadow(0 10px 25px rgba(0, 0, 0, 0.5))",
-          }}
-        />
       </div>
 
       {/* Stats Row - Below Hero */}
