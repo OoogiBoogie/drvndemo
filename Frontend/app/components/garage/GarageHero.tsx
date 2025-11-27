@@ -138,12 +138,12 @@ export function GarageHero({
             alt={activeCar.name}
             className="hero-car drop-shadow-2xl"
             style={{
-              height: "clamp(140px, 55%, 320px)",
+              height: "clamp(180px, 65%, 400px)",
               width: "auto",
-              maxWidth: "90%",
+              maxWidth: "95%",
               objectFit: "contain",
               transform: activeCar.offsetX ? `translateX(${activeCar.offsetX}%)` : undefined,
-              marginBottom: "2%",
+              marginBottom: "-5%",
             }}
           />
         </div>

@@ -112,10 +112,10 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
 
   const rwaHoldings: RwaHolding[] = currentUser?.rwaHoldings || [
     {
-      id: "rwa-gt3",
-      name: "Porsche 911 GT3 RS",
-      collection: "Paul Walker Legacy Set",
-      ticker: "GT3RS",
+      id: "rwa-ferrari",
+      name: "Ferrari 360 Modena",
+      collection: "Italian Exotics",
+      ticker: "F360",
       sharesOwned: 1250,
       totalShares: 10000,
       usdValue: 27500,
@@ -173,7 +173,7 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
 
   const carOverlays = rwaHoldings.map((holding) => ({
     id: holding.id,
-    src: holding.id === "rwa-gt3" 
+    src: holding.id === "rwa-ferrari" 
       ? "/car-overlays/ferrari-360.png" 
       : holding.id === "rwa-r34"
         ? "/car-overlays/gtr-r34.png"
