@@ -311,8 +311,8 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
     });
 
   return (
-    <div className="w-full max-w-full overflow-x-hidden box-border">
-      <div className="w-full max-w-6xl mx-auto space-y-6">
+    <div className="w-full max-w-[100vw] overflow-x-hidden box-border">
+      <div className="w-full max-w-full md:max-w-6xl mx-0 md:mx-auto px-0 md:px-0 space-y-6">
 
         {/* Module 1: User Profile Card - ABOVE Hero on desktop */}
         <UserProfileCard

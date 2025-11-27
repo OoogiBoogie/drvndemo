@@ -1315,8 +1315,8 @@ export function DRVNDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 grid-background overflow-x-hidden mobile-optimized">
-      <div className="flex h-screen">
+    <div className="min-h-screen bg-gray-950 grid-background overflow-x-hidden mobile-optimized max-w-[100vw]">
+      <div className="flex h-screen w-full max-w-[100vw]">
         {/* Desktop Sidebar */}
         <div
           className={`relative bg-gray-950 border-r border-[#8351a1] transition-all duration-300 hidden md:block ${sidebarCollapsed ? "w-16" : "w-64"
@@ -1757,9 +1757,9 @@ export function DRVNDashboard() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-w-0 max-w-full w-full">
           {/* Header */}
-          <header className="flex items-center justify-between p-5 border-b border-[#8351a1] bg-gray-950">
+          <header className="flex items-center justify-between p-5 border-b border-[#8351a1] bg-gray-950 w-full max-w-full">
             <div className="flex items-center gap-4">
               {/* Mobile Logo */}
               <div className="md:hidden">
@@ -1791,7 +1791,7 @@ export function DRVNDashboard() {
           </header>
 
           {/* Main Content */}
-          <main className="p-4 md:p-6 space-y-6 md:space-y-8 flex-1 overflow-y-auto overflow-x-hidden mobile-scroll w-full max-w-full">
+          <main className="p-4 md:p-6 space-y-6 md:space-y-8 flex-1 overflow-y-auto overflow-x-hidden mobile-scroll w-full max-w-full min-w-0">
             {renderPageContent()}
           </main>
         </div>
