@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, Settings } from "lucide-react";
 import { Button } from "../ui/button";
 
@@ -52,6 +52,9 @@ export function GarageHero({
   const [localCarIndex, setLocalCarIndex] = useState(activeCarIndex);
   const [localBgIndex, setLocalBgIndex] = useState(activeBackgroundIndex);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const prevCarIdxRef = useRef(activeCarIndex);
 
   const currentCarIdx = onCarChange ? activeCarIndex : localCarIndex;
   const currentBgIdx = onBackgroundChange ? activeBackgroundIndex : localBgIndex;
@@ -61,7 +64,24 @@ export function GarageHero({
     ? backgrounds[currentBgIdx % backgrounds.length] 
     : null;
 
+  useEffect(() => {
+    if (prevCarIdxRef.current !== currentCarIdx) {
+      const direction = currentCarIdx > prevCarIdxRef.current ? "left" : "right";
+      setSlideDirection(direction);
+      setIsAnimating(true);
+      
+      const timer = setTimeout(() => {
+        setIsAnimating(false);
+        setSlideDirection(null);
+      }, 500);
+      
+      prevCarIdxRef.current = currentCarIdx;
+      return () => clearTimeout(timer);
+    }
+  }, [currentCarIdx]);
+
   const showNextCar = useCallback(() => {
+    setSlideDirection("left");
     const newIndex = (currentCarIdx + 1) % cars.length;
     if (onCarChange) {
       onCarChange(newIndex);
@@ -71,6 +91,7 @@ export function GarageHero({
   }, [currentCarIdx, cars.length, onCarChange]);
 
   const showPreviousCar = useCallback(() => {
+    setSlideDirection("right");
     const newIndex = (currentCarIdx - 1 + cars.length) % cars.length;
     if (onCarChange) {
       onCarChange(newIndex);
@@ -143,12 +164,19 @@ export function GarageHero({
           />
         </div>
 
-        {/* Layer 3: Car Overlay - Reactive with glow */}
-        <div className="hero-car-layer absolute inset-0 z-[3] flex items-end justify-center group">
+        {/* Layer 3: Car Overlay - Reactive with glow and slide animation */}
+        <div className="hero-car-layer absolute inset-0 z-[3] flex items-end justify-center group overflow-hidden">
           <img
+            key={activeCar.id}
             src={activeCar.src}
             alt={activeCar.name}
-            className="hero-car transition-all duration-500 ease-out hover:scale-105 cursor-pointer"
+            className={`hero-car cursor-pointer ${
+              isAnimating 
+                ? slideDirection === "left" 
+                  ? "animate-slide-in-right" 
+                  : "animate-slide-in-left"
+                : ""
+            }`}
             style={{
               height: "clamp(100px, 49%, 285px)",
               width: "auto",
@@ -254,28 +282,8 @@ export function GarageHero({
         </div>
       </div>
 
-      {/* Navigation Controls - Arrow Buttons & Progress Dots */}
-      <div className="flex items-center justify-between flex-wrap gap-4 mt-4 px-2">
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="border border-white/20 text-white/80 hover:text-white"
-            onClick={showPreviousCar}
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="border border-white/20 text-white/80 hover:text-white"
-            onClick={showNextCar}
-          >
-            <ChevronRight className="w-5 h-5" />
-          </Button>
-        </div>
-
-        {/* Progress Dots */}
+      {/* Progress Dots Only */}
+      <div className="flex items-center justify-end mt-4 px-2">
         <div className="flex items-center gap-2">
           {cars.map((car, index) => (
             <button
