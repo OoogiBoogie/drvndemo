@@ -113,34 +113,37 @@ export function GarageHero({
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-white/5 rounded-3xl p-4 md:p-6">
-      {/* Main Hero Container - Square source image shown without cropping */}
+      {/* Main Hero Container - Wide crop showing mezzanine + mid-ground (red box region) */}
       <div
-        className="hero-container relative w-full aspect-square rounded-2xl overflow-hidden"
+        className="hero-container relative w-full aspect-[2/1] rounded-2xl overflow-hidden"
         onTouchStart={(e) => handleSwipeStart(e.touches[0].clientX)}
         onTouchEnd={(e) => handleSwipeEnd(e.changedTouches[0].clientX)}
       >
-        {/* Layer 1: Background - Full image, no cropping */}
+        {/* Layer 1: Background - Cropped to show middle section (mezzanine + cars, no ceiling/floor) */}
         <div className="hero-bg absolute inset-0 z-[1] bg-gray-950">
           <img
             src={activeBackground.src}
             alt={activeBackground.name}
-            className="w-full h-full object-contain"
+            className="w-full h-full object-cover"
+            style={{
+              objectPosition: "center 50%",
+            }}
           />
         </div>
 
-        {/* Layer 2: Car Overlay (Transparent PNG - 42% height to align tires with floor) */}
+        {/* Layer 2: Car Overlay (Yellow box position - bottom center, ~45% height) */}
         <div className="hero-car-layer absolute inset-0 z-[2] flex items-end justify-center">
           <img
             src={activeCar.src}
             alt={activeCar.name}
             className="hero-car"
             style={{
-              height: "clamp(130px, 42%, 280px)",
+              height: "clamp(120px, 55%, 320px)",
               width: "auto",
-              maxWidth: "85%",
+              maxWidth: "75%",
               objectFit: "contain",
               transform: activeCar.offsetX ? `translateX(${activeCar.offsetX}%)` : undefined,
-              marginBottom: "3%",
+              marginBottom: "-5%",
               filter: "drop-shadow(0 10px 30px rgba(0,0,0,0.8))",
             }}
           />
