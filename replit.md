@@ -50,7 +50,15 @@ The application utilizes TailwindCSS for utility-first styling and Radix UI for 
   - **User Profile Card** (above Hero on desktop): Two-column compact layout with:
     - Left: PFP, username, Farcaster/Base handles, follower counts
     - Right: Social icons + Follow button (same row), bio with clickable links, token ticker quick links
-  - **Hero Section**: Interactive swipeable garage viewer for RWA vehicle collection with ticker badges
+  - **Hero Section (GarageHero)**: Dual-layer compositing system with:
+    - **Layer 1 - Background**: Square NFT images (1:1) cropped to 16:9 display using object-fit:cover and configurable focusY for crop position
+    - **Layer 2 - Car Overlay**: Transparent PNG car assets layered on top with responsive sizing (clamp-based height) and centered positioning
+    - **Layer 3 - Gradient**: Text readability overlay
+    - **Layer 4 - Content**: Vehicle info, ticker badge, stats
+    - Swipeable carousel for switching cars with arrow navigation and progress dots
+    - Customize button (gear icon, owner-only) opens GarageCustomizeModal
+    - Data structure supports future NFT metadata (isNft, nftContract, nftTokenId)
+    - Assets located at: `/public/garage-backgrounds/` and `/public/car-overlays/`
   - **Portfolio Snapshot**: Summary cards showing total value, 24h change, vehicles owned, ETH balance
   - **VHCL Collection** (4 tabs, public):
     - RWA Collection: List-style view of car tokens held with tickers and ownership %
