@@ -149,10 +149,11 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
     },
   ];
 
-  const activeHolding =
+  const _activeHolding =
     rwaHoldings.length > 0
       ? rwaHoldings[activeHoldingIndex % rwaHoldings.length]
       : null;
+  void _activeHolding;
 
   const garageBackgrounds = [
     {
@@ -189,7 +190,8 @@ export function Garage({ currentUser, isAuthenticated, profileWalletAddress, onN
     offsetX: 0,
   }));
 
-  const selectedBackground = garageBackgrounds.find(bg => bg.id === selectedBackgroundId) || garageBackgrounds[0];
+  const _selectedBackground = garageBackgrounds.find(bg => bg.id === selectedBackgroundId) || garageBackgrounds[0];
+  void _selectedBackground;
 
   const displayWalletAddress = profileAddress || address || "0x0000000000000000000000000000000000000000";
   

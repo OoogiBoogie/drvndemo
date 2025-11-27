@@ -49,7 +49,8 @@ export function GarageHero({
   isOwner = false,
 }: GarageHeroProps) {
   const [localCarIndex, setLocalCarIndex] = useState(activeCarIndex);
-  const [localBgIndex, setLocalBgIndex] = useState(activeBackgroundIndex);
+  const [localBgIndex, _setLocalBgIndex] = useState(activeBackgroundIndex);
+  void _setLocalBgIndex;
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   
   // Two-phase animation state
