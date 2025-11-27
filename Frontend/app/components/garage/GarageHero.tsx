@@ -115,7 +115,7 @@ export function GarageHero({
     <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-white/5 rounded-3xl p-4 md:p-6">
       {/* Main Hero Container - Wide crop showing mezzanine + mid-ground (red box region) */}
       <div
-        className="hero-container relative w-full aspect-[2/1] rounded-2xl overflow-hidden"
+        className="hero-container relative w-full aspect-[16/9] rounded-2xl overflow-hidden"
         onTouchStart={(e) => handleSwipeStart(e.touches[0].clientX)}
         onTouchEnd={(e) => handleSwipeEnd(e.changedTouches[0].clientX)}
       >
@@ -143,7 +143,7 @@ export function GarageHero({
               maxWidth: "85%",
               objectFit: "contain",
               transform: activeCar.offsetX ? `translateX(${activeCar.offsetX}%)` : undefined,
-              marginBottom: "-5%",
+              marginBottom: "-12%",
               filter: "drop-shadow(0 10px 30px rgba(0,0,0,0.8))",
             }}
           />
