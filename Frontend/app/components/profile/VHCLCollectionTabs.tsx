@@ -396,7 +396,7 @@ export function VHCLCollectionTabs({
     };
 
     return (
-        <Card className="w-full bg-black/40 border-white/10 backdrop-blur-md">
+        <Card className="w-full bg-black/40 border-white/10 backdrop-blur-md overflow-hidden">
             <CardHeader className="pb-3">
                 <CardTitle className="text-xl font-bold text-white flex items-center gap-2">
                     <Car className="w-5 h-5 text-primary" />

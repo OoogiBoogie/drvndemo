@@ -106,8 +106,8 @@ export function UserProfileCard({
     };
 
     return (
-        <Card className="w-full bg-black/40 border-white/10 backdrop-blur-md mb-6">
-            <CardContent className="p-4 md:p-6">
+        <Card className="w-full bg-black/40 border-white/10 backdrop-blur-md mb-6 overflow-hidden">
+            <CardContent className="p-3 md:p-6 overflow-hidden">
                 <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                     {/* LEFT COLUMN: PFP, username, handles, followers */}
                     <div className="flex flex-row md:flex-col gap-4 md:gap-3 items-center md:items-start flex-shrink-0">

@@ -158,7 +158,7 @@ export function GarageHero({
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-white/5 rounded-3xl p-4 md:p-6">
+    <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-white/5 rounded-3xl p-3 md:p-6 w-full overflow-hidden">
       {/* Main Hero Container */}
       <div
         className="hero-container relative w-full aspect-[3/2] rounded-2xl overflow-hidden"
