@@ -22,6 +22,7 @@ const spaceGrotesk = Space_Grotesk({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -58,7 +59,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`bg-black text-foreground min-h-screen ${spaceMono.variable} ${spaceGrotesk.variable} font-sans`}
+        className={`bg-black text-foreground min-h-screen safe-area-inset ${spaceMono.variable} ${spaceGrotesk.variable} font-sans`}
       >
         <Providers>{children}</Providers>
       </body>
