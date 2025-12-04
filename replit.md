@@ -23,6 +23,12 @@ The application utilizes TailwindCSS for utility-first styling and Radix UI for 
     - **Token Swap**: In-platform token exchange functionality.
     - **Wallet Authentication**: Web3-based user authentication.
 - **Development Environment**: Configured for Replit with Node.js 22, frontend dependencies, and a development server on port 5000. Next.js host checking is disabled for Replit proxy compatibility.
+- **SDK Integration (Updated Dec 2025)**:
+    - Next.js pinned to 15.3.6 per team requirements
+    - Uses `@farcaster/miniapp-sdk` (deprecated frame-sdk removed from codebase; upstream OnchainKit warning is known)
+    - MiniKit provider with `useMiniKit`, `useIsInMiniApp` hooks for context/FID access
+    - Base App detection via `clientFid === 309857` in `useBaseAppDetection` and `useOptimizedOnboarding` hooks
+    - Safe area insets: `viewport-fit: cover`, CSS `env()` utilities, and `useSafeAreaInsets` hook for MiniKit context
 
 ### Feature Specifications
 - **Vehicle Detail Modal (VHCL)**: Full-screen, responsive overlay for ownership-focused vehicle details including image gallery, car profile card, sponsorship module, token details, valuation card (AV/MV/Spread), content feed (Timeline, Gallery, Modifications), and Tagged Posts section. Uses glassmorphic styling (bg-white/[0.03], bg-black/40 backdrop-blur-md). Opens from Garage page for community/ownership experience.
