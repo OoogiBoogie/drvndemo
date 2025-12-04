@@ -1,0 +1,107 @@
+Justin T, [12/3/2025 3:11 PM]
+Hey Stuff! I reviewed the shared link. There’s nothing wrong with experimenting or “vibe coding,” but a few important issues need to be addressed. It’s essential that you fully understand our build, our tech stack, and the repo documentation before shipping code.
+
+1. Framework Mismatch
+
+Replit is generating code using a framework we do *not* use.
+As documented in our DRVN-LABO GitHub repo, our stack is built on Next.js, not Vite. This mismatch alone prevents direct integration.
+
+2. Follow the Repo Structure Exactly
+
+Please clone the repo and follow the tech stack documentation step-by-step.
+Testing must also be done across all platforms:
+- dApp
+- Farcaster Mini App
+- Base App
+
+You’ll need to tunnel your local environment (localhost:3000) using Ngrok to ensure the app works correctly in all contexts. The docs describe this process in detail.
+
+3. TailwindCSS Styling Issues
+
+On the Feed page, the CSS doesn’t align with the TailwindCSS patterns defined in our repo (we’re on Tailwind v3.4). Please match your components to our existing style conventions.
+
+4. Container Sizing & Safe Areas
+
+Some parent containers are oversized on desktop.
+We must keep layouts within OnchainKit safe areas for mini apps.
+You can validate this by tunneling via Ngrok and previewing the mini app inside:
+- Farcaster Dev Tools
+- Base.dev
+- Base App (mobile developer mode)
+
+This allows you to see hot reloads and confirm proper scaling.
+
+5. Database & Realtime Behavior
+
+Replit uses Supabase by default, so the posts you’re seeing are temporary and don’t reflect our actual system.
+
+Our build *must* use Farcaster SDKs to:
+
+- Read the user’s FID
+- Read the BaseApp clientFID (from the connected wallet through Farcaster/Base Mini App)
+
+This can only be properly tested by tunneling your local build via Ngrok.
+
+Example from Base Docs (clientFid):
+
+import { useMiniKit } from 'coinbase/onchainkit/minikit'
+
+function MyComponent() {
+  const { context } = useMiniKit();
+  const isBaseApp = context.client.clientFid === 309857;
+
+  if (isBaseApp) {
+    console.log('Running in Base App');
+  }
+
+  return <div>{/* Your Components */}</div>
+}
+
+6. Please Read the Repo Code Structure + Docs
+
+Understanding:
+- our folder layout
+- our Next.js patterns
+- our SDK dependencies (Farcaster, Base, OnchainKit)
+
+…is critical before contributing.
+Right now, the Replit-generated code can’t be accepted due to multiple incompatibilities.
+
+If you have questions about the repo docs, Base docs, or Farcaster docs, please ask — I’m happy to help.
+
+7. FIDs and ComposeCast Requirements
+
+Base and Farcaster are strict about FIDs.
+Although our signup form currently holds some static info, I’ll be updating the DRVN build this week so that users’ database accounts incorporate proper FID handling.
+
+There are more moving parts than just a wallet connection because this project is:
+- a dApp
+- a Farcaster Mini App
+- a Base Mini App
+
+This hybrid setup means that features developed in Replit won’t work or be testable unless run through the proper environment.
+
+Final Notes on Testing
+
+To test features correctly, the workflow must be:
+1. Clone our repo
+2. Read the contributor docs
+3. Set up your .env
+4. Install dependencies
+5. Run the project locally
+6. Tunnel with Ngrok
+7. Test through:
+
+   - Farcaster Dev Tools
+   - Base.dev
+   - Base App (mobile developer mode)
+
+This is the only way to ensure the mini app behaves as expected with hot reloads and accurate FID / clientFID handling.
+
+Justin T, [12/3/2025 3:13 PM]
+The version of 15.3.6 is fine I just confirmed it so if you want to update the NextJS version on your side before you make your commit and PR to your branch that is fine and I will approve it since I have verified it will not break the current mini kit config.
+
+Thank you for finding this and catching that great work : 0
+
+Justin T, [12/3/2025 3:35 PM]
+Just a heads up I am working on some new CSS updates as well not major changes or overhaul just better layouts, for example side nav bar, cards, pages etc.
