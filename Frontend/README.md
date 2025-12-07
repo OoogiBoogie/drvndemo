@@ -61,39 +61,43 @@ DRVN VHCLS is a next-generation automotive platform that combines the thrill of 
    Then edit `.env.local` and fill in your actual values. See `example.md` for a complete reference, or use the following required variables:
 
    ```env
- # Shared/OnchainKit variables
-NEXT_PUBLIC_PROJECT_NAME=
-NEXT_PUBLIC_URL=http://localhost:3000
-NEXT_PUBLIC_ONCHAINKIT_API_KEY=
-NEXT_PUBLIC_ONCHAINKIT_PROJECT_ID=
-# NEXT_PUBLIC_ICON_URL=
+   # Shared/OnchainKit Variables
+   # Get your API key from: https://portal.cdp.coinbase.com/
+   NEXT_PUBLIC_PROJECT_NAME=
+   NEXT_PUBLIC_URL=http://localhost:3000
+   NEXT_PUBLIC_ONCHAINKIT_API_KEY=
+   NEXT_PUBLIC_ONCHAINKIT_PROJECT_ID=
+   # NEXT_PUBLIC_ICON_URL=
 
+   # Redis Configuration
+   # Get your Redis URL and token from: https://console.upstash.com/
+   REDIS_URL=
+   REDIS_TOKEN=
 
-# Redis config
-REDIS_URL=
-REDIS_TOKEN=
+   # MongoDB Database
+   # Format: mongodb+srv://username:password@cluster.mongodb.net/database
+   MONGODB_URI=
+   ENCRYPTION_KEY=
 
-#MongoDB Database
-MONGODB_URI=
-ENCRYPTION_KEY=
+   # IPFS/Pinata Configuration
+   # Get your API keys from: https://app.pinata.cloud/
+   NEXT_PUBLIC_PINATA_API_KEY=
+   NEXT_PUBLIC_PINATA_SECRET_KEY=
+   PINATA_JWT=
+   NEXT_PUBLIC_IPFS_GATEWAY=
 
-# IPFS Configuration
-NEXT_PUBLIC_PINATA_API_KEY=
-NEXT_PUBLIC_PINATA_SECRET_KEY=
-PINATA_JWT=
-NEXT_PUBLIC_IPFS_GATEWAY=
+   # Reown Wallet Key
+   NEXT_PUBLIC_PROJECT_ID=
 
-# Reown Wallet Key
-NEXT_PUBLIC_PROJECT_ID=
+   # Alchemy API Key
+   # Get your API key from: https://www.alchemy.com/
+   ALCHEMY_API_KEY=
+   NEXT_PUBLIC_BASE_RPC_URL=
 
-# Alchemy API Key
-ALCHEMY_API_KEY=
-NEXT_PUBLIC_BASE_RPC_URL=
-
-# Buster Token Variables
-NEXT_PUBLIC_BSTR_CONTRACT_ADDRESS=
-NEXT_PUBLIC_BSTR_ETH_POOL_ADDRESS=
-NEXT_PUBLIC_BSTR_USDC_POOL_ADDRESS=
+   # Buster Token Variables
+   NEXT_PUBLIC_BSTR_CONTRACT_ADDRESS=
+   NEXT_PUBLIC_BSTR_ETH_POOL_ADDRESS=
+   NEXT_PUBLIC_BSTR_USDC_POOL_ADDRESS=
    ```
 
 4. **Start the development server**
