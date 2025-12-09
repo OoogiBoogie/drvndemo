@@ -8,12 +8,12 @@ import Sponsorship from "@/lib/models/Sponsorship";
  */
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await dbConnect();
 
-        const { id } = params;
+        const { id } = await params;
         const sponsorship = await Sponsorship.findById(id).populate("vehicle");
 
         if (!sponsorship) {
@@ -51,12 +51,12 @@ export async function GET(
  */
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await dbConnect();
 
-        const { id } = params;
+        const { id } = await params;
         const body = await req.json();
         const { branding } = body;
 

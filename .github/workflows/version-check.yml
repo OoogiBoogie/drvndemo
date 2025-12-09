@@ -1,0 +1,208 @@
+name: Package Version Check
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'Frontend/package.json'
+      - 'Frontend/package-lock.json'
+      - 'Hardhat/package.json'
+      - 'Hardhat/yarn.lock'
+  push:
+    branches:
+      - main
+    paths:
+      - 'Frontend/package.json'
+      - 'Frontend/package-lock.json'
+      - 'Hardhat/package.json'
+      - 'Hardhat/yarn.lock'
+
+jobs:
+  check-frontend-versions:
+    name: Check Frontend Package Versions
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name != github.repository || github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check Frontend Package Versions
+        working-directory: ./Frontend
+        run: |
+          echo "🔍 Checking Frontend package versions..."
+          
+          # Required versions (must match exactly or be compatible)
+          REQUIRED_NEXT="^15.5.7"
+          REQUIRED_REACT="^19.2.1"
+          REQUIRED_REACT_DOM="^19.2.1"
+          REQUIRED_TAILWIND="^4.1.17"
+          REQUIRED_ONCHAINKIT="1.0.3"
+          REQUIRED_WAGMI="^2.16.0"
+          REQUIRED_VIEM="^2.27.2"
+          
+          # Extract versions from package.json
+          NEXT_VERSION=$(node -p "require('./package.json').dependencies.next")
+          REACT_VERSION=$(node -p "require('./package.json').dependencies.react")
+          REACT_DOM_VERSION=$(node -p "require('./package.json').dependencies['react-dom']")
+          TAILWIND_VERSION=$(node -p "require('./package.json').devDependencies.tailwindcss")
+          ONCHAINKIT_VERSION=$(node -p "require('./package.json').dependencies['@coinbase/onchainkit']")
+          WAGMI_VERSION=$(node -p "require('./package.json').dependencies.wagmi")
+          VIEM_VERSION=$(node -p "require('./package.json').dependencies.viem")
+          
+          echo "📦 Current versions:"
+          echo "  Next.js: $NEXT_VERSION"
+          echo "  React: $REACT_VERSION"
+          echo "  React-DOM: $REACT_DOM_VERSION"
+          echo "  Tailwind CSS: $TAILWIND_VERSION"
+          echo "  OnchainKit: $ONCHAINKIT_VERSION"
+          echo "  Wagmi: $WAGMI_VERSION"
+          echo "  Viem: $VIEM_VERSION"
+          
+          # Install semver for version checking
+          npm install -g semver || echo "semver install failed, using fallback checks"
+          
+          ERROR_COUNT=0
+          
+          # Function to check version compatibility
+          check_version() {
+            local package_name=$1
+            local current=$2
+            local required=$3
+            local is_exact=$4
+            
+            if [ "$is_exact" = "true" ]; then
+              if [ "$current" != "$required" ]; then
+                echo "❌ ERROR: $package_name version $current does not match required $required"
+                return 1
+              else
+                echo "✅ $package_name version matches"
+                return 0
+              fi
+            else
+              # Use semver if available, otherwise use basic check
+              if command -v semver &> /dev/null; then
+                if semver -r "$required" "$current" 2>/dev/null; then
+                  echo "✅ $package_name version is compatible"
+                  return 0
+                else
+                  echo "❌ ERROR: $package_name version $current does not match required $required"
+                  return 1
+                fi
+              else
+                # Fallback: basic version check
+                # Extract major.minor from version strings
+                current_major=$(echo "$current" | sed 's/[^0-9].*//')
+                required_major=$(echo "$required" | sed 's/[^0-9].*//')
+                if [ "$current_major" -ge "$required_major" ]; then
+                  echo "✅ $package_name version appears compatible (basic check)"
+                  return 0
+                else
+                  echo "❌ ERROR: $package_name version $current does not match required $required"
+                  return 1
+                fi
+              fi
+            fi
+          }
+          
+          # Check Next.js (security critical)
+          if ! check_version "Next.js" "$NEXT_VERSION" "$REQUIRED_NEXT" false; then
+            echo "   ⚠️  This is a SECURITY UPDATE - compromised versions must be updated."
+            ERROR_COUNT=$((ERROR_COUNT + 1))
+          fi
+          
+          # Check React (security critical)
+          if ! check_version "React" "$REACT_VERSION" "$REQUIRED_REACT" false; then
+            echo "   ⚠️  This is a SECURITY UPDATE - compromised versions must be updated."
+            ERROR_COUNT=$((ERROR_COUNT + 1))
+          fi
+          
+          # Check React-DOM (security critical)
+          if ! check_version "React-DOM" "$REACT_DOM_VERSION" "$REQUIRED_REACT_DOM" false; then
+            echo "   ⚠️  This is a SECURITY UPDATE - compromised versions must be updated."
+            ERROR_COUNT=$((ERROR_COUNT + 1))
+          fi
+          
+          # Check Tailwind CSS
+          if ! check_version "Tailwind CSS" "$TAILWIND_VERSION" "$REQUIRED_TAILWIND" false; then
+            ERROR_COUNT=$((ERROR_COUNT + 1))
+          fi
+          
+          # Check OnchainKit (exact match required)
+          if ! check_version "OnchainKit" "$ONCHAINKIT_VERSION" "$REQUIRED_ONCHAINKIT" true; then
+            echo "   ⚠️  OnchainKit requires exact version match."
+            ERROR_COUNT=$((ERROR_COUNT + 1))
+          fi
+          
+          # Check Wagmi
+          if ! check_version "Wagmi" "$WAGMI_VERSION" "$REQUIRED_WAGMI" false; then
+            ERROR_COUNT=$((ERROR_COUNT + 1))
+          fi
+          
+          # Check Viem
+          if ! check_version "Viem" "$VIEM_VERSION" "$REQUIRED_VIEM" false; then
+            ERROR_COUNT=$((ERROR_COUNT + 1))
+          fi
+          
+          if [ $ERROR_COUNT -gt 0 ]; then
+            echo ""
+            echo "🚨 CRITICAL: $ERROR_COUNT package version(s) do not match requirements!"
+            echo ""
+            echo "📋 ACTION REQUIRED:"
+            echo "1. Pull the latest changes from main branch:"
+            echo "   git checkout main"
+            echo "   git pull origin main"
+            echo ""
+            echo "2. Merge main into your branch:"
+            echo "   git checkout your-branch-name"
+            echo "   git merge main"
+            echo ""
+            echo "3. Update package.json to match required versions:"
+            echo "   cd Frontend"
+            echo "   npm install next@$REQUIRED_NEXT react@$REQUIRED_REACT react-dom@$REQUIRED_REACT_DOM"
+            echo "   npm install -D tailwindcss@$REQUIRED_TAILWIND"
+            echo "   npm install @coinbase/onchainkit@$REQUIRED_ONCHAINKIT"
+            echo ""
+            echo "4. Run npm install to update lock file"
+            echo "5. Test your changes and push updated code"
+            echo ""
+            echo "📖 See SECURITY_UPDATE.md for detailed information about this mandatory update."
+            exit 1
+          else
+            echo ""
+            echo "✅ All package versions are compatible!"
+          fi
+
+  check-node-version:
+    name: Check Node.js Version
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check Node.js version requirement
+        run: |
+          echo "🔍 Checking Node.js version requirement..."
+          
+          # Check root package.json for engines requirement
+          if [ -f "package.json" ]; then
+            NODE_REQUIREMENT=$(node -p "require('./package.json').engines?.node || '>=22.0.0'" 2>/dev/null || echo ">=22.0.0")
+            echo "📦 Required Node.js version: $NODE_REQUIREMENT"
+            
+            if [[ ! "$NODE_REQUIREMENT" =~ "22" ]]; then
+              echo "⚠️  WARNING: Node.js 22.x is required for this project"
+              echo "   Please ensure your local environment uses Node.js 22.x"
+            else
+              echo "✅ Node.js version requirement is correct"
+            fi
+          fi
+

@@ -13,11 +13,7 @@ interface AutoSignupModalProps {
   onSuccess: () => void;
 }
 
-export function AutoSignupModal({
-  isOpen,
-  onClose,
-  onSuccess,
-}: AutoSignupModalProps) {
+export function AutoSignupModal({ isOpen, onClose, onSuccess }: AutoSignupModalProps) {
   const [showSignupModal, setShowSignupModal] = useState(false);
 
   const handleSignupClick = () => {
@@ -39,13 +35,13 @@ export function AutoSignupModal({
     <>
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         {/* Garage Door Effect */}
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-black to-black opacity-60"></div>
+        <div className="absolute inset-0 bg-linear-to-b from-gray-900 via-black to-black opacity-60"></div>
 
-        <Card className="w-full max-w-lg bg-gradient-to-b from-gray-900 to-black border-2 border-[#00daa2]/30 shadow-2xl shadow-[#00daa2]/20 relative overflow-hidden">
+        <Card className="w-full max-w-lg bg-linear-to-b from-gray-900 to-black border-2 border-[#00daa2]/30 shadow-2xl shadow-[#00daa2]/20 relative overflow-hidden">
           {/* Garage Door Lines */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#00daa2] to-transparent opacity-40"></div>
-          <div className="absolute top-4 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#00daa2] to-transparent opacity-20"></div>
-          <div className="absolute top-8 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#00daa2] to-transparent opacity-10"></div>
+          <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-transparent via-[#00daa2] to-transparent opacity-40"></div>
+          <div className="absolute top-4 left-0 right-0 h-1 bg-linear-to-r from-transparent via-[#00daa2] to-transparent opacity-20"></div>
+          <div className="absolute top-8 left-0 right-0 h-1 bg-linear-to-r from-transparent via-[#00daa2] to-transparent opacity-10"></div>
 
           {/* Close Button - Styled like a garage door handle */}
           <div className="flex flex-row justify-end mt-4 mr-4">
@@ -92,7 +88,7 @@ export function AutoSignupModal({
               {/* Create Account Button */}
               <Button
                 onClick={handleSignupClick}
-                className="w-full bg-gradient-to-r from-[#00daa2] to-[#00b894] text-black hover:from-[#00b894] hover:to-[#00daa2] font-bold font-mono h-12 text-lg shadow-lg shadow-[#00daa2]/30 transition-all duration-300 border-2 border-[#00daa2]/50 hover:border-[#00daa2] hover:scale-[1.02]"
+                className="w-full bg-linear-to-r from-[#00daa2] to-[#00b894] text-black hover:from-[#00b894] hover:to-[#00daa2] font-bold font-mono h-12 text-lg shadow-lg shadow-[#00daa2]/30 transition-all duration-300 border-2 border-[#00daa2]/50 hover:border-[#00daa2] hover:scale-[1.02]"
               >
                 <Home className="h-5 w-5 mr-3" />
                 Create Your Garage
@@ -102,10 +98,8 @@ export function AutoSignupModal({
             {/* Footer - Garage mechanic style */}
             <div className="text-center pt-4 border-t border-gray-700">
               <p className="text-gray-400 text-xs font-mono tracking-wide">
-                <span className="text-[#00daa2] font-bold">JOIN</span> the
-                automotive community and{" "}
-                <span className="text-[#00daa2] font-bold">UNLOCK</span>{" "}
-                exclusive features
+                <span className="text-[#00daa2] font-bold">JOIN</span> the automotive community and{" "}
+                <span className="text-[#00daa2] font-bold">UNLOCK</span> exclusive features
               </p>
               <div className="flex justify-center mt-2 space-x-2">
                 <Car className="h-4 w-4 text-[#00daa2]" />

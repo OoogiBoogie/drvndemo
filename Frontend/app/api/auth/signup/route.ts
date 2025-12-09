@@ -20,34 +20,20 @@ export async function POST(request: NextRequest) {
 
     // Get request body
     const body = await request.json();
-    const {
-      firstName,
-      lastName,
-      username,
-      email,
-      xHandle,
-      profileImage,
-      walletAddress,
-      bio,
-    } = body;
+    const { firstName, lastName, username, email, xHandle, profileImage, walletAddress, bio } =
+      body;
 
     // Processing signup data...
 
     // Validate required fields
     if (!firstName || !lastName || !username || !email || !walletAddress) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: "Invalid email format" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
     }
 
     // Validate username format
@@ -57,24 +43,21 @@ export async function POST(request: NextRequest) {
         {
           error: "Username can only contain letters, numbers, and underscores",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     if (username.length < 3 || username.length > 20) {
       return NextResponse.json(
         { error: "Username must be between 3 and 20 characters" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     // Validate wallet address format (basic Ethereum address validation)
     const walletRegex = /^0x[a-fA-F0-9]{40}$/;
     if (!walletRegex.test(walletAddress)) {
-      return NextResponse.json(
-        { error: "Invalid wallet address format" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Invalid wallet address format" }, { status: 400 });
     }
 
     // Check if user already exists
@@ -88,21 +71,15 @@ export async function POST(request: NextRequest) {
 
     if (existingUser) {
       if (existingUser.email === email.toLowerCase()) {
-        return NextResponse.json(
-          { error: "User with this email already exists" },
-          { status: 409 },
-        );
+        return NextResponse.json({ error: "User with this email already exists" }, { status: 409 });
       }
       if (existingUser.username === username.toLowerCase()) {
-        return NextResponse.json(
-          { error: "Username already taken" },
-          { status: 409 },
-        );
+        return NextResponse.json({ error: "Username already taken" }, { status: 409 });
       }
       if (existingUser.walletAddress === walletAddress.toLowerCase()) {
         return NextResponse.json(
           { error: "User with this wallet address already exists" },
-          { status: 409 },
+          { status: 409 }
         );
       }
     }
@@ -142,13 +119,10 @@ export async function POST(request: NextRequest) {
         message: "User registered successfully",
         user: safeUser,
       },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     console.error("Signup error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

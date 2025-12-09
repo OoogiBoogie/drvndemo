@@ -25,12 +25,12 @@ import RegisteredVehicle from "@/lib/models/RegisteredVehicle";
  */
 export async function POST(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await dbConnect();
 
-        const { id } = params;
+        const { id } = await params;
         const body = await req.json();
         const { carToken, sponsorshipCollection, wrapperTxHash } = body;
 

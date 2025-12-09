@@ -8,12 +8,12 @@ import User from "@/lib/models/User";
  */
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await dbConnect();
 
-        const { id } = params;
+        const { id } = await params;
         const user = await User.findById(id).select(
             "-email -walletAddress -createdAt -updatedAt"
         );
@@ -46,15 +46,16 @@ export async function GET(
  */
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await dbConnect();
 
-        const { id } = params;
+        const { id } = await params;
         const body = await req.json();
         const { displayName, bio, profileImage, socialLinks } = body;
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const updateData: any = {};
         if (displayName !== undefined) updateData.displayName = displayName;
         if (bio !== undefined) updateData.bio = bio;

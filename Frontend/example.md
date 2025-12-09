@@ -1,44 +1,34 @@
-# OnchainKit Configuration
-# Get your API key from: https://portal.cdp.coinbase.com/
-NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME=DRVN VHCLS
+# Shared/OnchainKit variables
+# https://www.drvnvhcls.app
+NEXT_PUBLIC_PROJECT_NAME=
 NEXT_PUBLIC_URL=http://localhost:3000
-NEXT_PUBLIC_ONCHAINKIT_API_KEY=your_onchainkit_api_key_here
+NEXT_PUBLIC_ONCHAINKIT_API_KEY=
+NEXT_PUBLIC_ONCHAINKIT_PROJECT_ID=
+# NEXT_PUBLIC_ICON_URL=
 
-# App Metadata (for Base Mini App)
-NEXT_PUBLIC_APP_ICON=$NEXT_PUBLIC_URL/newIcon.png
-NEXT_PUBLIC_APP_SUBTITLE=Automotive RWA and Car Culture
-NEXT_PUBLIC_APP_DESCRIPTION=Bringing car culture onchain We tokenize real automotive assets, unlock transparent ownership, and rally a community to fund, govern and grow the garage—together.
-NEXT_PUBLIC_APP_SPLASH_IMAGE=$NEXT_PUBLIC_URL/newSplash.png
-NEXT_PUBLIC_SPLASH_BACKGROUND_COLOR="#000000"
-NEXT_PUBLIC_APP_PRIMARY_CATEGORY=finance
-NEXT_PUBLIC_APP_HERO_IMAGE=$NEXT_PUBLIC_URL/newHero.png
-NEXT_PUBLIC_APP_TAGLINE=Bringing car culture onchain.
-NEXT_PUBLIC_APP_OG_TITLE=DRVN VHCLS
-NEXT_PUBLIC_APP_OG_DESCRIPTION=Automotive RWA and Car Culture
-NEXT_PUBLIC_APP_OG_IMAGE=$NEXT_PUBLIC_URL/newIcon.png
-NEXT_PUBLIC_ICON_URL=http://localhost:3000/newIcon.png
 
-# Farcaster Frame Configuration (optional)
-FARCASTER_HEADER=your_farcaster_header_here
-FARCASTER_PAYLOAD=your_farcaster_payload_here
-FARCASTER_SIGNATURE=your_farcaster_signature_here
+# Redis config
+REDIS_URL=
+REDIS_TOKEN=
 
-# Database
-# MongoDB connection string
-# Format: mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority
-# ( If you need access request database connection screen )
-MONGODB_URI=your_mongodb_connection_string_here
+#MongoDB Database
+MONGODB_URI=
+ENCRYPTION_KEY=
 
-# Redis Configuration (for notifications and caching)
-# Get your Redis URL and token from: https://console.upstash.com/
-REDIS_URL=your_redis_url_here
-REDIS_TOKEN=your_redis_token_here
+# IPFS Configuration
+NEXT_PUBLIC_PINATA_API_KEY=
+NEXT_PUBLIC_PINATA_SECRET_KEY=
+PINATA_JWT=
+NEXT_PUBLIC_IPFS_GATEWAY=
 
-# IPFS/Pinata Configuration (for profile image uploads)
-# Get your API keys from: https://app.pinata.cloud/
-NEXT_PUBLIC_PINATA_API_KEY=your_pinata_api_key_here
-NEXT_PUBLIC_PINATA_SECRET_KEY=your_pinata_secret_key_here
+# Reown Wallet Key
+NEXT_PUBLIC_PROJECT_ID=
 
-# Encryption Key (optional, auto-generated if not provided)
-# Used for encrypting sensitive user data
-ENCRYPTION_KEY=your_32_character_encryption_key_here
+# Alchemy API Key
+ALCHEMY_API_KEY=
+NEXT_PUBLIC_BASE_RPC_URL=
+
+# Buster Token Variables
+NEXT_PUBLIC_BSTR_CONTRACT_ADDRESS=
+NEXT_PUBLIC_BSTR_ETH_POOL_ADDRESS=
+NEXT_PUBLIC_BSTR_USDC_POOL_ADDRESS=

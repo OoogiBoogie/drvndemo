@@ -122,7 +122,7 @@ body {
   top: 0rem;
   right: -0rem;
   width: 2rem;
-  height: 4.3rem;
+  height: 4rem;
   /* background: #131725; */
   border-radius: 6px 0 0 4px;
   border: 1px solid #8351a1;
@@ -131,19 +131,41 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  /* z-index: 20; */
+  z-index: 10;
   transition: all 0.2s ease;
 }
 
 /* .sidebar-collapse-arrow:hover {
-  background: #131725;
-  transform: scale(1.05);
+  background: rgb(249 250 251);
+  border-color: rgb(209 213 219);
+} */
+
+.dark .sidebar-collapse-arrow {
+  border-color: rgba(255, 255, 255, 0.1); /* white/10 */
+}
+
+/* .dark .sidebar-collapse-arrow:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
 } */
 
 .sidebar-collapse-arrow svg {
   width: 0.75rem;
   height: 0.75rem;
-  color: #ffffff;
+  color: rgb(107 114 128); /* gray-500 */
+  transition: color 0.2s ease;
+}
+
+.sidebar-collapse-arrow:hover svg {
+  color: rgb(75 85 99); /* gray-600 */
+}
+
+.dark .sidebar-collapse-arrow svg {
+  color: rgb(156 163 175); /* gray-400 */
+}
+
+.dark .sidebar-collapse-arrow:hover svg {
+  color: rgb(209 213 219); /* gray-300 */
 }
 
 [data-testid*="ockConnectWallet_Connected"],
@@ -483,6 +505,186 @@ body {
 .ockSwapSettings [data-radix-portal] {
   z-index: 99999 !important;
   position: relative !important;
+}
+
+/* Ensure wallet modal appears above everything on desktop */
+[data-testid*="ockWalletModal"],
+[data-testid*="ockConnectWallet"],
+.ockWalletModal,
+[role="dialog"][data-testid*="ock"] {
+  z-index: 999999 !important;
+}
+
+/* Ensure wallet modal backdrop appears */
+[data-testid*="ockWalletModal"] [role="dialog"],
+[data-testid*="ockWalletModal"] [data-radix-portal] {
+  z-index: 999999 !important;
+}
+
+/* Radix UI Portal and Overlay for Wallet Modal - Critical for modal visibility */
+[data-radix-portal] {
+  z-index: 999999 !important;
+}
+
+/* Radix UI Dialog Overlay (backdrop) - DRVN theme */
+[data-radix-dialog-overlay] {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999998 !important;
+  background-color: rgba(3, 7, 18, 0.8) !important; /* gray-950 with opacity */
+  backdrop-filter: blur(8px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Radix UI Dialog Content (modal itself) - DRVN theme with glow */
+[data-radix-dialog-content] {
+  position: relative !important;
+  z-index: 999999 !important;
+  max-width: 90vw !important;
+  max-height: 90vh !important;
+  background: linear-gradient(135deg, #030712 0%, #0f172a 50%, #030712 100%) !important;
+  border: 1px solid rgba(0, 218, 162, 0.3) !important;
+  border-radius: var(--ock-border-radius, 0.75rem) !important;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.5),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2),
+    0 0 30px rgba(0, 218, 162, 0.15) !important;
+  overflow: hidden !important;
+}
+
+/* Add shimmer effect to modal content */
+[data-radix-dialog-content]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 218, 162, 0.05),
+    transparent
+  );
+  animation: shimmer 3s infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Ensure wallet modal container is visible */
+[data-testid*="ockWalletModal"] {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: auto !important;
+}
+
+/* Wallet modal content wrapper */
+[data-testid*="ockWalletModal"] > div,
+[data-testid*="ockWalletModal"] [role="dialog"] {
+  position: relative !important;
+  z-index: 999999 !important;
+  pointer-events: auto !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure modal is not hidden */
+[data-testid*="ockWalletModal"]:not([hidden]) {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Desktop-specific modal styles */
+@media (min-width: 768px) {
+  [data-testid*="ockWalletModal"],
+  [data-testid*="ockWalletModal"] [role="dialog"],
+  [data-radix-dialog-content] {
+    z-index: 999999 !important;
+  }
+
+  [data-radix-dialog-overlay] {
+    z-index: 999998 !important;
+  }
+}
+
+/* Critical: Ensure Radix Portal root exists and is visible */
+[data-radix-portal] {
+  z-index: 999999 !important;
+}
+
+/* Ensure all Radix portals are visible */
+body > [data-radix-portal] {
+  z-index: 999999 !important;
+  position: fixed !important;
+}
+
+/* Wallet Modal specific visibility fixes - CRITICAL: Must be above all custom modals */
+[data-testid*="ockWalletModal"],
+[data-testid*="ockConnectWallet_Modal"],
+[data-testid*="ockWallet"] [role="dialog"],
+[data-testid*="ockConnectWallet"] [role="dialog"] {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure wallet modal appears above wallet-first-auth-modal (z-30) */
+body > [data-radix-portal] [data-testid*="ockWalletModal"],
+body > [data-radix-portal] [data-testid*="ockConnectWallet"] {
+  z-index: 999999 !important;
+}
+
+/* Ensure modal content is visible and properly positioned */
+[data-testid*="ockWalletModal"] > *,
+[data-testid*="ockConnectWallet_Modal"] > * {
+  position: relative !important;
+  z-index: 1000000 !important;
+  pointer-events: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+/* CRITICAL: Ensure wallet modal appears above wallet-first-auth-modal */
+/* Our custom modal uses z-30, so wallet modal must be much higher */
+body > [data-radix-portal] {
+  z-index: 999999 !important;
+}
+
+/* Ensure ConnectWallet button triggers modal properly */
+[data-testid*="ockConnectWallet"],
+.ockConnectWallet {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Force wallet modal to appear above all custom modals */
+[data-radix-dialog-overlay][data-testid*="ock"],
+[data-radix-dialog-content][data-testid*="ock"] {
+  z-index: 999999 !important;
+  position: fixed !important;
 }
 
 @layer utilities {

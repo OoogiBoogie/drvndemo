@@ -79,7 +79,7 @@ export function BuySponsorshipModal({
 
             setTokenId(mockTokenId);
             setStep("success");
-        } catch (err) {
+        } catch {
             setError("Purchase failed. Please try again.");
             setStep("confirm");
         } finally {

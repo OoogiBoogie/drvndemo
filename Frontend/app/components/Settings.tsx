@@ -216,14 +216,14 @@ export function Settings({
         profileImage: currentUser.profileImage || "",
       });
 
-      setSocialLinks(currentUser.socialLinks || {
-        base: "",
-        x: "",
-        instagram: "",
-        facebook: "",
-        youtube: "",
-        tiktok: "",
-        linkedin: "",
+      setSocialLinks({
+        base: currentUser.socialLinks?.base || "",
+        x: currentUser.socialLinks?.x || "",
+        instagram: currentUser.socialLinks?.instagram || "",
+        facebook: currentUser.socialLinks?.facebook || "",
+        youtube: currentUser.socialLinks?.youtube || "",
+        tiktok: currentUser.socialLinks?.tiktok || "",
+        linkedin: currentUser.socialLinks?.linkedin || "",
       });
 
       setNotificationPreferences(currentUser.preferences?.notifications || {
@@ -424,14 +424,14 @@ export function Settings({
         profileImage: currentUser.profileImage || "",
       });
 
-      setSocialLinks(currentUser.socialLinks || {
-        base: "",
-        x: "",
-        instagram: "",
-        facebook: "",
-        youtube: "",
-        tiktok: "",
-        linkedin: "",
+      setSocialLinks({
+        base: currentUser.socialLinks?.base || "",
+        x: currentUser.socialLinks?.x || "",
+        instagram: currentUser.socialLinks?.instagram || "",
+        facebook: currentUser.socialLinks?.facebook || "",
+        youtube: currentUser.socialLinks?.youtube || "",
+        tiktok: currentUser.socialLinks?.tiktok || "",
+        linkedin: currentUser.socialLinks?.linkedin || "",
       });
 
       setNotificationPreferences(currentUser.preferences?.notifications || {

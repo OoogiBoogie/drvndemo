@@ -1,27 +1,490 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #111111;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
     --background: #111111;
     --foreground: #ffffff;
+    --app-background: #111111;
+    --app-foreground: #ffffff;
+    --app-gray: #232526;
+
+    /* OnchainKit theme variables (match basekit-starter-improved) */
+    --app-foreground-muted: #b0b0b0;
+    --app-accent: #0fcf6a;
+    --app-accent-hover: #13e68a;
+    --app-accent-active: #0fcf6a;
+    --app-accent-light: #e6fff4;
+    --app-gray-dark: #181818;
+    --app-card-bg: #181818;
+    --app-card-border: #222222;
+
+    /* App-level variables above; OnchainKit theme tokens are defined in [data-ock-theme='custom-*'] blocks below */
+  }
+
+  html,
+  body {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  body {
+    color: var(--foreground);
+    background: var(--background);
+    font-family: var(--font-inter), var(--font-space-grotesk), "Space Grotesk", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  code {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    font-family: var(--font-source-code-pro), var(--font-space-mono), "Space Mono", monospace;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem calc(0.25rem + 2px);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    code {
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  html {
+    color-scheme: dark;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal;
-  font-size: 80%;
+/* OnchainKit custom theme: 'custom' */
+@layer base {
+  [data-ock-theme="custom-light"] {
+    /* Typography & Shape */
+    --ock-font-family: "Inter", sans-serif;
+    --ock-radius-default: 0.75rem;
+    --ock-radius-inner: 0.5rem;
+
+    /* Foreground (Text) */
+    --ock-foreground: #ffffff; /* white text */
+    --ock-foreground-muted: #ffffff; /* keep strictly white */
+    --ock-foreground-inverse: #ffffff;
+    --ock-foreground-disabled: #ffffff;
+
+    /* Backgrounds (gray-950 theme) */
+    --ock-background: #030712; /* gray-950 */
+    --ock-background-hover: #0f172a; /* gray-900 */
+    --ock-background-active: #1e293b; /* gray-800 */
+    --ock-background-alternate: #030712;
+    --ock-background-alternate-hover: #0f172a;
+    --ock-background-alternate-active: #1e293b;
+    --ock-background-inverse: #030712;
+    --ock-background-inverse-hover: #0f172a;
+    --ock-background-inverse-active: #1e293b;
+    --ock-background-reverse: #030712;
+
+    /* Primary (DRVN Green) */
+    --ock-primary: #00daa2;
+    --ock-primary-hover: #00b894;
+    --ock-primary-active: #00a085;
+    --ock-primary-washed: #030712; /* gray-950 */
+    --ock-primary-disabled: #00daa2;
+
+    /* Secondary (gray-950 surfaces) */
+    --ock-secondary: #030712;
+    --ock-secondary-hover: #0f172a;
+    --ock-secondary-active: #1e293b;
+
+    /* States (restrict to green) */
+    --ock-error: #00daa2;
+    --ock-warning: #00daa2;
+    --ock-success: #00daa2;
+    --ock-success-background: #030712;
+
+    /* Lines (borders green) */
+    --ock-line: #00daa2;
+
+    /* Legacy tokens override to ensure all components match strictly */
+    --ock-text-foreground: #ffffff;
+    --ock-text-foreground-muted: #ffffff;
+    --ock-text-inverse: #ffffff;
+    --ock-text-primary: #00daa2;
+    --ock-bg-default: #030712;
+    --ock-bg-default-hover: #0f172a;
+    --ock-bg-default-active: #1e293b;
+    --ock-bg-alternate: #030712;
+    --ock-bg-alternate-hover: #0f172a;
+    --ock-bg-alternate-active: #1e293b;
+    --ock-bg-inverse: #030712;
+    --ock-bg-inverse-hover: #0f172a;
+    --ock-bg-inverse-active: #1e293b;
+    --ock-bg-primary: #00daa2;
+    --ock-bg-primary-hover: #00b894;
+    --ock-bg-primary-active: #00a085;
+    --ock-icon-color-primary: #00daa2;
+    --ock-line-primary: #00daa2;
+    --ock-line-default: #00daa2;
+    --ock-toast-bg: #030712;
+    --ock-toast-border: #00daa2;
+    --ock-toast-text: #ffffff;
+  }
+
+  [data-ock-theme="custom-dark"] {
+    /* Typography & Shape */
+    --ock-font-family: "Inter", sans-serif;
+    --ock-radius-default: 0.75rem;
+    --ock-radius-inner: 0.5rem;
+
+    /* Foreground (Text) */
+    --ock-foreground: #ffffff; /* white text */
+    --ock-foreground-muted: #ffffff; /* keep strictly white */
+    --ock-foreground-inverse: #ffffff;
+    --ock-foreground-disabled: #ffffff;
+
+    /* Backgrounds (gray-950 theme) */
+    --ock-background: #030712; /* gray-950 */
+    --ock-background-hover: #0f172a; /* gray-900 */
+    --ock-background-active: #1e293b; /* gray-800 */
+    --ock-background-alternate: #030712;
+    --ock-background-alternate-hover: #0f172a;
+    --ock-background-alternate-active: #1e293b;
+    --ock-background-inverse: #030712;
+    --ock-background-inverse-hover: #0f172a;
+    --ock-background-inverse-active: #1e293b;
+    --ock-background-reverse: #030712;
+
+    /* Primary (Only green) */
+    --ock-primary: #1bf696;
+    --ock-primary-hover: #1bf696;
+    --ock-primary-active: #1bf696;
+    --ock-primary-washed: #000000;
+    --ock-primary-disabled: #1bf696;
+
+    /* Secondary (black surfaces) */
+    --ock-secondary: #000000;
+    --ock-secondary-hover: #0a0a0a;
+    --ock-secondary-active: #111111;
+
+    /* States (restrict to green) */
+    --ock-error: #1bf696;
+    --ock-warning: #1bf696;
+    --ock-success: #1bf696;
+    --ock-success-background: #000000;
+
+    /* Lines (borders green) */
+    --ock-line: #1bf696;
+
+    /* Legacy tokens override to ensure all components match strictly */
+    --ock-text-foreground: #ffffff;
+    --ock-text-foreground-muted: #ffffff;
+    --ock-text-inverse: #ffffff;
+    --ock-text-primary: #1bf696;
+    --ock-bg-default: #000000;
+    --ock-bg-default-hover: #0a0a0a;
+    --ock-bg-default-active: #111111;
+    --ock-bg-alternate: #000000;
+    --ock-bg-alternate-hover: #0a0a0a;
+    --ock-bg-alternate-active: #111111;
+    --ock-bg-inverse: #000000;
+    --ock-bg-inverse-hover: #0a0a0a;
+    --ock-bg-inverse-active: #111111;
+    --ock-bg-primary: #1bf696;
+    --ock-bg-primary-hover: #1bf696;
+    --ock-bg-primary-active: #1bf696;
+    --ock-icon-color-primary: #1bf696;
+    --ock-line-primary: #1bf696;
+    --ock-line-default: #1bf696;
+    --ock-toast-bg: #000000;
+    --ock-toast-border: #1bf696;
+    --ock-toast-text: #ffffff;
+  }
+}
+
+/* OnchainKit element overrides: DRVN theme with gray-950 bg + green borders */
+[data-testid="ockConnectButton"] {
+  background-color: #030712 !important;
+  color: #ffffff !important;
+  border: 1px solid #00daa2 !important;
+  padding: 4px 10px !important;
+  min-height: 38px !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  box-shadow: 0 0 10px rgba(0, 218, 162, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+[data-testid="ockConnectButton"]:hover {
+  box-shadow: 0 0 20px rgba(0, 218, 162, 0.4) !important;
+  border-color: #00b894 !important;
+}
+
+/* Wallet modal option buttons: DRVN theme with angled borders and shimmer effects */
+[data-testid="ockModalContent"] button,
+[data-testid="ockModalContent"] [role="button"],
+[data-testid*="ockWalletOption"],
+[data-testid*="ockWalletListItem"],
+[data-testid*="ockWalletConnector"] {
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%) !important;
+  border: 1px solid rgba(0, 218, 162, 0.3) !important;
+  background: linear-gradient(to right, #030712, #0f172a, #030712) !important;
+  background-size: 200% 100% !important;
+  color: #ffffff !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 0 10px rgba(0, 218, 162, 0.1) !important;
+}
+
+[data-testid="ockModalContent"] button:hover,
+[data-testid="ockModalContent"] [role="button"]:hover,
+[data-testid*="ockWalletOption"]:hover,
+[data-testid*="ockWalletListItem"]:hover,
+[data-testid*="ockWalletConnector"]:hover {
+  border-color: #00daa2 !important;
+  box-shadow: 0 0 20px rgba(0, 218, 162, 0.4), 0 0 40px rgba(0, 218, 162, 0.2) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Shimmer effect on wallet buttons */
+[data-testid="ockModalContent"] button::before,
+[data-testid="ockModalContent"] [role="button"]::before,
+[data-testid*="ockWalletOption"]::before,
+[data-testid*="ockWalletListItem"]::before,
+[data-testid*="ockWalletConnector"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 218, 162, 0.1),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+[data-testid="ockModalContent"] button:hover::before,
+[data-testid="ockModalContent"] [role="button"]:hover::before,
+[data-testid*="ockWalletOption"]:hover::before,
+[data-testid*="ockWalletListItem"]:hover::before,
+[data-testid*="ockWalletConnector"]:hover::before {
+  left: 100%;
+}
+
+/* Stronger target: the specific OCK utility classes used on modal wallet options with angled borders */
+[data-testid="ockModalContent"] .ock\:rounded-ock-default.ock\:text-base,
+[data-testid="ockModalContent"] button.ock\:rounded-ock-default.ock\:text-base,
+[data-testid="ockModalContent"] [role="button"].ock\:rounded-ock-default.ock\:text-base {
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%) !important;
+  border: 1px solid rgba(0, 218, 162, 0.3) !important;
+  background: linear-gradient(to right, #030712, #0f172a, #030712) !important;
+  background-size: 200% 100% !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* Modal surface - DRVN theme */
+[data-testid="ockModalOverlay"],
+[data-testid="ockModalContent"] {
+  background: linear-gradient(135deg, #030712 0%, #0f172a 50%, #030712 100%) !important;
+  border: 1px solid rgba(0, 218, 162, 0.3) !important;
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.5),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2),
+    0 0 30px rgba(0, 218, 162, 0.1) !important;
+}
+
+/* Ensure wallet option text-base buttons also show green border with angled borders and glow */
+[data-testid="ockModalContent"] .ock\:text-base,
+.ock\:text-base {
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%) !important;
+  background: linear-gradient(to right, #030712, #0f172a, #030712) !important;
+  background-size: 200% 100% !important;
+  border: 1px solid rgba(0, 218, 162, 0.3) !important;
+  color: #ffffff !important;
+  padding: 0.5rem 1rem !important;
+  font-weight: bold !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 0 10px rgba(0, 218, 162, 0.1) !important;
+}
+
+[data-testid="ockModalContent"] .ock\:text-base:hover,
+.ock\:text-base:hover {
+  border-color: #00daa2 !important;
+  box-shadow: 0 0 20px rgba(0, 218, 162, 0.4), 0 0 40px rgba(0, 218, 162, 0.2) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Enlarge app icon inside wallet modal with glow effect */
+[data-testid="ockModalContent"] img.ock\:object-cover {
+  width: 96px !important;
+  height: 96px !important;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 0.75rem !important;
+  border: 2px solid rgba(0, 218, 162, 0.2) !important;
+  box-shadow: 0 0 20px rgba(0, 218, 162, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+[data-testid="ockModalContent"] img.ock\:object-cover:hover {
+  border-color: #00daa2 !important;
+  box-shadow: 0 0 30px rgba(0, 218, 162, 0.4) !important;
+  transform: scale(1.05) !important;
+}
+
+/* If the icon is targeted by alt text, fallback rule */
+[data-testid="ockModalContent"] img[alt*="icon"] {
+  width: 96px !important;
+  height: 96px !important;
+  border-radius: 0.75rem !important;
+  border: 2px solid rgba(0, 218, 162, 0.2) !important;
+  box-shadow: 0 0 20px rgba(0, 218, 162, 0.2) !important;
+}
+
+/* Wallet option text styling */
+[data-testid="ockModalContent"] [class*="text"],
+[data-testid="ockModalContent"] p,
+[data-testid="ockModalContent"] span {
+  color: #ffffff !important;
+}
+
+/* Wallet option titles with green accent */
+[data-testid="ockModalContent"] h2,
+[data-testid="ockModalContent"] h3,
+[data-testid="ockModalContent"] [class*="font-semibold"],
+[data-testid="ockModalContent"] [class*="font-bold"] {
+  color: #ffffff !important;
+}
+
+/* Connected wallet: add green border around account chip (header) with glow */
+[data-testid*="ockConnectWallet_Connected"],
+[data-testid*="ockConnected"] {
+  border: 1px solid #00daa2 !important;
+  background: linear-gradient(to right, #030712, #0f172a, #030712) !important;
+  background-size: 200% 100% !important;
+  color: #ffffff !important;
+  padding: 4px 10px !important;
+  min-height: 38px !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  box-shadow: 0 0 10px rgba(0, 218, 162, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+[data-testid*="ockConnectWallet_Connected"]:hover,
+[data-testid*="ockConnected"]:hover {
+  box-shadow: 0 0 20px rgba(0, 218, 162, 0.4) !important;
+  border-color: #00b894 !important;
+}
+
+/* Ensure inner account chip content also scales down */
+.ockConnectAccountButtonInner {
+  padding: 4px 10px !important;
+  min-height: 32px !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+}
+
+/* Dropdown identity card: green border only inside dropdown to avoid double borders */
+[data-testid*="ockWalletDropdown"] [data-testid="ockIdentityLayout_container"] {
+  border-radius: 0.75rem !important;
+  background: linear-gradient(135deg, #030712 0%, #0f172a 50%, #030712 100%) !important;
+  border: 1px solid rgba(0, 218, 162, 0.2) !important;
+}
+
+/* Ensure inner identity text does not add its own border (avoid double) */
+[data-testid="ockIdentityLayout_container"] [data-testid="ockIdentity_Text"] {
+  border: none !important;
+}
+
+/* Remove borders on Disconnect control in wallet dropdown */
+[data-testid*="ockWalletDropdownDisconnect"],
+[data-testid*="ockWalletDropdownDisconnect"] *,
+[data-testid*="ockWalletDropdown"] [data-testid*="Disconnect"],
+[data-testid*="ockWalletDropdown"] .ock\:text-base {
+  border: none !important;
+}
+
+/* Also ensure dropdown account rows keep no borders */
+[data-testid*="ockWalletDropdown"] .ock\:rounded-ock-default.ock\:text-base,
+[data-testid*="ockWalletDropdown"] button.ock\:rounded-ock-default.ock\:text-base,
+[data-testid*="ockWalletDropdown"] [role="button"].ock\:rounded-ock-default.ock\:text-base {
+  border: none !important;
+}
+
+/* Mobile-only: remove border for Disconnect control only */
+@media (max-width: 768px) {
+  .ock\:text-base {
+    border: none;
+  }
+
+  .ock-disconnect-svg {
+    margin-left: 10px !important;
+  }
+
+  /* Make sheet top border green on mobile */
+  [data-testid="ockSheet"].ock\:border-t,
+  [data-testid="ockSheet"] .ock\:border-t {
+    border-top: 1px solid #00daa2 !important;
+    box-shadow: 0 -2px 10px rgba(0, 218, 162, 0.2) !important;
+  }
+}
+
+/* Custom sidebar styles */
+.sidebar-collapse-arrow {
+  position: absolute;
+  top: 0rem;
+  right: -0rem;
+  width: 2rem;
+  height: 4rem;
+  border-radius: 6px 0 0 4px;
+  border: 1px solid #8351a1;
+  border-right: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.dark .sidebar-collapse-arrow {
+  border-color: rgba(255, 255, 255, 0.1); /* white/10 */
+}
+
+.sidebar-collapse-arrow svg {
+  width: 0.75rem;
+  height: 0.75rem;
+  color: rgb(107 114 128); /* gray-500 */
+  transition: color 0.2s ease;
+}
+
+.sidebar-collapse-arrow:hover svg {
+  color: rgb(75 85 99); /* gray-600 */
+}
+
+.dark .sidebar-collapse-arrow svg {
+  color: rgb(156 163 175); /* gray-400 */
+}
+
+.dark .sidebar-collapse-arrow:hover svg {
+  color: rgb(209 213 219); /* gray-300 */
 }
 
 /* Custom scrollbar styles */
@@ -213,4 +676,40 @@ body {
   background-repeat: no-repeat;
   filter: blur(3px) brightness(0.2) contrast(1.2);
   animation: car-glow 4s ease-in-out infinite;
+}
+
+/* Ensure signup/signin modals appear above wallet-first-auth-modal but below wallet modal */
+.signup-modal-container,
+.signin-modal-container {
+  z-index: 9999 !important;
+  position: fixed !important;
+  inset: 0 !important;
+  pointer-events: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Sidebar Auth Button - Angled Borders (Left in, Right out) with Blue/Purple Accent */
+.sidebar-auth-btn {
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  position: relative;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Auth Choice Modal Buttons - Angled Borders */
+.auth-choice-btn-primary {
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  position: relative;
+}
+
+.auth-choice-btn-secondary {
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  position: relative;
+}
+
+/* Connected Wallet Button - Angled Borders (Left in, Right out) */
+.connected-wallet-btn {
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  position: relative;
 }

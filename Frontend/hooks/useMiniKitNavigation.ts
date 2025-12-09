@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  useOpenUrl,
-  useComposeCast,
-  useViewProfile,
-} from "@coinbase/onchainkit/minikit";
+import { useOpenUrl, useComposeCast, useViewProfile } from "@coinbase/onchainkit/minikit";
 
 export function useMiniKitNavigation() {
   const openUrl = useOpenUrl();

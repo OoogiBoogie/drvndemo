@@ -94,10 +94,7 @@ export default function SwapPage() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12">
         <div className="flex justify-center">
-          <SwapInterface
-            isAuthenticated={isAuthenticated}
-            currentUser={currentUser}
-          />
+          <SwapInterface isAuthenticated={isAuthenticated} currentUser={currentUser} />
         </div>
       </div>
     </div>

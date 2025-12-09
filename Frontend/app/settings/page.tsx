@@ -7,6 +7,12 @@ export default function SettingsPage() {
         _id: "demo-user-id",
         username: "drvn_enthusiast",
         displayName: "DRVN Enthusiast",
+        firstName: "Demo",
+        lastName: "User",
+        email: "demo@example.com",
+        walletAddress: "0x1234567890123456789012345678901234567890",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
     };
 
     return (

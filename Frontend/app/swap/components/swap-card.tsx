@@ -9,10 +9,7 @@ interface SwapCardProps {
 
 export function SwapCard({ children, className = "" }: SwapCardProps) {
   return (
-    <div
-      className={`max-w-md mx-auto relative ${className}`}
-      style={{ zIndex: 1 }}
-    >
+    <div className={`max-w-md mx-auto relative ${className}`} style={{ zIndex: 1 }}>
       {children}
     </div>
   );

@@ -25,12 +25,7 @@ interface SigninModalProps {
   onSuccess: () => void;
 }
 
-export function SigninModal({
-  isOpen,
-  onClose,
-  onSwitchToSignup,
-  onSuccess,
-}: SigninModalProps) {
+export function SigninModal({ isOpen, onClose, onSwitchToSignup, onSuccess }: SigninModalProps) {
   const { address } = useAccount();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -80,7 +75,10 @@ export function SigninModal({
   if (!isOpen) return null;
 
   return (
-    <div className="flex-col justify-center items-center fixed inset-0 bg-black/50 flex z-50 p-4">
+    <div
+      className="signin-modal-container flex-col justify-center items-center fixed inset-0 bg-black/50 flex z-9999 p-4"
+      style={{ pointerEvents: "auto" }}
+    >
       <Card className="w-full max-w-md bg-gray-950 border-gray-800">
         <CardHeader className="flex flex-row items-center justify-end space-y-0 pb-2">
           <Button
@@ -98,9 +96,7 @@ export function SigninModal({
         <CardContent className="space-y-6 text-center">
           {success ? (
             <div className="py-8">
-              <div className="text-green-400 text-lg font-mono mb-2">
-                Success!
-              </div>
+              <div className="text-green-400 text-lg font-mono mb-2">Success!</div>
               <div className="text-gray-300 text-sm font-mono">
                 You have been signed in successfully.
               </div>
@@ -109,8 +105,7 @@ export function SigninModal({
             <div className="space-y-6">
               <div className="space-y-2">
                 <div className="text-gray-300 text-sm font-mono">
-                  <a className="text-[#00daa2]">Connect</a> your wallet to sign
-                  in
+                  <a className="text-[#00daa2]">Connect</a> your wallet to sign in
                 </div>
                 <div className="text-red-500 text-xs font-mono">
                   You must use the wallet address registered to your account!
@@ -147,16 +142,12 @@ export function SigninModal({
                 )}
               </div>
 
-              {error && (
-                <div className="text-red-400 text-sm font-mono">{error}</div>
-              )}
+              {error && <div className="text-red-400 text-sm font-mono">{error}</div>}
             </div>
           )}
 
           <div className="pt-4 border-t border-gray-700">
-            <span className="text-gray-400 text-sm font-mono">
-              Don&apos;t have an account?{" "}
-            </span>
+            <span className="text-gray-400 text-sm font-mono">Don&apos;t have an account? </span>
             <button
               onClick={onSwitchToSignup}
               className="text-green-400 hover:text-green-300 text-sm font-medium font-mono"

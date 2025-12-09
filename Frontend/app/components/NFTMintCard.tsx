@@ -1,29 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  useAccount,
-  useReadContract,
-  useWriteContract,
-  useWaitForTransactionReceipt,
-} from "wagmi";
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { formatUnits } from "viem";
-import { Card, CardContent } from "./ui/card";
-import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useToast } from "./ui/toast-context";
 import deployedContracts from "../../contracts/deployedContracts";
 import Confetti from "react-confetti";
 import Image from "next/image";
-import {
-  Loader2,
-  CheckCircle,
-  AlertCircle,
-  Coins,
-  Gift,
-  Users,
-  Wallet,
-} from "lucide-react";
+import { Loader2, CheckCircle, AlertCircle, Coins, Gift, Users, Wallet } from "lucide-react";
 import { AllBenefitsModal } from "./modals/all-benefits-modal";
 import { BenefitsModal } from "./modals/benefits-modal";
 
@@ -57,10 +42,7 @@ interface MintCardProps {
   onMintSuccess?: () => void;
 }
 
-export default function NFTMintCard({
-  contractName,
-  onMintSuccess,
-}: MintCardProps) {
+export default function NFTMintCard({ contractName, onMintSuccess }: MintCardProps) {
   const { address, isConnected } = useAccount();
   const [showBenefits, setShowBenefits] = useState(false);
   const [mintAmount, setMintAmount] = useState(1);
@@ -143,10 +125,7 @@ export default function NFTMintCard({
     address: usdcAddress,
     abi: usdcConfig.abi,
     functionName: "allowance",
-    args:
-      address && usdcAddress
-        ? ([address, contractAddress] as const)
-        : undefined,
+    args: address && usdcAddress ? ([address, contractAddress] as const) : undefined,
     query: {
       refetchInterval: 15000,
       staleTime: 0,
@@ -185,11 +164,7 @@ export default function NFTMintCard({
   } = useWriteContract();
 
   // Mint function
-  const {
-    writeContract: mint,
-    data: mintData,
-    isPending: isMintingTx,
-  } = useWriteContract();
+  const { writeContract: mint, data: mintData, isPending: isMintingTx } = useWriteContract();
 
   // Wait for transactions
   const {
@@ -239,9 +214,7 @@ export default function NFTMintCard({
         });
         // Force a refresh of the allowance data
         // This will trigger a re-render and show the mint button
-        console.log(
-          `Approval successful for ${contractName}, allowance should update soon`,
-        );
+        console.log(`Approval successful for ${contractName}, allowance should update soon`);
       } else if (isApprovalError) {
         setIsApproving(false);
         // Remove the "approve" toast and show error
@@ -315,35 +288,26 @@ export default function NFTMintCard({
 
   // Calculate available supply for minting
   const availableSupply =
-    maxSupply && totalMinted !== undefined
-      ? Number(maxSupply) - Number(totalMinted)
-      : 0;
+    maxSupply && totalMinted !== undefined ? Number(maxSupply) - Number(totalMinted) : 0;
 
   // Calculate total cost
-  const totalCost =
-    mintPrice && mintAmount ? mintPrice * BigInt(mintAmount) : BigInt(0);
-  const hasEnoughAllowance =
-    allowance && totalCost ? allowance >= totalCost : false;
+  const totalCost = mintPrice && mintAmount ? mintPrice * BigInt(mintAmount) : BigInt(0);
+  const hasEnoughAllowance = allowance && totalCost ? allowance >= totalCost : false;
 
   // Button states - directly follow transaction status
   const isApprovalPending = isApproving || isApprovingTx || isApprovingReceipt;
   const isMintingPending = isMinting || isMintingTx || isMintingReceipt;
 
   // Show approve button only when needed and not pending
-  const showApproveButton =
-    !hasEnoughAllowance && !isApprovalPending && !isMintingPending;
+  const showApproveButton = !hasEnoughAllowance && !isApprovalPending && !isMintingPending;
 
   // Show mint button only when approved and not pending
-  const showMintButton =
-    hasEnoughAllowance && !isMintingPending && !isApprovalPending;
+  const showMintButton = hasEnoughAllowance && !isMintingPending && !isApprovalPending;
 
   // Handle retry scenarios after errors
   const showRetryApproval =
-    !hasEnoughAllowance &&
-    !isApprovalPending &&
-    (isApprovalError || isMintingError);
-  const showRetryMint =
-    hasEnoughAllowance && !isMintingPending && isMintingError;
+    !hasEnoughAllowance && !isApprovalPending && (isApprovalError || isMintingError);
+  const showRetryMint = hasEnoughAllowance && !isMintingPending && isMintingError;
 
   // Debug logging for button states
   useEffect(() => {
@@ -451,79 +415,66 @@ export default function NFTMintCard({
 
   return (
     <>
-      <Card
-        className={`bg-gradient-to-br ${contract.color} border ${contract.borderColor} hover:border-gray-400 transition-all duration-300 hover:shadow-xl`}
-      >
-        <CardContent className="p-4">
-          {/* Header with Image and Name */}
-          <div className="flex items-center gap-3 mb-4">
-            <div className="relative w-16 h-16 rounded-lg overflow-hidden">
-              <Image
-                src={contract.image}
-                alt={contract.name}
-                fill
-                className="object-cover"
-                priority
-                unoptimized
-              />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-white mb-1">
-                {contract.name}
-              </h3>
-              <div className="flex items-center gap-2 text-xs text-gray-300">
-                <Coins className="w-3 h-3" />
-                <span>
-                  Key #
-                  {contractName === "SteelBuster"
-                    ? "0"
-                    : contractName === "CarbonBuster"
-                      ? "1"
-                      : "2"}
-                </span>
-              </div>
+      <div className="overflow-hidden rounded-xl outline -outline-offset-1 outline-white/10 bg-gray-950">
+        {/* Header with Image and Name */}
+        <div className="flex items-center gap-x-4 border-b border-white/10 bg-white/5 p-6">
+          <div className="size-12 flex-none rounded-lg bg-linear-to-r from-gray-600 to-gray-700 object-cover ring-1 ring-white/10 overflow-hidden">
+            <Image
+              src={contract.image}
+              alt={contract.name}
+              width={48}
+              height={48}
+              className="w-full h-full object-cover"
+              priority
+              unoptimized
+            />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-sm/6 font-semibold text-white font-mono">{contract.name}</div>
+            <div className="flex items-center gap-2 text-xs text-gray-400 font-mono mt-1">
+              <Coins className="w-3 h-3" />
+              <span>
+                Key #
+                {contractName === "SteelBuster" ? "0" : contractName === "CarbonBuster" ? "1" : "2"}
+              </span>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <div className="bg-black/20 rounded-lg p-2">
-              <div className="text-gray-400 text-xs mb-1">Supply</div>
-              <div className="text-white font-bold text-sm">
-                {maxSupply?.toString() || "0"}
-              </div>
+        </div>
+
+        {/* Content */}
+        <div className="px-6 py-5">
+          <dl className="-my-3 divide-y divide-white/10 text-sm/6 mb-4">
+            <div className="flex justify-between gap-x-4 py-3">
+              <dt className="text-gray-400 font-mono">Supply</dt>
+              <dd className="font-medium text-white font-mono">{maxSupply?.toString() || "0"}</dd>
             </div>
-            <div className="bg-black/20 rounded-lg p-2">
-              <div className="text-gray-400 text-xs mb-1">Minted</div>
-              <div className="text-white font-bold text-sm">
-                {totalMinted?.toString() || "0"}
-              </div>
+            <div className="flex justify-between gap-x-4 py-3">
+              <dt className="text-gray-400 font-mono">Minted</dt>
+              <dd className="font-medium text-white font-mono">{totalMinted?.toString() || "0"}</dd>
             </div>
-            <div className="bg-black/20 rounded-lg p-2">
-              <div className="text-gray-400 text-xs mb-1">Available</div>
-              <div className="text-white font-bold text-sm">
-                {availableSupply}
-              </div>
+            <div className="flex justify-between gap-x-4 py-3">
+              <dt className="text-gray-400 font-mono">Available</dt>
+              <dd className="font-medium text-white font-mono">{availableSupply}</dd>
             </div>
-            <div className="bg-black/20 rounded-lg p-2">
-              <div className="text-gray-400 text-xs mb-1">Price</div>
-              <div className="text-white font-bold text-sm">
+            <div className="flex justify-between gap-x-4 py-3">
+              <dt className="text-gray-400 font-mono">Price</dt>
+              <dd className="font-medium text-white font-mono">
                 {mintPrice ? `${formatPrice(mintPrice)} USDC` : "..."}
-              </div>
+              </dd>
             </div>
-          </div>
+          </dl>
 
           {/* Progress Bar */}
           <div className="mb-4">
-            <div className="flex justify-between text-xs text-gray-400 mb-1">
+            <div className="flex justify-between text-xs text-gray-400 mb-1 font-mono">
               <span>Progress</span>
               <span>
-                {totalMinted && maxSupply
-                  ? `${formatPercentage(totalMinted, maxSupply)}`
-                  : "0%"}
+                {totalMinted && maxSupply ? `${formatPercentage(totalMinted, maxSupply)}` : "0%"}
               </span>
             </div>
-            <div className="w-full bg-gray-700 rounded-full h-1.5">
+            <div className="w-full bg-white/10 rounded-full h-1.5">
               <div
-                className="bg-gradient-to-r from-blue-500 to-purple-500 h-1.5 rounded-full transition-all duration-300"
+                className="bg-linear-to-r from-[#00daa2] to-[#00b894] h-1.5 rounded-full transition-all duration-300"
                 style={{
                   width:
                     maxSupply && totalMinted
@@ -535,82 +486,75 @@ export default function NFTMintCard({
           </div>
 
           {/* Status Indicators */}
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <div className="bg-black/20 rounded-lg p-2">
-              <div className="flex items-center gap-2 mb-1">
-                <Gift className="w-3 h-3 text-yellow-400" />
-                <span className="text-gray-400 text-xs">Mint Rewards</span>
-              </div>
-              <div className="text-white text-xs">{formatRewardStatus()}</div>
+          <dl className="-my-3 divide-y divide-white/10 text-sm/6 mb-4">
+            <div className="flex justify-between gap-x-4 py-3">
+              <dt className="flex items-center gap-2 text-gray-400 font-mono">
+                <Gift className="w-4 h-4 text-yellow-400" />
+                Mint Rewards
+              </dt>
+              <dd className="font-medium text-white font-mono text-xs">{formatRewardStatus()}</dd>
             </div>
-            <div className="bg-black/20 rounded-lg p-2">
-              <div className="flex items-center gap-2 mb-1">
-                <Users className="w-3 h-3 text-green-400" />
-                <span className="text-gray-400 text-xs">Auto Airdrop</span>
-              </div>
-              <div className="text-white text-xs">
+            <div className="flex justify-between gap-x-4 py-3">
+              <dt className="flex items-center gap-2 text-gray-400 font-mono">
+                <Users className="w-4 h-4 text-green-400" />
+                Auto Airdrop
+              </dt>
+              <dd className="font-medium text-white font-mono text-xs">
                 {airdropFlag ? (
                   <span className="text-green-400 flex items-center gap-1">
                     <CheckCircle className="w-3 h-3" />
-                    <span className="text-xs">Yes</span>
+                    Yes
                   </span>
                 ) : (
                   <span className="text-red-400 flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />
-                    <span className="text-xs">No</span>
+                    No
                   </span>
                 )}
-              </div>
+              </dd>
             </div>
-          </div>
-
-          {/* Sale Status */}
-          <div className="bg-black/20 rounded-lg p-2 mb-4">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-xs">Sale Status</span>
-              <span
-                className={`text-xs font-medium ${saleActive ? "text-green-400" : "text-red-400"}`}
+            <div className="flex justify-between gap-x-4 py-3">
+              <dt className="text-gray-400 font-mono">Sale Status</dt>
+              <dd
+                className={`font-medium text-xs font-mono ${
+                  saleActive ? "text-green-400" : "text-red-400"
+                }`}
               >
                 {saleActive ? "🟢 Active" : "🔴 Inactive"}
-              </span>
+              </dd>
             </div>
-          </div>
-
-          <div className="flex items-center gap-1 mb-1">
-            <Wallet className="w-3 h-3 text-green-400" />
-            <p className="text-gray-300 text-xs">Wallet Balances</p>
-          </div>
+          </dl>
 
           {/* Wallet Balances - Only show when connected */}
           {isConnected && (
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <div className="bg-black/20 rounded-lg p-2">
-                <div className="text-gray-400 text-xs mb-1">USDC</div>
-                <div className="text-white font-bold text-sm">
+            <dl className="-my-3 divide-y divide-white/10 text-sm/6 mb-4">
+              <div className="flex items-center gap-2 py-2 mb-2">
+                <Wallet className="w-4 h-4 text-green-400" />
+                <span className="text-gray-400 text-xs font-mono">Wallet Balances</span>
+              </div>
+              <div className="flex justify-between gap-x-4 py-3">
+                <dt className="text-gray-400 font-mono">USDC</dt>
+                <dd className="font-medium text-white font-mono">
                   {usdcBalance
                     ? `$${Number(formatUnits(usdcBalance, 6)).toLocaleString()}`
                     : "$0.00"}
-                </div>
+                </dd>
               </div>
-              <div className="bg-black/20 rounded-lg p-2">
-                <div className="text-gray-400 text-xs mb-1">BSTR</div>
-                <div className="text-white font-bold text-sm">
-                  {bstrBalance
-                    ? Number(formatUnits(bstrBalance, 9)).toLocaleString()
-                    : "0"}
-                </div>
+              <div className="flex justify-between gap-x-4 py-3">
+                <dt className="text-gray-400 font-mono">BSTR</dt>
+                <dd className="font-medium text-white font-mono">
+                  {bstrBalance ? Number(formatUnits(bstrBalance, 9)).toLocaleString() : "0"}
+                </dd>
               </div>
-            </div>
+            </dl>
           )}
 
           {/* Minting Interface */}
           {isConnected && saleActive ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {/* Quantity Selector */}
               <div className="flex items-center gap-2">
-                <label className="text-gray-300 text-xs font-medium">
-                  Quantity:
-                </label>
+                <label className="text-gray-300 text-xs font-medium font-mono">Quantity:</label>
                 <Input
                   type="number"
                   min="1"
@@ -618,13 +562,11 @@ export default function NFTMintCard({
                   value={mintAmount}
                   onChange={(e) => {
                     const value = parseInt(e.target.value) || 0;
-                    // Allow typing while data is loading, validate on blur or submit
                     if (value >= 0) {
                       setMintAmount(value);
                     }
                   }}
                   onBlur={(e) => {
-                    // Validate on blur to ensure value is within bounds
                     const value = parseInt(e.target.value) || 1;
                     if (availableSupply && value > availableSupply) {
                       setMintAmount(availableSupply);
@@ -632,117 +574,130 @@ export default function NFTMintCard({
                       setMintAmount(1);
                     }
                   }}
-                  className="w-20 bg-black/20 border-gray-600 text-white text-center text-sm"
+                  className="w-20 bg-white/5 border-white/10 text-white text-center text-sm font-mono"
                   placeholder="Enter amount"
                 />
-                <span className="text-green-400 text-xs">
-                  / {availableSupply}
-                </span>
+                <span className="text-[#00daa2] text-xs font-mono">/ {availableSupply}</span>
               </div>
 
               {/* Total Cost */}
-              <div className="bg-black/20 rounded-lg p-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-green-400 text-xs">Total Cost</span>
-                  <span className="text-white font-bold text-sm">
-                    ${totalCost ? `${formatPrice(totalCost)} USDC` : "0 USDC"}
-                  </span>
+              <dl className="-my-3 divide-y divide-white/10 text-sm/6">
+                <div className="flex justify-between gap-x-4 py-3">
+                  <dt className="text-[#00daa2] font-mono">Total Cost</dt>
+                  <dd className="font-medium text-white font-mono">
+                    {totalCost ? `${formatPrice(totalCost)} USDC` : "0 USDC"}
+                  </dd>
                 </div>
-              </div>
+              </dl>
 
               {/* View Benefits Button */}
-              <div className="mb-4">
-                <Button
-                  onClick={() => setShowBenefits(true)}
-                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-mono"
-                  size="sm"
-                >
-                  <Gift className="w-4 h-4 mr-2" />
-                  View Benefits
-                </Button>
-              </div>
+              <button
+                onClick={() => setShowBenefits(true)}
+                className="auth-choice-btn-primary w-full relative flex items-center justify-center gap-2 py-3 px-4 border border-white/20 text-white font-sans font-semibold text-sm uppercase tracking-wide overflow-hidden group hover:border-white/30 transition-all duration-300 cursor-pointer bg-transparent"
+              >
+                {/* Shimmer Effect */}
+                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-linear-to-r from-transparent via-white/10 to-transparent"></div>
+                {/* Purple/Blue Accent Gradient Overlay */}
+                <div className="absolute inset-0 bg-linear-to-r from-purple-600/20 via-transparent to-blue-600/20 opacity-50"></div>
+                <Gift className="relative z-10 w-4 h-4" />
+                <span className="relative z-10 font-mono">View Benefits</span>
+              </button>
 
               {/* Action Buttons */}
               {showApproveButton && (
-                <Button
+                <button
                   onClick={handleApprove}
                   disabled={isApprovalPending}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 text-sm"
+                  className="auth-choice-btn-primary w-full relative flex items-center justify-center gap-2 py-3 px-4 border border-white/20 text-white font-sans font-semibold text-sm uppercase tracking-wide overflow-hidden group hover:border-white/30 transition-all duration-300 cursor-pointer bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                 >
+                  {/* Shimmer Effect */}
+                  <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-linear-to-r from-transparent via-white/10 to-transparent"></div>
+                  {/* Blue Accent Gradient Overlay */}
+                  <div className="absolute inset-0 bg-linear-to-r from-blue-600/20 via-transparent to-blue-600/20 opacity-50"></div>
                   {isApprovalPending ? (
                     <>
-                      <Loader2 className="w-3 h-3 mr-2 animate-spin" />
-                      Approving...
+                      <Loader2 className="relative z-10 w-4 h-4 animate-spin" />
+                      <span className="relative z-10 font-mono">Approving...</span>
                     </>
                   ) : (
-                    "Approve USDC"
+                    <span className="relative z-10 font-mono">Approve USDC</span>
                   )}
-                </Button>
+                </button>
               )}
               {showRetryApproval && (
-                <Button
+                <button
                   onClick={handleApprove}
                   disabled={isApprovalPending}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 text-sm"
+                  className="auth-choice-btn-primary w-full relative flex items-center justify-center gap-2 py-3 px-4 border border-white/20 text-white font-sans font-semibold text-sm uppercase tracking-wide overflow-hidden group hover:border-white/30 transition-all duration-300 cursor-pointer bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                 >
+                  {/* Shimmer Effect */}
+                  <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-linear-to-r from-transparent via-white/10 to-transparent"></div>
+                  {/* Blue Accent Gradient Overlay */}
+                  <div className="absolute inset-0 bg-linear-to-r from-blue-600/20 via-transparent to-blue-600/20 opacity-50"></div>
                   {isApprovalPending ? (
                     <>
-                      <Loader2 className="w-3 h-3 mr-2 animate-spin" />
-                      Approving...
+                      <Loader2 className="relative z-10 w-4 h-4 animate-spin" />
+                      <span className="relative z-10 font-mono">Approving...</span>
                     </>
                   ) : (
-                    "Retry Approval"
+                    <span className="relative z-10 font-mono">Retry Approval</span>
                   )}
-                </Button>
+                </button>
               )}
               {showMintButton && (
-                <Button
+                <button
                   onClick={handleMint}
                   disabled={isMintingPending}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 text-sm"
+                  className="auth-choice-btn-primary w-full relative flex items-center justify-center gap-2 py-3 px-4 border border-white/20 text-white font-sans font-semibold text-sm uppercase tracking-wide overflow-hidden group hover:border-white/30 transition-all duration-300 cursor-pointer bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                 >
+                  {/* Shimmer Effect */}
+                  <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-linear-to-r from-transparent via-white/10 to-transparent"></div>
+                  {/* Green Accent Gradient Overlay */}
+                  <div className="absolute inset-0 bg-linear-to-r from-[#00daa2]/20 via-transparent to-[#00daa2]/20 opacity-50"></div>
                   {isMintingPending ? (
                     <>
-                      <Loader2 className="w-3 h-3 mr-2 animate-spin" />
-                      Minting...
+                      <Loader2 className="relative z-10 w-4 h-4 animate-spin" />
+                      <span className="relative z-10 font-mono">Minting...</span>
                     </>
                   ) : (
-                    `Mint ${mintAmount} Key${mintAmount > 1 ? "s" : ""}`
+                    <span className="relative z-10 font-mono">
+                      Mint {mintAmount} Key{mintAmount > 1 ? "s" : ""}
+                    </span>
                   )}
-                </Button>
+                </button>
               )}
               {showRetryMint && (
-                <Button
+                <button
                   onClick={handleMint}
                   disabled={isMintingPending}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 text-sm"
+                  className="auth-choice-btn-primary w-full relative flex items-center justify-center gap-2 py-3 px-4 border border-white/20 text-white font-sans font-semibold text-sm uppercase tracking-wide overflow-hidden group hover:border-white/30 transition-all duration-300 cursor-pointer bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                 >
+                  {/* Shimmer Effect */}
+                  <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-linear-to-r from-transparent via-white/10 to-transparent"></div>
+                  {/* Green Accent Gradient Overlay */}
+                  <div className="absolute inset-0 bg-linear-to-r from-[#00daa2]/20 via-transparent to-[#00daa2]/20 opacity-50"></div>
                   {isMintingPending ? (
                     <>
-                      <Loader2 className="w-3 h-3 mr-2 animate-spin" />
-                      Minting...
+                      <Loader2 className="relative z-10 w-4 h-4 animate-spin" />
+                      <span className="relative z-10 font-mono">Minting...</span>
                     </>
                   ) : (
-                    `Retry Mint`
+                    <span className="relative z-10 font-mono">Retry Mint</span>
                   )}
-                </Button>
+                </button>
               )}
             </div>
           ) : (
             <div className="text-center py-3">
               {!isConnected ? (
-                <div className="text-gray-400 text-xs">
-                  Connect wallet to mint
-                </div>
+                <div className="text-gray-400 text-xs font-mono">Connect wallet to mint</div>
               ) : !saleActive ? (
-                <div className="text-red-400 text-xs">
-                  Sale is currently inactive
-                </div>
+                <div className="text-red-400 text-xs font-mono">Sale is currently inactive</div>
               ) : null}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Benefits Modal */}
       {showBenefits && (
@@ -750,10 +705,7 @@ export default function NFTMintCard({
           isOpen={showBenefits}
           onClose={() => setShowBenefits(false)}
           keyType={
-            contractName.toLowerCase().replace("buster", "") as
-              | "steel"
-              | "carbon"
-              | "titanium"
+            contractName.toLowerCase().replace("buster", "") as "steel" | "carbon" | "titanium"
           }
         />
       )}
@@ -810,42 +762,35 @@ export function NFTMintGrid() {
 
       {/* Header */}
       <div className="text-left mb-8 mt-2">
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
+        <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 font-mono">
           Founder&apos;s Club Keys
         </h1>
-        <p className="text-left text-gray-400 max-w-2xl">
-          Collect your DRVN Founder&apos;s Club keys to unlock exclusive
-          benefits, larger rewards, and voting power within the DRVN DAO.
+        <p className="text-left text-gray-400 max-w-2xl font-mono">
+          Collect your DRVN Founder&apos;s Club keys to unlock exclusive benefits, larger rewards,
+          and voting power within the DRVN DAO.
         </p>
       </div>
 
       {/* Mint Cards Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <NFTMintCard
-          contractName="SteelBuster"
-          onMintSuccess={triggerConfetti}
-        />
-        <NFTMintCard
-          contractName="CarbonBuster"
-          onMintSuccess={triggerConfetti}
-        />
-        <NFTMintCard
-          contractName="TitaniumBuster"
-          onMintSuccess={triggerConfetti}
-        />
+        <NFTMintCard contractName="SteelBuster" onMintSuccess={triggerConfetti} />
+        <NFTMintCard contractName="CarbonBuster" onMintSuccess={triggerConfetti} />
+        <NFTMintCard contractName="TitaniumBuster" onMintSuccess={triggerConfetti} />
       </div>
 
       {/* Holder Benefits Button */}
-      <div className="flex justify-center mt-8">
-        <Button
+      {/* <div className="flex justify-center mt-8">
+        <button
           onClick={() => setShowBenefits(true)}
-          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-mono px-8 py-3 text-lg"
-          size="lg"
+          className="auth-choice-btn-primary relative flex items-center justify-center gap-2 py-4 px-8 border border-white/20 text-white font-sans font-semibold text-base uppercase tracking-wide overflow-hidden group hover:border-white/30 transition-all duration-300 cursor-pointer bg-transparent"
         >
-          <Gift className="w-5 h-5 mr-2" />
-          Holder Benefits
-        </Button>
-      </div>
+          
+          <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-linear-to-r from-transparent via-white/10 to-transparent"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-purple-600/20 via-transparent to-blue-600/20 opacity-50"></div>
+          <Gift className="relative z-10 w-5 h-5" />
+          <span className="relative z-10 font-mono">Holder Benefits</span>
+        </button>
+      </div> */}
 
       {/* Additional Info */}
       {/* <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-700">
@@ -866,10 +811,7 @@ export function NFTMintGrid() {
       </div> */}
 
       {/* All Benefits Modal */}
-      <AllBenefitsModal
-        isOpen={showBenefits}
-        onClose={() => setShowBenefits(false)}
-      />
+      <AllBenefitsModal isOpen={showBenefits} onClose={() => setShowBenefits(false)} />
     </div>
   );
 }

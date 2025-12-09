@@ -24,7 +24,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'yarn'
           cache-dependency-path: Hardhat/yarn.lock
 
@@ -72,44 +72,78 @@ jobs:
         working-directory: ./Frontend
         run: npm ci
 
+      - name: Verify Critical Package Versions
+        working-directory: ./Frontend
+        run: |
+          echo "🔍 Verifying critical package versions..."
+          
+          # Check for compromised/vulnerable versions
+          NEXT_VERSION=$(node -p "require('./package.json').dependencies.next")
+          REACT_VERSION=$(node -p "require('./package.json').dependencies.react")
+          REACT_DOM_VERSION=$(node -p "require('./package.json').dependencies['react-dom']")
+          
+          echo "Current versions:"
+          echo "  Next.js: $NEXT_VERSION"
+          echo "  React: $REACT_VERSION"
+          echo "  React-DOM: $REACT_DOM_VERSION"
+          
+          # Check if versions are too old (security risk)
+          if [[ "$NEXT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            NEXT_MAJOR=$(echo $NEXT_VERSION | cut -d. -f1)
+            NEXT_MINOR=$(echo $NEXT_VERSION | cut -d. -f2)
+            if [ "$NEXT_MAJOR" -lt 15 ] || ([ "$NEXT_MAJOR" -eq 15 ] && [ "$NEXT_MINOR" -lt 5 ]); then
+              echo "❌ ERROR: Next.js version $NEXT_VERSION is below required 15.5.7 (security update required)"
+              exit 1
+            fi
+          fi
+          
+          if [[ "$REACT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            REACT_MAJOR=$(echo $REACT_VERSION | cut -d. -f1)
+            if [ "$REACT_MAJOR" -lt 19 ]; then
+              echo "❌ ERROR: React version $REACT_VERSION is below required 19.2.1 (security update required)"
+              exit 1
+            fi
+          fi
+          
+          echo "✅ Critical package versions verified"
+
       - name: Create .env.local for build
         working-directory: ./Frontend
         run: |
           cat > .env.local << EOF
-          # Public/Non-sensitive variables for CI build
-          NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME=DRVN VHCLS
+          # Shared/OnchainKit variables
+          NEXT_PUBLIC_PROJECT_NAME=${{ secrets.NEXT_PUBLIC_PROJECT_NAME || secrets.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME || 'DRVN VHCLS' }}
+          # Backward compatibility: code may still use NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME
+          NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME=${{ secrets.NEXT_PUBLIC_PROJECT_NAME || secrets.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME || 'DRVN VHCLS' }}
           NEXT_PUBLIC_URL=http://localhost:3000
           NEXT_PUBLIC_ONCHAINKIT_API_KEY=${{ secrets.NEXT_PUBLIC_ONCHAINKIT_API_KEY || '' }}
-          NEXT_PUBLIC_APP_ICON=https://placeholder.com/icon.png
-          NEXT_PUBLIC_APP_SUBTITLE=Premium Automotive Marketplace
-          NEXT_PUBLIC_APP_DESCRIPTION=Exclusive car collections and trading platform
-          NEXT_PUBLIC_APP_SPLASH_IMAGE=https://placeholder.com/splash.jpg
-          NEXT_PUBLIC_SPLASH_BACKGROUND_COLOR=#00daa2
-          NEXT_PUBLIC_APP_PRIMARY_CATEGORY=Automotive
-          NEXT_PUBLIC_APP_HERO_IMAGE=https://placeholder.com/hero.jpg
-          NEXT_PUBLIC_APP_TAGLINE=Where Cars Meet Culture
-          NEXT_PUBLIC_APP_OG_TITLE=DRVN VHCLS - Premium Automotive Marketplace
-          NEXT_PUBLIC_APP_OG_DESCRIPTION=Exclusive car collections and trading platform
-          NEXT_PUBLIC_APP_OG_IMAGE=https://placeholder.com/og-image.jpg
-          NEXT_PUBLIC_ICON_URL=https://placeholder.com/icon.png
-          # Database (optional for build - only needed for runtime)
-          MONGODB_URI=${{ secrets.MONGODB_URI || 'mongodb://localhost:27017/test' }}
-          # Redis (optional for build)
+          NEXT_PUBLIC_ONCHAINKIT_PROJECT_ID=${{ secrets.NEXT_PUBLIC_ONCHAINKIT_PROJECT_ID || '' }}
+          
+          # Redis config (optional for build)
           REDIS_URL=${{ secrets.REDIS_URL || '' }}
           REDIS_TOKEN=${{ secrets.REDIS_TOKEN || '' }}
-          # IPFS/Pinata (optional for build)
+          
+          # MongoDB Database (optional for build - only needed for runtime)
+          MONGODB_URI=${{ secrets.MONGODB_URI || 'mongodb://localhost:27017/test' }}
+          ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY || '' }}
+          
+          # IPFS Configuration (optional for build)
           NEXT_PUBLIC_PINATA_API_KEY=${{ secrets.NEXT_PUBLIC_PINATA_API_KEY || '' }}
           NEXT_PUBLIC_PINATA_SECRET_KEY=${{ secrets.NEXT_PUBLIC_PINATA_SECRET_KEY || '' }}
           PINATA_JWT=${{ secrets.PINATA_JWT || '' }}
           NEXT_PUBLIC_IPFS_GATEWAY=${{ secrets.NEXT_PUBLIC_IPFS_GATEWAY || '' }}
-          # Farcaster (optional for build)
-          FARCASTER_HEADER=${{ secrets.FARCASTER_HEADER || '' }}
-          FARCASTER_PAYLOAD=${{ secrets.FARCASTER_PAYLOAD || '' }}
-          FARCASTER_SIGNATURE=${{ secrets.FARCASTER_SIGNATURE || '' }}
-          # Encryption (optional for build)
-          ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY || '' }}
-          # Alchemy (optional for build)
+          
+          # Reown Wallet Key (optional for build)
+          NEXT_PUBLIC_PROJECT_ID=${{ secrets.NEXT_PUBLIC_PROJECT_ID || '' }}
+          
+          # Alchemy API Key (optional for build)
           ALCHEMY_API_KEY=${{ secrets.ALCHEMY_API_KEY || '' }}
+          NEXT_PUBLIC_BASE_RPC_URL=${{ secrets.NEXT_PUBLIC_BASE_RPC_URL || '' }}
+          
+          # Buster Token Variables (optional for build)
+          NEXT_PUBLIC_BSTR_CONTRACT_ADDRESS=${{ secrets.NEXT_PUBLIC_BSTR_CONTRACT_ADDRESS || '' }}
+          NEXT_PUBLIC_BSTR_ETH_POOL_ADDRESS=${{ secrets.NEXT_PUBLIC_BSTR_ETH_POOL_ADDRESS || '' }}
+          NEXT_PUBLIC_BSTR_USDC_POOL_ADDRESS=${{ secrets.NEXT_PUBLIC_BSTR_USDC_POOL_ADDRESS || '' }}
           EOF
 
       - name: Run ESLint

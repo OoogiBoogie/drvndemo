@@ -17,13 +17,10 @@ export async function DELETE() {
         message: `Deleted ${result.deletedCount} users from database`,
         deletedCount: result.deletedCount,
       },
-      { status: 200 },
+      { status: 200 }
     );
   } catch (error) {
     console.error("Cleanup error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -32,18 +32,24 @@ This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDU
 
 ---
 
+## <picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/lucide:alert-triangle.svg?color=%2300daa2"><img src="https://api.iconify.design/lucide:alert-triangle.svg?color=%23000000" width="18" height="18" alt="" /></picture> ⚠️ Important: Security Update Required
+
+**Before contributing, please read [SECURITY_UPDATE.md](../SECURITY_UPDATE.md)** if you're working on an existing feature branch. All contributors must ensure their code uses the latest secure package versions.
+
+---
+
 ## <picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/lucide:rocket.svg?color=%2300daa2"><img src="https://api.iconify.design/lucide:rocket.svg?color=%23000000" width="18" height="18" alt="" /></picture> Getting Started
 
 ### Prerequisites
 
 | Requirement | Version | Purpose |
 |------------|---------|---------|
-| **Node.js** | 22.x | Runtime environment |
+| **Node.js** | 22.x | Runtime environment (required) |
 | **Git** | Latest | Version control |
-| **npm** | Latest | Frontend package manager |
+| **npm** | Latest | Frontend package manager (comes with Node.js) |
 | **yarn** | Latest | Hardhat package manager |
 | **Code Editor** | - | VS Code recommended |
-| **Knowledge** | - | React/Next.js, Solidity/Hardhat, TypeScript/JavaScript |
+| **Knowledge** | - | React 19/Next.js 15, Solidity/Hardhat, TypeScript/JavaScript |
 
 ### Fork and Clone
 
@@ -79,6 +85,8 @@ cd Hardhat
 yarn install
 cd ..
 ```
+
+> **Note**: Frontend uses `npm` while Hardhat uses `yarn`. This is intentional and matches the project structure.
 
 #### Step 5: Set Up Environment Variables
 
@@ -228,10 +236,10 @@ Before committing, ensure all checks pass:
 **Frontend:**
 ```bash
 cd Frontend
-npm run lint
-npm run format:check
-npm run typecheck
-npm run build
+npm run lint          # Must pass
+npm run format:check  # Must pass
+npm run typecheck     # Must pass
+npm run build         # Must pass
 ```
 
 **Hardhat:**
@@ -457,7 +465,10 @@ Related to #456
 | Aspect | Standard |
 |--------|----------|
 | **TypeScript** | Use TypeScript for all new code. Avoid `any` types. |
+| **React** | React 19.2.1 with Next.js 15.5.7 App Router |
 | **Components** | Use functional components with hooks |
+| **Styling** | Tailwind CSS 4.1.17 with custom theme |
+| **Web3** | OnchainKit 1.0.3 for wallet integration |
 | **Naming** | Components: PascalCase (`UserProfile.tsx`)<br>Functions/variables: camelCase (`getUserData`)<br>Constants: UPPER_SNAKE_CASE (`MAX_RETRIES`) |
 | **Imports** | Group imports (external, internal, relative) |
 | **Formatting** | Use Prettier (configured in `.prettierrc`) |
@@ -505,8 +516,10 @@ Related to #456
 ```bash
 # Frontend
 cd Frontend
-npm run typecheck
-npm run lint
+npm run typecheck     # TypeScript type checking
+npm run lint          # ESLint linting
+npm run format:check # Prettier formatting check
+npm run build         # Production build test
 
 # Hardhat
 cd Hardhat

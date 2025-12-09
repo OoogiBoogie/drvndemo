@@ -148,7 +148,10 @@ export default function RegisteredVehiclePage() {
                 ...prev.carToken,
                 ...payload.carToken,
             },
-            sponsorshipCollection: payload.sponsorshipCollection,
+            sponsorshipCollection: {
+                ...payload.sponsorshipCollection,
+                mintedCount: payload.sponsorshipCollection.mintedCount ?? 0,
+            },
         }));
         lifecycle.handleUpgradeComplete(payload);
     };
@@ -159,11 +162,15 @@ export default function RegisteredVehiclePage() {
 
     const handleSponsorPurchase = (payload: Parameters<typeof lifecycle.handleSponsorshipMint>[0]) => {
         setVehicle((prev) => {
-            const existingIndex = prev.sponsors.findIndex((s) => s.tokenId === payload.sponsor.tokenId);
+            const safeSponsor = {
+                ...payload.sponsor,
+                name: payload.sponsor.name || "Unknown Sponsor",
+            };
+            const existingIndex = prev.sponsors.findIndex((s) => s.tokenId === safeSponsor.tokenId);
             const isNewSponsor = existingIndex === -1;
             const nextSponsors = isNewSponsor
-                ? [...prev.sponsors, payload.sponsor]
-                : prev.sponsors.map((s, idx) => (idx === existingIndex ? payload.sponsor : s));
+                ? [...prev.sponsors, safeSponsor]
+                : prev.sponsors.map((s, idx) => (idx === existingIndex ? safeSponsor : s));
             const existingCollection = prev.sponsorshipCollection;
             const updatedCollection = existingCollection
                 ? {
@@ -264,7 +271,10 @@ export default function RegisteredVehiclePage() {
 
                 {/* 4. Token Details (If Upgraded) */}
                 {vehicle.isUpgraded && (lifecycle.carToken || vehicle.carToken) && (
-                    <TokenDetails token={(lifecycle.carToken || vehicle.carToken)!} />
+                    <TokenDetails token={{
+                        ...(lifecycle.carToken || vehicle.carToken)!,
+                        address: (lifecycle.carToken || vehicle.carToken)!.address || ""
+                    }} />
                 )}
 
                 {/* 5. Filtered Content Feed */}

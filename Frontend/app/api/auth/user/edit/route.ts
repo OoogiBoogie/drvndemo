@@ -13,19 +13,13 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!walletAddress) {
-      return NextResponse.json(
-        { error: "Wallet address is required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Wallet address is required" }, { status: 400 });
     }
 
     // Validate wallet address format (basic Ethereum address validation)
     const walletRegex = /^0x[a-fA-F0-9]{40}$/;
     if (!walletRegex.test(walletAddress)) {
-      return NextResponse.json(
-        { error: "Invalid wallet address format" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Invalid wallet address format" }, { status: 400 });
     }
 
     // Find user by wallet address
@@ -56,13 +50,10 @@ export async function POST(request: NextRequest) {
         success: true,
         user: editableUser,
       },
-      { status: 200 },
+      { status: 200 }
     );
   } catch (error) {
     console.error("User edit fetch error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

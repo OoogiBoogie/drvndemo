@@ -60,8 +60,11 @@ cp .env.example .env.local
 
 | Variable | Where to Get | Required |
 |----------|--------------|----------|
+| `NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME` | Set to "DRVN VHCLS" | ✅ Yes |
+| `NEXT_PUBLIC_ONCHAINKIT_PROJECT_ID` | [portal.cdp.coinbase.com](https://portal.cdp.coinbase.com/) | ✅ Yes |
 | `NEXT_PUBLIC_ONCHAINKIT_API_KEY` | [portal.cdp.coinbase.com](https://portal.cdp.coinbase.com/) | ✅ Yes |
 | `NEXT_ONCHAINKIT_API_KEY` | [portal.cdp.coinbase.com](https://portal.cdp.coinbase.com/) | ✅ Yes |
+| `NEXT_PUBLIC_URL` | Your app URL (localhost:3000 for dev) | ✅ Yes |
 | `MONGODB_URI` | Contact DBRO/DRVN Labo | ✅ Yes |
 | `REDIS_URL` | [console.upstash.com](https://console.upstash.com/) | ✅ Yes |
 | `REDIS_TOKEN` | [console.upstash.com](https://console.upstash.com/) | ✅ Yes |
@@ -69,6 +72,8 @@ cp .env.example .env.local
 | `NEXT_PUBLIC_PINATA_SECRET_KEY` | [app.pinata.cloud](https://app.pinata.cloud/) | ✅ Yes |
 | `ALCHEMY_API_KEY` | [alchemy.com](https://www.alchemy.com/) | ✅ Yes |
 | `NEXT_PUBLIC_BSTR_CONTRACT_ADDRESS` | From contract deployment | ✅ Yes |
+| `ENCRYPTION_KEY` | Auto-generated if not provided (32 chars) | ⚠️ Optional |
+| `NEXT_PUBLIC_PAYMASTER_AND_BUNDLER_ENDPOINT` | For gasless transactions | ⚠️ Optional |
 
 **See `Frontend/.env.example` for complete list.**
 
@@ -322,10 +327,10 @@ git commit -m "updated stuff"                # No type, vague
 **If you modified Frontend:**
 ```bash
 cd Frontend
-npm run lint
-npm run format:check
-npm run typecheck
-npm run build
+npm run lint          # Must pass
+npm run format:check  # Must pass
+npm run typecheck     # Must pass
+npm run build         # Must pass
 ```
 
 **If you modified Hardhat:**
@@ -419,7 +424,10 @@ Closes #123
 | Standard | Rule |
 |----------|------|
 | **TypeScript** | Use TypeScript for all new code. Avoid `any` types |
+| **React** | React 19.2.1 with Next.js 15.5.7 App Router |
 | **Components** | Use functional components with hooks |
+| **Styling** | Tailwind CSS 4.1.17 with custom theme |
+| **Web3** | OnchainKit 1.0.3 for wallet integration |
 | **Naming** | Components: `PascalCase.tsx`<br>Functions: `camelCase`<br>Constants: `UPPER_SNAKE_CASE` |
 | **Imports** | Group imports (external, internal, relative) |
 | **Formatting** | Prettier auto-formats on save |
@@ -451,9 +459,10 @@ Closes #123
 **Before every commit:**
 ```bash
 cd Frontend
-npm run typecheck  # TypeScript must pass
-npm run lint       # ESLint must pass
-npm run build      # Build must succeed
+npm run typecheck     # TypeScript must pass
+npm run lint          # ESLint must pass
+npm run format:check  # Prettier must pass
+npm run build         # Build must succeed
 ```
 
 ### Contract Testing
@@ -487,6 +496,9 @@ yarn compile       # Contracts must compile
 - Runs on `http://localhost:3000`
 - Hot reload enabled
 - TypeScript strict mode
+- Next.js 15.5.7 with React 19.2.1
+- Tailwind CSS 4.1.17 with PostCSS
+- OnchainKit 1.0.3 for wallet integration
 
 ### Contract Developers
 

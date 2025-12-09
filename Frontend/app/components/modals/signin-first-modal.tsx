@@ -13,11 +13,7 @@ interface SigninFirstModalProps {
   onSuccess: () => void;
 }
 
-export function SigninFirstModal({
-  isOpen,
-  onClose,
-  onSuccess,
-}: SigninFirstModalProps) {
+export function SigninFirstModal({ isOpen, onClose, onSuccess }: SigninFirstModalProps) {
   const [showSignupModal, setShowSignupModal] = useState(false);
 
   const handleSignupClick = () => {
@@ -44,9 +40,7 @@ export function SigninFirstModal({
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         <Card className="w-full max-w-md bg-gray-950 border-gray-800">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-            <CardTitle className="text-white text-xl font-mono">
-              Sign In to DRVN VHCLS
-            </CardTitle>
+            <CardTitle className="text-white text-xl font-mono">Sign In to DRVN VHCLS</CardTitle>
             <Button
               variant="ghost"
               size="icon"
@@ -73,9 +67,7 @@ export function SigninFirstModal({
 
             {/* Signup Option */}
             <div className="text-center pt-4 border-t border-gray-700">
-              <p className="text-gray-400 text-xs font-mono mb-3">
-                Don&apos;t have an account?
-              </p>
+              <p className="text-gray-400 text-xs font-mono mb-3">Don&apos;t have an account?</p>
               <Button
                 onClick={handleSignupClick}
                 variant="outline"

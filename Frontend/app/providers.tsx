@@ -1,33 +1,42 @@
 "use client";
-
-import { type ReactNode } from "react";
+import { ReactNode } from "react";
 import { base } from "wagmi/chains";
-import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
-import { ToastProvider } from "./components/ui/toast-context";
+import { OnchainKitProvider } from "@coinbase/onchainkit";
+import { minikitConfig } from "../minikit.config";
 
-// Main Provider - Using Coinbase Mini Kit and Toast Provider
-export function Providers(props: { children: ReactNode }) {
+export function Providers({ children }: { children: ReactNode }) {
   return (
-    <ToastProvider>
-      <MiniKitProvider
-        apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
-        chain={base}
-        config={{
-          appearance: {
-            mode: "auto",
-            theme: "mini-app-theme",
-            name: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME,
-            logo: process.env.NEXT_PUBLIC_ICON_URL,
+    <OnchainKitProvider
+      projectId={process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_ID}
+      apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
+      chain={base}
+      config={{
+        paymaster: process.env.NEXT_PUBLIC_PAYMASTER_AND_BUNDLER_ENDPOINT,
+        appearance: {
+          mode: "auto",
+          theme: "custom",
+          name: minikitConfig.miniapp.name,
+          logo: minikitConfig.miniapp.iconUrl,
+        },
+        wallet: {
+          display: "modal",
+          preference: "all",
+          termsUrl: "https://www.decentralbros.io/terms",
+          privacyUrl: "https://www.decentralbros.io/privacy",
+          supportedWallets: {
+            rabby: false,
+            trust: true,
+            frame: false,
           },
-          wallet: {
-            display: "modal",
-            termsUrl: "",
-            privacyUrl: "",
-          },
-        }}
-      >
-        {props.children}
-      </MiniKitProvider>
-    </ToastProvider>
+        },
+      }}
+      miniKit={{
+        enabled: true,
+        autoConnect: true,
+        notificationProxyUrl: undefined,
+      }}
+    >
+      {children}
+    </OnchainKitProvider>
   );
 }

@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { DRVN_TOKENS } from "../swap/types/swap-types";
-import { Card, CardContent } from "./ui/card";
-import { Button } from "./ui/button";
 import {
   TrendingUp,
   BarChart3,
@@ -132,151 +130,142 @@ export function Buster({ currentUser, isAuthenticated }: BusterProps) {
           {/* Left Column - Token Info and Price */}
           <div className="lg:col-span-1 space-y-4">
             {/* Token Identification and Price */}
-            <Card className="bg-gray-900/50 border border-purple-500/20 backdrop-blur-sm">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  {/* Token Icon - Larger and more prominent */}
-                  <div className="flex-shrink-0">
-                    <div className="w-20 h-20 rounded-full bg-[#000000]">
+            <div className="overflow-hidden rounded-xl outline -outline-offset-1 outline-white/10 bg-gray-950">
+              <div className="px-6 py-5 border-b border-white/10">
+                <div className="flex items-center gap-4">
+                  {/* Token Icon */}
+                  <div className="shrink-0">
+                    <div className="w-16 h-16 rounded-full bg-[#000000] ring-1 ring-white/10">
                       <Image
                         src={DRVN_TOKENS.BSTR.image || ""}
                         alt="BSTR Token"
-                        width={80}
-                        height={80}
+                        width={64}
+                        height={64}
                         className="w-full h-full rounded-full object-cover"
                       />
                     </div>
                   </div>
 
                   {/* Price Information */}
-                  <div className="flex-1">
-                    <div className="text-3xl font-bold text-white font-mono mb-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-2xl font-bold text-white font-mono mb-1">
                       {isLoading ? (
                         <span className="text-gray-400">Loading...</span>
                       ) : (
                         `$${tokenData.usdPrice}`
                       )}
                     </div>
-                    <div className="text-lg text-gray-300 font-mono mb-1">
+                    <div className="text-sm text-gray-400 font-mono">
                       {isLoading ? (
                         <span className="text-gray-400">Loading...</span>
                       ) : (
                         `◆${tokenData.ethPrice}`
                       )}
                     </div>
-                    <div className="text-sm text-gray-400 font-mono">
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-6 py-4">
+                <dl className="-my-3 divide-y divide-white/10 text-sm/6">
+                  <div className="flex justify-between gap-x-4 py-3">
+                    <dt className="text-gray-400 font-mono">24hr Change</dt>
+                    <dd className="font-medium text-white font-mono">
                       {isLoading ? (
                         <span className="text-gray-400">Loading...</span>
                       ) : (
                         tokenData.priceChange
                       )}
-                    </div>
+                    </dd>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </dl>
+              </div>
+            </div>
 
             {/* Action Buttons */}
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  className="bg-[#00daa2] hover:bg-[#00b894] text-black font-mono py-2"
-                  size="sm"
-                  onClick={() => {
-                    setSwapType("buy");
-                    setShowSwapModal(true);
-                  }}
-                >
-                  Buy
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-[#00daa2] text-[#00daa2] hover:bg-[#00daa2] hover:text-black font-mono py-2"
-                  size="sm"
-                  onClick={() => {
-                    setSwapType("sell");
-                    setShowSwapModal(true);
-                  }}
-                >
-                  Sell
-                </Button>
-              </div>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => {
+                  setSwapType("buy");
+                  setShowSwapModal(true);
+                }}
+                className="auth-choice-btn-primary relative flex items-center justify-center gap-2 py-3 px-4 border border-white/20 text-white font-sans font-semibold text-sm uppercase tracking-wide overflow-hidden group hover:border-white/30 transition-all duration-300 cursor-pointer bg-transparent"
+              >
+                {/* Shimmer Effect */}
+                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+                {/* Green Accent Gradient Overlay */}
+                <div className="absolute inset-0 bg-linear-to-r from-[#00daa2]/20 via-transparent to-[#00daa2]/20 opacity-50"></div>
+                <span className="relative z-10 font-mono">Buy</span>
+              </button>
+              <button
+                onClick={() => {
+                  setSwapType("sell");
+                  setShowSwapModal(true);
+                }}
+                className="auth-choice-btn-primary relative flex items-center justify-center gap-2 py-3 px-4 border border-white/20 text-white font-sans font-semibold text-sm uppercase tracking-wide overflow-hidden group hover:border-white/30 transition-all duration-300 cursor-pointer bg-transparent"
+              >
+                {/* Shimmer Effect */}
+                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+                <span className="relative z-10 font-mono">Sell</span>
+              </button>
             </div>
           </div>
 
           {/* Right Column - Market Data */}
           <div className="lg:col-span-2">
-            <Card className="bg-gray-900/50 border border-purple-500/20 backdrop-blur-sm">
-              <CardContent className="p-6">
-                <div className="grid grid-cols-2 gap-6">
-                  {/* Left Column - Market Cap & Volume */}
-                  <div className="space-y-6">
-                    {/* Market Cap */}
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                        <TrendingUp className="w-5 h-5 text-blue-400" />
-                      </div>
-                      <div>
-                        <div className="text-gray-400 text-sm font-mono">
-                          Market Cap
-                        </div>
-                        <div className="text-white font-bold font-mono">
-                          {isLoading ? "Loading..." : tokenData.marketCap}
-                        </div>
-                      </div>
-                    </div>
+            <div className="overflow-hidden rounded-xl outline -outline-offset-1 outline-white/10 bg-gray-950">
+              <div className="px-6 py-5 border-b border-white/10">
+                <h2 className="text-xl font-bold text-white font-mono">Market Data</h2>
+              </div>
 
-                    {/* 24 HR Volume */}
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
-                        <BarChart3 className="w-5 h-5 text-green-400" />
-                      </div>
-                      <div>
-                        <div className="text-gray-400 text-sm font-mono">
-                          24 HR Volume
-                        </div>
-                        <div className="text-white font-bold font-mono">
-                          {isLoading ? "Loading..." : tokenData.volume24h}
-                        </div>
-                      </div>
-                    </div>
+              <div className="px-6 py-5">
+                <dl className="-my-3 divide-y divide-white/10 text-sm/6">
+                  {/* Market Cap */}
+                  <div className="flex justify-between gap-x-4 py-3">
+                    <dt className="flex items-center gap-3 text-gray-400 font-mono">
+                      <TrendingUp className="w-5 h-5 text-white/60" />
+                      Market Cap
+                    </dt>
+                    <dd className="font-medium text-white font-mono">
+                      {isLoading ? "Loading..." : tokenData.marketCap}
+                    </dd>
                   </div>
 
-                  {/* Right Column - Holders & Liquidity */}
-                  <div className="space-y-6">
-                    {/* Holders */}
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                        <Users className="w-5 h-5 text-purple-400" />
-                      </div>
-                      <div>
-                        <div className="text-gray-400 text-sm font-mono">
-                          Holders
-                        </div>
-                        <div className="text-white font-bold font-mono">
-                          {isLoading ? "Loading..." : tokenData.holders}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Liquidity */}
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center">
-                        <Droplets className="w-5 h-5 text-cyan-400" />
-                      </div>
-                      <div>
-                        <div className="text-gray-400 text-sm font-mono">
-                          Liquidity
-                        </div>
-                        <div className="text-white font-bold font-mono">
-                          {isLoading ? "Loading..." : tokenData.liquidity}
-                        </div>
-                      </div>
-                    </div>
+                  {/* 24 HR Volume */}
+                  <div className="flex justify-between gap-x-4 py-3">
+                    <dt className="flex items-center gap-3 text-gray-400 font-mono">
+                      <BarChart3 className="w-5 h-5 text-white/60" />
+                      24 HR Volume
+                    </dt>
+                    <dd className="font-medium text-white font-mono">
+                      {isLoading ? "Loading..." : tokenData.volume24h}
+                    </dd>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+
+                  {/* Holders */}
+                  <div className="flex justify-between gap-x-4 py-3">
+                    <dt className="flex items-center gap-3 text-gray-400 font-mono">
+                      <Users className="w-5 h-5 text-white/60" />
+                      Holders
+                    </dt>
+                    <dd className="font-medium text-white font-mono">
+                      {isLoading ? "Loading..." : tokenData.holders}
+                    </dd>
+                  </div>
+
+                  {/* Liquidity */}
+                  <div className="flex justify-between gap-x-4 py-3">
+                    <dt className="flex items-center gap-3 text-gray-400 font-mono">
+                      <Droplets className="w-5 h-5 text-white/60" />
+                      Liquidity
+                    </dt>
+                    <dd className="font-medium text-white font-mono">
+                      {isLoading ? "Loading..." : tokenData.liquidity}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
           </div>
         </div>
 

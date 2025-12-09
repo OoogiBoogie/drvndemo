@@ -27,8 +27,7 @@ export const marketplaceItems = [
     status: "Coming Soon" as const,
     price: "$RS1",
     image: "/Cars/modena1.jpg",
-    description:
-      "This 1999 Ferrari 360 Modena was owned by the late Hollywood actor Paul Walker.",
+    description: "This 1999 Ferrari 360 Modena was owned by the late Hollywood actor Paul Walker.",
     moreInfo:
       "All provenance is provided, including Walker's registration and insurance cards, license plate and copy of the previous title in Walker's name. The 360 Modena was a clean-sheet design by Ferrari which set the stage for their entire future vision. It's light weight aluminum construction, rigid chassis, and compact V8 made the 360 one of the most driver-focused cars of the late 90's - early 2000's.",
     specs: {
@@ -173,108 +172,75 @@ export function MarketplaceCard({
 
   return (
     <div
-      className="relative bg-gradient-to-br from-gray-900 to-black border border-gray-700 rounded-xl overflow-hidden min-w-[300px] max-w-[320px] group cursor-pointer transition-all duration-500 hover:scale-105 backdrop-blur-sm"
-      // onMouseEnter={() => setIsHovered(true)}
-      // onMouseLeave={() => setIsHovered(false)}
+      className="relative bg-gray-950 rounded-lg overflow-hidden border border-white/10 shadow outline -outline-offset-1 outline-black/5 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10 group cursor-pointer transition-all duration-200 hover:border-[#00daa2]/50 hover:shadow-lg hover:shadow-[#00daa2]/10 min-w-[280px] sm:min-w-[300px] max-w-[320px]"
       onClick={handleCardClick}
     >
-      {/* Animated Background Pattern */}
-      {/* <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#00daa2]/20 via-transparent to-transparent"></div>
-      </div> */}
-
-      {/* Car Image with Overlay */}
-      <div className="relative h-48 bg-black overflow-hidden">
+      {/* Car Image */}
+      <div className="relative h-48 sm:h-56 bg-gray-800 overflow-hidden">
         <Image
           src={image}
           alt={`${brand} ${model}`}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
 
-        {/* Dynamic Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-linear-to-t from-gray-900/80 via-gray-900/20 to-transparent"></div>
 
         {/* Status Badge */}
         <div className="absolute top-3 right-3">
           <div
-            className={`px-3 py-1 rounded-full text-xs font-bold font-mono ${
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold backdrop-blur-sm ${
               status === "Coming Soon"
-                ? "bg-black/80 text-red-500"
-                : "bg-black/80 text-[#00daa2]/90"
+                ? "bg-red-500/90 text-white ring-2 ring-inset ring-red-500/50 shadow-lg"
+                : "bg-green-400/90 text-black ring-2 ring-inset ring-green-400/50 shadow-lg"
             }`}
           >
             {status === "Coming Soon" ? (
-              <div className="flex items-center gap-1">
-                <Clock className="h-3 w-3" />
+              <>
+                <Clock className="h-3.5 w-3.5" />
                 {status}
-              </div>
+              </>
             ) : (
-              <div className="flex items-center gap-1">
-                <TrendingUp className="h-3 w-3" />
+              <>
+                <TrendingUp className="h-3.5 w-3.5" />
                 {status}
-              </div>
+              </>
             )}
           </div>
         </div>
       </div>
 
       {/* Card Content */}
-      <div className="p-4 space-y-4">
+      <div className="p-4 sm:p-5 space-y-4">
         {/* Car Info */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <div className="text-gray-400 text-xs font-medium font-sans">
+            <div className="text-sm/6 text-gray-400 font-mono">
               {year} {brand}
             </div>
-            <div className="flex items-center gap-1">
-              <span className="text-[#00daa2] text-xs font-medium font-mono">
-                {price}
-              </span>
-            </div>
+            <div className="text-sm/6 font-semibold text-[#00daa2] font-mono">{price}</div>
           </div>
 
-          <div className="text-white text-xl font-bold tracking-wide font-mono">
-            {model}
-          </div>
+          <h3 className="text-lg/7 font-semibold text-white font-mono">{model}</h3>
 
-          <div className="text-gray-300 text-sm font-medium font-sans">
-            {collection}
-          </div>
+          <p className="text-sm/6 text-gray-400 font-sans">{collection}</p>
         </div>
 
-        {/* Pricing Table */}
-        <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-3 border border-gray-700/50">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-red-400 text-xs font-medium font-sans">
-                  MV
-                </span>
-              </div>
-              <span className="text-white text-sm font-bold font-mono">
-                {mv}
-              </span>
+        {/* Pricing Section */}
+        <div className="border-t border-white/10 pt-4">
+          <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
+            <div>
+              <dt className="text-xs/5 text-red-400 font-sans font-medium">MV</dt>
+              <dd className="mt-1 text-sm/6 font-semibold text-white font-mono">{mv}</dd>
             </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-blue-400 text-xs font-medium font-sans">
-                  AV
-                </span>
-              </div>
-              <span className="text-white text-sm font-bold font-mono">
-                {av}
-              </span>
+            <div>
+              <dt className="text-xs/5 text-blue-400 font-sans font-medium">AV</dt>
+              <dd className="mt-1 text-sm/6 font-semibold text-white font-mono">{av}</dd>
             </div>
-          </div>
+          </dl>
         </div>
-
-        {/* Hover Effect Overlay */}
-        {/* {isHovered && (
-          <div className="absolute inset-0 bg-gradient-to-t from-[#00daa2]/10 to-transparent rounded-xl pointer-events-none transition-opacity duration-300"></div>
-        )} */}
       </div>
     </div>
   );

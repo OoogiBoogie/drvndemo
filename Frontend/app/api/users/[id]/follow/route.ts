@@ -14,12 +14,12 @@ import User from "@/lib/models/User";
  */
 export async function POST(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await dbConnect();
 
-        const { id: targetUserId } = params;
+        const { id: targetUserId } = await params;
         const body = await req.json();
         const { followerId, action } = body;
 
@@ -47,6 +47,7 @@ export async function POST(
 
         if (action === "follow") {
             // Check if already following
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             if (followerUser.following.includes(targetUserId as any)) {
                 return NextResponse.json(
                     { error: "Already following this user" },
@@ -55,15 +56,18 @@ export async function POST(
             }
 
             // Add to following/followers
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             followerUser.following.push(targetUserId as any);
             followerUser.followingCount = (followerUser.followingCount || 0) + 1;
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             targetUser.followers.push(followerId as any);
             targetUser.followerCount = (targetUser.followerCount || 0) + 1;
         } else if (action === "unfollow") {
             // Remove from following/followers
             followerUser.following = followerUser.following.filter(
-                (id) => id.toString() !== targetUserId
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (id: any) => id.toString() !== targetUserId
             );
             followerUser.followingCount = Math.max(
                 (followerUser.followingCount || 0) - 1,
@@ -71,7 +75,8 @@ export async function POST(
             );
 
             targetUser.followers = targetUser.followers.filter(
-                (id) => id.toString() !== followerId
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (id: any) => id.toString() !== followerId
             );
             targetUser.followerCount = Math.max(
                 (targetUser.followerCount || 0) - 1,

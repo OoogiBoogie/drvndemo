@@ -1,17 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  X,
-  DollarSign,
-  Users,
-  Gift,
-  Star,
-  Crown,
-  Zap,
-  ChevronRight,
-} from "lucide-react";
-import { Card, CardContent } from "../ui/card";
+import { X, DollarSign, Users, Gift, Star, Crown, Zap, ChevronRight } from "lucide-react";
 import Image from "next/image";
 
 interface AllBenefitsModalProps {
@@ -74,9 +64,7 @@ const keyData = {
 };
 
 export function AllBenefitsModal({ isOpen, onClose }: AllBenefitsModalProps) {
-  const [selectedKey, setSelectedKey] = useState<
-    "steel" | "carbon" | "titanium"
-  >("steel");
+  const [selectedKey, setSelectedKey] = useState<"steel" | "carbon" | "titanium">("steel");
 
   if (!isOpen) return null;
 
@@ -85,148 +73,133 @@ export function AllBenefitsModal({ isOpen, onClose }: AllBenefitsModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal Content */}
       <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <Card className="bg-gradient-to-br from-gray-900 to-black border border-gray-700 backdrop-blur-sm">
-          <CardContent className="p-0">
-            {/* Header */}
-            <div className="p-6 border-b border-gray-700">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <Gift className="w-8 h-8 text-yellow-500" />
-                  <h2 className="text-3xl font-bold text-white font-mono">
-                    DRVN Key Benefits
-                  </h2>
-                </div>
+        <div className="overflow-hidden rounded-xl outline -outline-offset-1 outline-white/10 bg-gray-950">
+          {/* Header */}
+          <div className="px-6 py-5 border-b border-white/10">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <Gift className="w-8 h-8 text-yellow-500" />
+                <h2 className="text-3xl font-bold text-white font-mono">DRVN Key Benefits</h2>
+              </div>
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+              >
+                <X className="w-6 h-6 text-gray-400" />
+              </button>
+            </div>
+
+            {/* Key Selection Tabs */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {Object.entries(keyData).map(([key, data]) => (
                 <button
-                  onClick={onClose}
-                  className="p-2 hover:bg-gray-800 rounded-full transition-colors"
+                  key={key}
+                  onClick={() => setSelectedKey(key as "steel" | "carbon" | "titanium")}
+                  className={`p-4 rounded-lg border transition-all ${
+                    selectedKey === key
+                      ? "border-white/50 bg-white/10 outline -outline-offset-1 outline-white/20"
+                      : "border-white/10 hover:border-white/20 bg-white/5"
+                  }`}
                 >
-                  <X className="w-6 h-6 text-gray-400" />
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-12 h-12 rounded-xl overflow-hidden bg-linear-to-r ${data.color} ring-1 ring-white/10`}
+                    >
+                      <Image
+                        src={`/Cars/${data.icon}`}
+                        alt={`${data.name} Key`}
+                        width={48}
+                        height={48}
+                        className="w-full h-full object-cover"
+                        unoptimized
+                      />
+                    </div>
+                    <div className="text-left flex-1 min-w-0">
+                      <div className="text-white font-mono font-bold text-sm">{data.name}</div>
+                      <div className="text-[#00daa2] font-mono text-xs">{data.price}</div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
+                  </div>
                 </button>
-              </div>
+              ))}
+            </div>
+          </div>
 
-              {/* Key Selection Tabs */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {Object.entries(keyData).map(([key, data]) => (
-                  <button
-                    key={key}
-                    onClick={() =>
-                      setSelectedKey(key as "steel" | "carbon" | "titanium")
-                    }
-                    className={`p-4 rounded-lg border transition-all ${
-                      selectedKey === key
-                        ? "border-yellow-500 bg-yellow-500/10"
-                        : "border-gray-700 hover:border-gray-600"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`w-12 h-12 rounded-xl overflow-hidden bg-gradient-to-r ${data.color}`}
-                      >
-                        <Image
-                          src={`/Cars/${data.icon}`}
-                          alt={`${data.name} Key`}
-                          width={48}
-                          height={48}
-                          className="w-full h-full object-cover"
-                          unoptimized
-                        />
-                      </div>
-                      <div className="text-left">
-                        <div className="text-white font-mono font-bold text-sm">
-                          {data.name}
-                        </div>
-                        <div className="text-green-400 font-mono text-xs">
-                          {data.price}
-                        </div>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-gray-400 ml-auto" />
-                    </div>
-                  </button>
-                ))}
+          {/* Selected Key Details */}
+          <div className="px-6 py-5">
+            <div className="flex items-center gap-4 mb-6 pb-6 border-b border-white/10">
+              <div
+                className={`w-20 h-20 rounded-xl overflow-hidden bg-linear-to-r ${selectedData.color} ring-1 ring-white/10`}
+              >
+                <Image
+                  src={`/Cars/${selectedData.icon}`}
+                  alt={`${selectedData.name} Key`}
+                  width={80}
+                  height={80}
+                  className="w-full h-full object-cover"
+                  unoptimized
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-2xl font-bold text-white font-mono mb-3">
+                  {selectedData.name}
+                </h3>
+                <dl className="-my-3 divide-y divide-white/10 text-sm/6">
+                  <div className="flex justify-between gap-x-4 py-3">
+                    <dt className="flex items-center gap-2 text-gray-400 font-mono">
+                      <DollarSign className="w-4 h-4 text-[#00daa2]" />
+                      Price
+                    </dt>
+                    <dd className="font-medium text-[#00daa2] font-mono">{selectedData.price}</dd>
+                  </div>
+                  <div className="flex justify-between gap-x-4 py-3">
+                    <dt className="flex items-center gap-2 text-gray-400 font-mono">
+                      <Users className="w-4 h-4 text-white/60" />
+                      Supply
+                    </dt>
+                    <dd className="font-medium text-white font-mono">{selectedData.supply}</dd>
+                  </div>
+                </dl>
               </div>
             </div>
 
-            {/* Selected Key Details */}
-            <div className="p-6">
-              <div className="flex items-center gap-4 mb-6">
+            {/* Benefits List */}
+            <div className="space-y-4">
+              <h4 className="text-xl font-bold text-white font-mono mb-4 flex items-center gap-2">
+                <Star className="w-6 h-6 text-yellow-500" />
+                Member Benefits
+              </h4>
+
+              {selectedData.benefits.map((benefit, index) => (
                 <div
-                  className={`w-20 h-20 rounded-xl overflow-hidden bg-gradient-to-r ${selectedData.color}`}
+                  key={index}
+                  className="flex items-start gap-4 p-4 bg-white/5 rounded-lg border border-white/10"
                 >
-                  <Image
-                    src={`/Cars/${selectedData.icon}`}
-                    alt={`${selectedData.name} Key`}
-                    width={80}
-                    height={80}
-                    className="w-full h-full object-cover"
-                    unoptimized
-                  />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-white font-mono">
-                    {selectedData.name}
-                  </h3>
-                  <div className="flex items-center gap-6 mt-2">
-                    <div className="flex items-center gap-2">
-                      <DollarSign className="w-5 h-5 text-green-400" />
-                      <span className="text-green-400 font-mono font-bold text-lg">
-                        {selectedData.price}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Users className="w-5 h-5 text-blue-400" />
-                      <span className="text-blue-400 font-mono text-lg">
-                        {selectedData.supply}
-                      </span>
-                    </div>
+                  <div className="shrink-0 mt-1">
+                    {index === 0 && selectedKey !== "steel" ? (
+                      <Crown className="w-6 h-6 text-yellow-500" />
+                    ) : (
+                      <Star className="w-6 h-6 text-yellow-500" />
+                    )}
                   </div>
+                  <p className="text-gray-300 font-mono text-sm leading-relaxed">{benefit}</p>
                 </div>
-              </div>
+              ))}
+            </div>
 
-              {/* Benefits List */}
-              <div className="space-y-4">
-                <h4 className="text-xl font-bold text-white font-mono mb-4 flex items-center gap-2">
-                  <Star className="w-6 h-6 text-yellow-500" />
-                  Member Benefits
-                </h4>
-
-                {selectedData.benefits.map((benefit, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start gap-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700"
-                  >
-                    <div className="flex-shrink-0 mt-1">
-                      {index === 0 && selectedKey !== "steel" ? (
-                        <Crown className="w-6 h-6 text-yellow-500" />
-                      ) : (
-                        <Star className="w-6 h-6 text-yellow-500" />
-                      )}
-                    </div>
-                    <p className="text-gray-300 font-mono text-sm leading-relaxed">
-                      {benefit}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Footer */}
-              <div className="mt-8 pt-6 border-t border-gray-700">
-                <div className="flex items-center justify-center gap-2 text-sm text-gray-400 font-mono">
-                  <Zap className="w-4 h-4" />
-                  <span>
-                    Limited Supply • Exclusive Access • Premium Benefits
-                  </span>
-                </div>
+            {/* Footer */}
+            <div className="mt-8 pt-6 border-t border-white/10">
+              <div className="flex items-center justify-center gap-2 text-sm text-gray-400 font-mono">
+                <Zap className="w-4 h-4" />
+                <span>Limited Supply • Exclusive Access • Premium Benefits</span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
