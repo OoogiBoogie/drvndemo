@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { MarketplaceCard, marketplaceItems } from "./ui/marketplace-card";
@@ -293,6 +293,16 @@ export function DRVNDashboard() {
   };
 
   const [arcadeExpanded, setArcadeExpanded] = useState(false);
+  const marketplaceScrollRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollMarketplace = (direction: "left" | "right") => {
+    const container = marketplaceScrollRef.current;
+    if (!container) return;
+
+    const scrollAmount = 400;
+    const delta = direction === "left" ? -scrollAmount : scrollAmount;
+    container.scrollBy({ left: delta, behavior: "smooth" });
+  };
 
   const navigationItems = [
     {
@@ -525,6 +535,7 @@ export function DRVNDashboard() {
                       variant="ghost"
                       size="icon"
                       className="bg-black/80 text-[#00daa2] w-10 h-10 rounded-full border border-[#00daa2] -ml-8"
+                      onClick={() => scrollMarketplace("left")}
                     >
                       <ChevronLeft className="h-5 w-5" />
                     </Button>
@@ -532,12 +543,16 @@ export function DRVNDashboard() {
                       variant="ghost"
                       size="icon"
                       className="bg-black/80 text-[#00daa2] w-10 h-10 rounded-full border border-[#00daa2] -mr-5"
+                      onClick={() => scrollMarketplace("right")}
                     >
                       <ChevronRight className="h-5 w-5" />
                     </Button>
                   </div>
 
-                  <div className="flex gap-4 overflow-x-auto pb-4 px-8">
+                  <div
+                    ref={marketplaceScrollRef}
+                    className="flex gap-4 overflow-x-auto pb-4 px-8"
+                  >
                     {marketplaceItems.map((item) => (
                       <MarketplaceCard
                         key={item.id}
@@ -1570,7 +1585,13 @@ export function DRVNDashboard() {
                             variant="ghost"
                             size="icon"
                             className="flex items-center gap-3 px-3 py-3 rounded-md transition-colors font-mono font-semibold justify-center text-gray-300 hover:text-[#00daa2] hover:bg-gray-800"
-                            onClick={() => setActivePage(item.id)}
+                            onClick={() => {
+                              if (item.externalUrl) {
+                                handleExternalLink(item.externalUrl);
+                              } else {
+                                setActivePage(item.id);
+                              }
+                            }}
                           >
                             <item.icon className="h-5 w-5 flex-shrink-0" />
                           </Button>

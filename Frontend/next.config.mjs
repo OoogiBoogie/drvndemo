@@ -1,3 +1,9 @@
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Configuration for Replit environment
@@ -23,6 +29,8 @@ const nextConfig = {
   
   // Turbopack configuration
   turbopack: {
+    // Explicitly set the root to silence multi-lockfile warnings
+    root: __dirname,
     resolveAlias: {
       fs: { browser: './empty-module.js' },
       path: { browser: './empty-module.js' },

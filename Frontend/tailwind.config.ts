@@ -9,14 +9,29 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
+        "permanent-marker": ['"Permanent Marker"', "sans-serif"],
+        chewy: ['"Chewy"', "cursive"],
+        geist: ['"Geist"', "sans-serif"],
+        vt323: ['"VT323"', "monospace"],
+        orbitron: ['"Orbitron"', "sans-serif"],
         headline: ["Space Mono", "monospace"],
         body: ["Space Grotesk", "sans-serif"],
         mono: ["Space Mono", "monospace"],
         sans: ["Space Grotesk", "sans-serif"],
       },
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        primary: "#1bf696",
+        secondary: "#FFFFFF",
+        background: "#111111",
+        foreground: "#ffffff",
+        "foreground-muted": "#c8c8d1",
+        "app-background": "var(--app-background)",
+        "app-foreground": "var(--app-foreground)",
+        "app-gray": "var(--app-gray)",
+      },
+      backgroundImage: {
+        "gradient-black": "linear-gradient(135deg, #111111 0%, #232526 100%)",
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
       },
       animation: {
         "fade-out": "1s fadeOut 3s ease-out forwards",
@@ -29,6 +44,5 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
 };
 export default config;
