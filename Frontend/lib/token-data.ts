@@ -39,9 +39,7 @@ export async function fetchTokenDataCoinGecko(): Promise<TokenData | null> {
     console.log("🔄 Fetching data from CoinGecko...");
 
     // First, let's search for Buster token with BSTR ticker to get the correct ID
-    const searchResponse = await fetch(
-      "https://api.coingecko.com/api/v3/search?query=Buster",
-    );
+    const searchResponse = await fetch("https://api.coingecko.com/api/v3/search?query=Buster");
 
     if (!searchResponse.ok) {
       throw new Error(`CoinGecko search API error: ${searchResponse.status}`);
@@ -53,19 +51,16 @@ export async function fetchTokenDataCoinGecko(): Promise<TokenData | null> {
     // Look for Buster token with BSTR ticker in the results
     const busterToken = searchData.coins?.find(
       (coin: { symbol?: string; name?: string; id: string }) =>
-        coin.symbol?.toLowerCase() === "bstr" &&
-        coin.name?.toLowerCase().includes("buster"),
+        coin.symbol?.toLowerCase() === "bstr" && coin.name?.toLowerCase().includes("buster")
     );
 
     if (!busterToken) {
-      console.log(
-        "❌ Buster token with BSTR ticker not found in CoinGecko search",
-      );
+      console.log("❌ Buster token with BSTR ticker not found in CoinGecko search");
 
       // Fallback: try using simple price API with common Buster identifiers
       console.log("🔄 Trying fallback price API...");
       const fallbackResponse = await fetch(
-        "https://api.coingecko.com/api/v3/simple/price?ids=bstr,buster-token,buster&vs_currencies=usd,eth&include_24hr_change=true&include_market_cap=true&include_24hr_vol=true",
+        "https://api.coingecko.com/api/v3/simple/price?ids=bstr,buster-token,buster&vs_currencies=usd,eth&include_24hr_change=true&include_market_cap=true&include_24hr_vol=true"
       );
 
       if (fallbackResponse.ok) {
@@ -97,7 +92,7 @@ export async function fetchTokenDataCoinGecko(): Promise<TokenData | null> {
 
     // Now fetch detailed data for the found token
     const coingeckoResponse = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${busterToken.id}?localization=false&tickers=false&market_data=true&community_data=true&developer_data=false&sparkline=false`,
+      `https://api.coingecko.com/api/v3/coins/${busterToken.id}?localization=false&tickers=false&market_data=true&community_data=true&developer_data=false&sparkline=false`
     );
 
     if (!coingeckoResponse.ok) {
@@ -146,7 +141,7 @@ export async function fetchTokenDataV2Pool(): Promise<TokenData | null> {
 
     // Try to get ETH price first (for ETH/BSTR calculations)
     const ethPriceResponse = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
+      "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
     );
 
     let ethUsdPrice = 3000; // Default fallback
@@ -290,10 +285,7 @@ export async function fetchTokenData(): Promise<TokenData> {
  * Format numbers for display
  * Handles currency formatting and large number abbreviations
  */
-export function formatCurrency(
-  amount: number,
-  currency: "USD" = "USD",
-): string {
+export function formatCurrency(amount: number, currency: "USD" = "USD"): string {
   if (currency === "USD") {
     return new Intl.NumberFormat("en-US", {
       style: "currency",

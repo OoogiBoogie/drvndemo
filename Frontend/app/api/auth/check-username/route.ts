@@ -13,10 +13,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!username) {
-      return NextResponse.json(
-        { error: "Username is required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Username is required" }, { status: 400 });
     }
 
     // Check if username is already taken by another user
@@ -30,13 +27,10 @@ export async function POST(request: NextRequest) {
         available: !existingUser,
         username: username.toLowerCase(),
       },
-      { status: 200 },
+      { status: 200 }
     );
   } catch (error) {
     console.error("Username check error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

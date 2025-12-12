@@ -59,15 +59,13 @@ export function BusterSwapModal({
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-gray-950 rounded-xl border border-gray-700 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-700 bg-gray-950 relative z-[999999]">
+        <div className="flex items-center justify-between p-6 border-b border-gray-700 bg-gray-950 relative z-999999">
           <div>
             <h2 className="text-xl font-bold text-white">
               {swapType === "buy" ? "Buy BSTR" : "Sell BSTR"}
             </h2>
             <p className="text-gray-400 text-sm">
-              {swapType === "buy"
-                ? "Swap ETH for BSTR tokens"
-                : "Swap BSTR tokens for ETH"}
+              {swapType === "buy" ? "Swap ETH for BSTR tokens" : "Swap BSTR tokens for ETH"}
             </p>
           </div>
           <button
@@ -79,7 +77,7 @@ export function BusterSwapModal({
         </div>
 
         {/* Swap Interface - Using existing SwapInterface component */}
-        <div className="p-6 relative z-[999999]">
+        <div className="p-6 relative z-999999">
           <BusterSwapInterface
             isAuthenticated={isAuthenticated}
             currentUser={currentUser}

@@ -33,26 +33,18 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         }, 4000);
       }
     },
-    [removeToast],
+    [removeToast]
   );
 
   // Function to remove toasts by type and contract name
-  const removeToastByType = useCallback(
-    (type: Toast["type"], contractName: string) => {
-      setToasts((prev) =>
-        prev.filter(
-          (toast) =>
-            !(toast.type === type && toast.contractName === contractName),
-        ),
-      );
-    },
-    [],
-  );
+  const removeToastByType = useCallback((type: Toast["type"], contractName: string) => {
+    setToasts((prev) =>
+      prev.filter((toast) => !(toast.type === type && toast.contractName === contractName))
+    );
+  }, []);
 
   return (
-    <ToastContext.Provider
-      value={{ addToast, removeToast, removeToastByType, toasts }}
-    >
+    <ToastContext.Provider value={{ addToast, removeToast, removeToastByType, toasts }}>
       {children}
       <ToastContainer toasts={toasts} onDismiss={removeToast} />
     </ToastContext.Provider>

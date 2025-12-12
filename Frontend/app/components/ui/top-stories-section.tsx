@@ -53,25 +53,21 @@ export function TopStoriesSection({ onNavigate }: TopStoriesSectionProps) {
   };
 
   const prevStory = () => {
-    setCurrentStoryIndex(
-      (prev) => (prev - 1 + topStoriesData.length) % topStoriesData.length,
-    );
+    setCurrentStoryIndex((prev) => (prev - 1 + topStoriesData.length) % topStoriesData.length);
   };
 
   return (
     <section className="space-y-4 md:space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-white text-lg md:text-2xl font-bold font-mono">
-          DRVN Culture
-        </h2>
+      <header className="flex items-center justify-between border-b border-white/5 pb-4">
+        <h2 className="text-base/7 font-semibold text-white font-mono">DRVN Culture</h2>
         <Button
           variant="link"
-          className="text-green-400 hover:text-green-300 text-sm md:text-base font-mono"
+          className="text-sm/6 font-semibold text-[#00daa2] hover:text-green-300 font-mono"
           onClick={() => onNavigate?.("culture")}
         >
           View all
         </Button>
-      </div>
+      </header>
 
       {/* Desktop Top Stories */}
       <div className="hidden md:block">
@@ -80,16 +76,16 @@ export function TopStoriesSection({ onNavigate }: TopStoriesSectionProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="bg-black/80 text-[#00daa2] w-10 h-10 rounded-full border border-[#00daa2] -ml-8"
+              className="text-[#00daa2] w-12 h-12 -ml-8 cursor-pointer"
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-7 w-7 stroke-3" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="bg-black/80 text-[#00daa2] w-10 h-10 rounded-full border border-[#00daa2] -mr-8"
+              className="text-[#00daa2] w-12 h-12 -mr-8 cursor-pointer"
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-7 w-7 stroke-3" />
             </Button>
           </div>
 
@@ -114,18 +110,18 @@ export function TopStoriesSection({ onNavigate }: TopStoriesSectionProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="bg-black/80 text-[#00daa2] w-10 h-10 rounded-full border border-[#00daa2] -ml-5"
+              className="text-[#00daa2] w-12 h-12 -ml-5 cursor-pointer"
               onClick={prevStory}
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-7 w-7 stroke-3" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="bg-black/80 text-[#00daa2] w-10 h-10 rounded-full border border-[#00daa2] -mr-5"
+              className="text-[#00daa2] w-12 h-12 -mr-5 cursor-pointer"
               onClick={nextStory}
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-7 w-7 stroke-3" />
             </Button>
           </div>
 

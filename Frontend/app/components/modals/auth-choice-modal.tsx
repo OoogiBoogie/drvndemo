@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { X, Wrench, Car, Key, Home, Settings } from "lucide-react";
+import { Card, CardContent } from "../ui/card";
+import { X, Key, Home, Settings, CheckCircle2 } from "lucide-react";
 import { SignupModal } from "./signup-modal";
 import { SigninModal } from "./signin-modal";
 import { useAccount, useDisconnect } from "wagmi";
@@ -16,27 +15,30 @@ interface AuthChoiceModalProps {
   onSuccess: () => void;
 }
 
-export function AuthChoiceModal({
-  isOpen,
-  onClose,
-  onSuccess,
-}: AuthChoiceModalProps) {
+export function AuthChoiceModal({ isOpen, onClose, onSuccess }: AuthChoiceModalProps) {
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showSigninModal, setShowSigninModal] = useState(false);
   const [userExists, setUserExists] = useState<boolean | null>(null);
   const [isChecking, setIsChecking] = useState(false);
-  const [selectedAction, setSelectedAction] = useState<
-    "signup" | "signin" | null
-  >(null);
+  const [selectedAction, setSelectedAction] = useState<"signup" | "signin" | null>(null);
+  const [verificationStep, setVerificationStep] = useState(0);
 
   // Check if user exists when wallet connects
   useEffect(() => {
     const checkUserExists = async () => {
       if (address && isOpen && userExists === null) {
         setIsChecking(true);
+        setVerificationStep(0); // Start with step 0
+
+        // Step 1: Verifying Connected Wallet
+        setTimeout(() => setVerificationStep(1), 800);
+
         try {
+          // Step 2: Collecting profile information
+          setTimeout(() => setVerificationStep(2), 1600);
+
           const response = await fetch("/api/auth/check-user", {
             method: "POST",
             headers: {
@@ -49,30 +51,43 @@ export function AuthChoiceModal({
             const data = await response.json();
             setUserExists(data.exists);
 
-            // If user has an existing account, automatically sign them in
+            // Step 3: Connecting (with delay to show the step)
+            setTimeout(() => {
+              setVerificationStep(3);
+
+              // If user has an existing account, automatically sign them in
+              if (data.exists) {
+                // Wait a bit for step 3 to show, then complete
+                setTimeout(() => {
+                  setIsChecking(false);
+                  onSuccess();
+                  onClose();
+                }, 500);
+              }
+            }, 800);
+
+            // If user has an existing account, return early (handled in setTimeout above)
             if (data.exists) {
-              // Auto-sign in the user since account exists
-              onSuccess();
-              onClose();
               return;
             }
 
             // If no account exists and user selected signup, show signup modal
             if (selectedAction === "signup") {
+              setIsChecking(false);
               setShowSignupModal(true);
             }
             // If no account exists and user selected signin, show error and disconnect
             else if (selectedAction === "signin") {
+              setIsChecking(false);
               disconnect();
               setUserExists(null);
               setSelectedAction(null);
-              alert(
-                "No account found for this wallet address. Please create a new account.",
-              );
+              alert("No account found for this wallet address. Please create a new account.");
               return;
             }
             // If no action selected yet and no account exists, show signup modal
             else if (!selectedAction) {
+              setIsChecking(false);
               setShowSignupModal(true);
               setSelectedAction("signup");
             }
@@ -80,6 +95,7 @@ export function AuthChoiceModal({
         } catch (error) {
           console.error("Error checking user existence:", error);
           setUserExists(false); // Default to signup if error
+          setIsChecking(false);
           if (selectedAction === "signin") {
             // Auto-disconnect wallet since we can't verify
             disconnect();
@@ -89,22 +105,12 @@ export function AuthChoiceModal({
           } else {
             setShowSignupModal(true);
           }
-        } finally {
-          setIsChecking(false);
         }
       }
     };
 
     checkUserExists();
-  }, [
-    address,
-    isOpen,
-    userExists,
-    selectedAction,
-    disconnect,
-    onSuccess,
-    onClose,
-  ]);
+  }, [address, isOpen, userExists, selectedAction, disconnect, onSuccess, onClose]);
 
   const handleSignupClick = () => {
     setSelectedAction("signup");
@@ -120,26 +126,44 @@ export function AuthChoiceModal({
     setShowSignupModal(false);
     setUserExists(null); // Reset for next time
     setSelectedAction(null);
+    // Disconnect wallet if signup is cancelled
+    if (address) {
+      disconnect();
+    }
+    onClose();
   };
 
   const handleSigninClose = () => {
     setShowSigninModal(false);
     setUserExists(null); // Reset for next time
     setSelectedAction(null);
+    // Disconnect wallet if signin is cancelled
+    if (address) {
+      disconnect();
+    }
+    onClose();
   };
 
   const handleSignupSuccess = () => {
-    onSuccess();
+    // Close signup modal first
     setShowSignupModal(false);
     setUserExists(null);
     setSelectedAction(null);
+    // Close the auth-choice-modal
+    onClose();
+    // Connect user to site
+    onSuccess();
   };
 
   const handleSigninSuccess = () => {
-    onSuccess();
-    setShowSignupModal(false);
+    // Close signin modal first
+    setShowSigninModal(false);
     setUserExists(null);
     setSelectedAction(null);
+    // Close the auth-choice-modal
+    onClose();
+    // Connect user to site
+    onSuccess();
   };
 
   // If wallet is not connected, show the choice modal with wallet connection
@@ -147,155 +171,183 @@ export function AuthChoiceModal({
     if (!isOpen) return null;
 
     return (
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-40 p-4">
-        {/* Garage Door Effect */}
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-black to-black opacity-60"></div>
+      <div
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-40 p-4"
+        onClick={onClose}
+      >
+        {/* Modal Content - Professional Sleek Design */}
+        <Card
+          className="w-full max-w-md bg-gray-950 rounded-lg border border-white/10 overflow-hidden shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="p-6 border-b border-white/10">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-white font-mono text-lg font-semibold tracking-wide">
+                  Garage Access
+                </h3>
+                <p className="text-gray-400 text-xs font-sans mt-1">
+                  Welcome to onchain car culture
+                </p>
+              </div>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
+              >
+                <X className="text-sm" />
+              </button>
+            </div>
 
-        {/* Car background overlay */}
-        {/* <div className="absolute inset-0 opacity-20">
-          <div 
-            className="w-full h-full bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage: "url('/newHero.png')",
-              filter: "blur(2px) brightness(0.3)",
-            }}
-          ></div>
-        </div> */}
-
-        <Card className="w-full max-w-lg bg-gradient-to-b from-gray-900 to-black border border-white/50 relative overflow-hidden">
-          {/* Garage Door Lines */}
-          {/* <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#00daa2] to-transparent opacity-40"></div>
-          <div className="absolute top-4 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#00daa2] to-transparent opacity-20"></div>
-          <div className="absolute top-8 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#00daa2] to-transparent opacity-10"></div> */}
-
-          {/* Close Button - Styled like a garage door handle */}
-          <div className="flex flex-row justify-end mt-4 mr-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="text-white/60 hover:text-white p-2 rounded-full hover:bg-white/10 hover:scale-110 transition-transform"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <CardHeader className="flex items-center justify-center space-y-0 pb-0">
-            <CardTitle className="text-[#00daa2] text-center text-2xl font-mono mb-2 -mt-5">
-              GARAGE ACCESS
-            </CardTitle>
-          </CardHeader>
-
-          {/* Logo with garage styling */}
-          <div className="flex justify-center mb-4 relative">
-            <div className="relative">
+            {/* Logo */}
+            <div className="flex justify-center mt-4">
               <Image
                 src="/Cars/DRVNWHITE.png"
                 alt="DRVN VHCLS"
-                width={100}
-                height={100}
-                className="mx-auto w-auto h-auto"
+                width={80}
+                height={80}
+                className="w-auto h-auto opacity-90"
               />
-              {/* Garage door effect around logo */}
-              {/* <div className="absolute inset-0 border-2 border-[#00daa2]/20 rounded-full animate-pulse"></div> */}
             </div>
           </div>
 
-          <CardContent className="space-y-6">
-            <div className="text-center">
-              <p className="text-gray-300 text-sm font-sans mb-6 tracking-wide">
-                Welcome to the home of onchain car culture!
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              {/* Create Account - Styled like a garage key */}
-              <Button
+          {/* Content */}
+          <div className="p-6 space-y-4">
+            <div className="space-y-3">
+              {/* Create New Garage Button - Professional with Angled Borders */}
+              <button
                 onClick={handleSignupClick}
-                className="w-full bg-gradient-to-r from-[#00daa2] to-[#00b894] text-black hover:from-[#00b894] hover:to-[#00daa2] font-bold font-mono h-10 text-lg shadow-lg shadow-[#00daa2]/30 transition-all duration-300 border-2 border-[#00daa2]/50 hover:border-[#00daa2] hover:scale-[1.02]"
+                className="auth-choice-btn-primary w-full relative flex items-center justify-center gap-2 py-3.5 px-4 bg-linear-to-r from-gray-900 via-gray-800 to-gray-900 border border-white/20 text-white font-sans font-semibold text-sm uppercase tracking-wide overflow-hidden group hover:border-white/30 transition-all duration-300 cursor-pointer"
               >
-                <Home className="h-5 w-5 mr-3" />
-                Create New Garage
-              </Button>
+                {/* Shimmer Effect */}
+                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-linear-to-r from-transparent via-white/10 to-transparent"></div>
 
-              {/* Sign In - Styled like a garage access card */}
-              <Button
+                {/* Accent Gradient Overlay */}
+                <div className="absolute inset-0 bg-linear-to-r from-[#00daa2]/20 via-transparent to-[#00daa2]/20 opacity-50"></div>
+
+                {/* Button Content */}
+                <div className="relative flex items-center gap-2 z-10">
+                  <Home className="text-sm group-hover:scale-110 transition-transform duration-300" />
+                  <span>Create New Garage</span>
+                </div>
+              </button>
+
+              {/* Unlock Your Garage Button - Professional with Angled Borders */}
+              <button
                 onClick={handleSigninClick}
-                variant="outline"
-                className="w-full border-2 border-[#00daa2] text-[#00daa2] bg-transparent font-bold font-mono h-10 text-lg transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-[#00daa2]/20"
+                className="auth-choice-btn-secondary w-full relative flex items-center justify-center gap-2 py-3.5 px-4 bg-linear-to-r from-gray-950 via-black to-gray-950 border border-blue-500/50 text-white font-sans font-semibold text-sm uppercase tracking-wide overflow-hidden group hover:border-blue-400 transition-all duration-300 cursor-pointer"
               >
-                <Key className="h-5 w-5 mr-3" />
-                Unlock Your Garage
-              </Button>
+                {/* Shimmer Effect */}
+                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-linear-to-r from-transparent via-blue-500/20 to-transparent"></div>
+
+                {/* Purple Accent Gradient Overlay */}
+                <div className="absolute inset-0 bg-linear-to-r from-[#8351a1]/20 via-transparent to-[#8351a1]/20 opacity-50"></div>
+
+                {/* Button Content */}
+                <div className="relative flex items-center gap-2 z-10">
+                  <Key className="text-sm group-hover:scale-110 transition-transform duration-300" />
+                  <span>Unlock Your Garage</span>
+                </div>
+              </button>
             </div>
 
-            {/* Wallet Connection Section - Styled like a garage security system */}
+            {/* Wallet Connection Section */}
             {selectedAction && (
-              <div className="space-y-4 pt-6 border-t-2 border-[#00daa2]/30">
+              <div className="space-y-4 pt-4 border-t border-white/10">
                 <div className="text-center">
-                  <div className="flex items-center justify-center mb-3">
-                    {/* <Zap className="h-5 w-5 text-[#00daa2] mr-2 animate-pulse" /> */}
-                    <p className="text-[#00daa2] text-sm font-mono font-bold">
-                      {selectedAction === "signup"
-                        ? "🔧 Connect or Create New Wallet to Unlock Your Garage"
-                        : "🔐 Login to Your Existing Garage"}
-                    </p>
-                    {/* <Zap className="h-5 w-5 text-[#00daa2] ml-2 animate-pulse" /> */}
-                  </div>
+                  <p className="text-gray-400 text-xs font-sans uppercase tracking-wide mb-3">
+                    {selectedAction === "signup"
+                      ? "Connect or Create New Wallet"
+                      : "Login to Your Existing Garage"}
+                  </p>
                 </div>
 
                 <div>
-                  <ConnectButton />
+                  <ConnectButton variant="modal" />
                 </div>
               </div>
             )}
 
-            {/* Footer - Garage mechanic style */}
-            <div className="text-center pt-4 border-t border-gray-700">
-              <p className="text-gray-400 text-xs font-sans tracking-wide">
-                <span className="text-[#00daa2] font-bold">CONNECT</span> your
-                wallet to access your{" "}
-                <span className="text-[#00daa2] font-bold">
-                  AUTOMOTIVE WORKSHOP
-                </span>
+            {/* Footer */}
+            <div className="text-center pt-4 border-t border-white/5">
+              <p className="text-gray-500 text-xs font-sans tracking-wide">
+                Connect your wallet to access your automotive workshop
               </p>
-              <div className="flex justify-center mt-2 space-x-2">
-                <Car className="h-4 w-4 text-[#00daa2]" />
-                <Wrench className="h-4 w-4 text-[#00daa2]" />
-                <Settings className="h-4 w-4 text-[#00daa2]" />
-              </div>
             </div>
-          </CardContent>
+          </div>
         </Card>
       </div>
     );
   }
 
-  // If wallet is connected but we're still checking, show loading with garage theme
+  // Verification steps
+  const verificationSteps = [
+    { name: "Verifying Connected Wallet", status: "upcoming" },
+    { name: "Collecting profile information", status: "upcoming" },
+    { name: "Connecting", status: "upcoming" },
+  ];
+
+  // Update step statuses based on current step
+  const getStepStatus = (index: number) => {
+    if (index < verificationStep) return "complete";
+    if (index === verificationStep) return "current";
+    return "upcoming";
+  };
+
+  // If wallet is connected but we're still checking, show step-by-step verification
   if (isChecking) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-40 p-4">
-        <Card className="w-full max-w-md bg-gradient-to-b from-gray-900 to-black border-2 border-[#00daa2]/30 shadow-2xl shadow-[#00daa2]/20">
-          <CardContent className="space-y-6 text-center py-8">
-            {/* Garage door loading animation */}
-            <div className="relative">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#00daa2]/20 border-t-[#00daa2] mx-auto"></div>
-              <div className="absolute inset-0 rounded-full border-2 border-[#00daa2]/10 animate-ping"></div>
+        <Card className="w-full max-w-md bg-gray-950 rounded-lg border border-white/10 overflow-hidden shadow-2xl">
+          <CardContent className="p-6">
+            <div className="flex justify-center mb-6">
+              <h3 className="text-white font-mono text-lg font-semibold tracking-wide">
+                Unlocking Your Garage
+              </h3>
             </div>
-            <p className="text-[#00daa2] text-sm font-mono font-bold tracking-wide">
-              🔧 SCANNING GARAGE ACCESS CREDENTIALS...
-            </p>
-            <div className="flex justify-center space-x-1">
-              <div className="w-2 h-2 bg-[#00daa2] rounded-full animate-bounce"></div>
-              <div
-                className="w-2 h-2 bg-[#00daa2] rounded-full animate-bounce"
-                style={{ animationDelay: "0.1s" }}
-              ></div>
-              <div
-                className="w-2 h-2 bg-[#00daa2] rounded-full animate-bounce"
-                style={{ animationDelay: "0.2s" }}
-              ></div>
-            </div>
+
+            <nav aria-label="Progress" className="flex justify-center">
+              <ol role="list" className="space-y-6 w-full">
+                {verificationSteps.map((step, index) => {
+                  const status = getStepStatus(index);
+                  const isCurrent = status === "current";
+                  const isComplete = status === "complete";
+
+                  return (
+                    <li key={step.name}>
+                      <div className="flex items-start">
+                        <span
+                          aria-hidden="true"
+                          className="relative flex size-6 shrink-0 items-center justify-center"
+                        >
+                          {isComplete ? (
+                            <CheckCircle2 className="size-6 text-white" />
+                          ) : isCurrent ? (
+                            <div className="relative">
+                              <span className="absolute size-5 rounded-full bg-white/20 animate-pulse" />
+                              <Settings className="size-5 text-white animate-spin relative z-10" />
+                            </div>
+                          ) : (
+                            <div className="size-2 rounded-full bg-white/15" />
+                          )}
+                        </span>
+                        <span
+                          className={`ml-4 text-sm font-medium ${
+                            isCurrent
+                              ? "text-white"
+                              : isComplete
+                                ? "text-gray-400"
+                                : "text-gray-500"
+                          }`}
+                        >
+                          {step.name}
+                        </span>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
+            </nav>
           </CardContent>
         </Card>
       </div>
@@ -314,6 +366,7 @@ export function AuthChoiceModal({
           setShowSigninModal(true);
         }}
         onSuccess={handleSignupSuccess}
+        allowClose={false} // Don't allow closing until signup is complete
       />
 
       {/* Signin Modal */}

@@ -35,10 +35,7 @@ interface SwapInterfaceProps {
   currentUser?: User | null;
 }
 
-export function SwapInterface({
-  isAuthenticated = false,
-  currentUser = null,
-}: SwapInterfaceProps) {
+export function SwapInterface({ isAuthenticated = false, currentUser = null }: SwapInterfaceProps) {
   const { address, isConnected } = useAccount();
 
   // Convert DRVN tokens to array format for OnChainKit
@@ -49,12 +46,8 @@ export function SwapInterface({
     return (
       <SwapCard>
         <div className="text-center py-8">
-          <div className="text-gray-400 text-sm mb-4">
-            Connect your wallet to start swapping
-          </div>
-          <div className="text-sm mb-6">
-            You need to connect your wallet to swap ETH ↔ BSTR
-          </div>
+          <div className="text-gray-400 text-sm mb-4">Connect your wallet to start swapping</div>
+          <div className="text-sm mb-6">You need to connect your wallet to swap ETH ↔ BSTR</div>
           <div className="mb-6">
             <ConnectButton />
           </div>
@@ -71,12 +64,8 @@ export function SwapInterface({
     return (
       <SwapCard>
         <div className="text-center py-8">
-          <div className="text-gray-400 text-sm mb-4">
-            Setting up your account...
-          </div>
-          <div className="text-sm mb-6">
-            Please wait while we verify your wallet connection
-          </div>
+          <div className="text-gray-400 text-sm mb-4">Setting up your account...</div>
+          <div className="text-sm mb-6">Please wait while we verify your wallet connection</div>
           <div className="text-xs text-gray-500">
             Connected: {address?.slice(0, 6)}...{address?.slice(-4)}
           </div>
@@ -103,12 +92,9 @@ export function SwapInterface({
           >
             {/* Swap Settings */}
             <SwapSettings>
-              <SwapSettingsSlippageTitle>
-                Max. slippage
-              </SwapSettingsSlippageTitle>
+              <SwapSettingsSlippageTitle>Max. slippage</SwapSettingsSlippageTitle>
               <SwapSettingsSlippageDescription>
-                Your swap will revert if the prices change by more than the
-                selected percentage.
+                Your swap will revert if the prices change by more than the selected percentage.
               </SwapSettingsSlippageDescription>
               <SwapSettingsSlippageInput />
             </SwapSettings>

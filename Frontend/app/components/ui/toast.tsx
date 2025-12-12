@@ -67,22 +67,20 @@ export function ToastNotification({ toast, onDismiss }: ToastProps) {
     <div
       className={cn(
         "transition-all duration-300 ease-in-out",
-        isVisible ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0",
+        isVisible ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
       )}
     >
       <div
         className={cn(
           "flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl min-w-[320px] max-w-md",
           getBackgroundColor(),
-          "border border-gray-800",
+          "border border-gray-800"
         )}
       >
         {getIcon()}
 
         <div className="flex-1 min-w-0">
-          <div className="text-white font-semibold text-sm mb-1">
-            {toast.title}
-          </div>
+          <div className="text-white font-semibold text-sm mb-1">{toast.title}</div>
           <div className="text-gray-300 text-xs">{toast.message}</div>
           {toast.hash && (
             <div className="text-green-400 text-xs mt-1 font-mono">

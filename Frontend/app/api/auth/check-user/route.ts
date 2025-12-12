@@ -7,10 +7,7 @@ export async function POST(request: NextRequest) {
     const { walletAddress } = await request.json();
 
     if (!walletAddress) {
-      return NextResponse.json(
-        { error: "Wallet address is required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Wallet address is required" }, { status: 400 });
     }
 
     await connectToDatabase();
@@ -29,12 +26,8 @@ export async function POST(request: NextRequest) {
             firstName: existingUser.firstName
               ? existingUser.firstName.substring(0, 2) + "***"
               : "***",
-            lastName: existingUser.lastName
-              ? existingUser.lastName.substring(0, 2) + "***"
-              : "***",
-            email: existingUser.email
-              ? existingUser.email.substring(0, 2) + "***"
-              : "***",
+            lastName: existingUser.lastName ? existingUser.lastName.substring(0, 2) + "***" : "***",
+            email: existingUser.email ? existingUser.email.substring(0, 2) + "***" : "***",
             profileImage: existingUser.profileImage || "/Cars/UserImage.png",
             walletAddress: existingUser.walletAddress,
           }
@@ -42,9 +35,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error checking user existence:", error);
-    return NextResponse.json(
-      { error: "Failed to check user existence" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Failed to check user existence" }, { status: 500 });
   }
 }

@@ -28,9 +28,7 @@ export function isOnChainKitConfigured(): boolean {
  * @param searchTerm - The search term (symbol, name, or address)
  * @returns Promise<OnChainKitToken | null> - The token data or null if not found
  */
-export async function getOnChainKitToken(
-  searchTerm: string,
-): Promise<OnChainKitToken | null> {
+export async function getOnChainKitToken(searchTerm: string): Promise<OnChainKitToken | null> {
   try {
     console.log(`🔄 Fetching OnChainKit token data for ${searchTerm}...`);
 
@@ -49,13 +47,11 @@ export async function getOnChainKitToken(
           Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     if (!response.ok) {
-      console.log(
-        `⚠️ Token ${searchTerm} not found in OnChainKit API (${response.status})`,
-      );
+      console.log(`⚠️ Token ${searchTerm} not found in OnChainKit API (${response.status})`);
       return null;
     }
 
@@ -70,10 +66,7 @@ export async function getOnChainKitToken(
       return null;
     }
   } catch (error) {
-    console.error(
-      `❌ Error fetching OnChainKit token data for ${searchTerm}:`,
-      error,
-    );
+    console.error(`❌ Error fetching OnChainKit token data for ${searchTerm}:`, error);
     return null;
   }
 }
@@ -84,7 +77,7 @@ export async function getOnChainKitToken(
  * @returns Promise<Record<string, OnChainKitToken>> - Object mapping search terms to token data
  */
 export async function getOnChainKitTokens(
-  searchTerms: string[],
+  searchTerms: string[]
 ): Promise<Record<string, OnChainKitToken>> {
   const results: Record<string, OnChainKitToken> = {};
 
@@ -156,7 +149,7 @@ export const FALLBACK_TOKENS: Record<string, Partial<OnChainKitToken>> = {
  */
 export async function getTokenWithFallback(
   searchTerm: string,
-  fallbackToken?: OnChainKitToken,
+  fallbackToken?: OnChainKitToken
 ): Promise<OnChainKitToken | null> {
   // Try OnChainKit API first if configured
   if (isOnChainKitConfigured()) {

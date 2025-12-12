@@ -1,7 +1,6 @@
 "use client";
 
 import { X, DollarSign, Users, Gift, Star, Crown, Zap } from "lucide-react";
-import { Card, CardContent } from "../ui/card";
 import Image from "next/image";
 
 interface BenefitsModalProps {
@@ -64,11 +63,7 @@ const keyData = {
   },
 };
 
-export function BenefitsModal({
-  isOpen,
-  onClose,
-  keyType,
-}: BenefitsModalProps) {
+export function BenefitsModal({ isOpen, onClose, keyType }: BenefitsModalProps) {
   if (!isOpen) return null;
 
   const data = keyData[keyType];
@@ -76,100 +71,89 @@ export function BenefitsModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal Content */}
       <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <Card className="bg-gradient-to-br from-gray-900 to-black border border-gray-700 backdrop-blur-sm">
-          <CardContent className="p-0">
-            {/* Header */}
-            <div className="relative p-6 border-b border-gray-700">
-              <button
-                onClick={onClose}
-                className="absolute top-4 right-4 p-2 hover:bg-gray-800 rounded-full transition-colors"
+        <div className="overflow-hidden rounded-xl outline -outline-offset-1 outline-white/10 bg-gray-950">
+          {/* Header */}
+          <div className="relative px-6 py-5 border-b border-white/10">
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5 text-gray-400" />
+            </button>
+
+            <div className="flex items-center gap-4 mb-4">
+              <div
+                className={`w-16 h-16 rounded-xl overflow-hidden bg-linear-to-r ${data.color} ring-1 ring-white/10`}
               >
-                <X className="w-5 h-5 text-gray-400" />
-              </button>
+                <Image
+                  src={`/Cars/${data.icon}`}
+                  alt={`${data.name} Key`}
+                  width={64}
+                  height={64}
+                  className="w-full h-full object-cover"
+                  unoptimized
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-2xl font-bold text-white font-mono mb-3">{data.name}</h2>
+                <dl className="-my-3 divide-y divide-white/10 text-sm/6">
+                  <div className="flex justify-between gap-x-4 py-3">
+                    <dt className="flex items-center gap-2 text-gray-400 font-mono">
+                      <DollarSign className="w-4 h-4 text-[#00daa2]" />
+                      Price
+                    </dt>
+                    <dd className="font-medium text-[#00daa2] font-mono">{data.price}</dd>
+                  </div>
+                  <div className="flex justify-between gap-x-4 py-3">
+                    <dt className="flex items-center gap-2 text-gray-400 font-mono">
+                      <Users className="w-4 h-4 text-white/60" />
+                      Supply
+                    </dt>
+                    <dd className="font-medium text-white font-mono">{data.supply}</dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+          </div>
 
-              <div className="flex items-center gap-4 mb-4">
+          {/* Benefits Section */}
+          <div className="px-6 py-5">
+            <div className="flex items-center gap-2 mb-6">
+              <Gift className="w-6 h-6 text-yellow-500" />
+              <h3 className="text-xl font-bold text-white font-mono">Member Benefits</h3>
+            </div>
+
+            <div className="space-y-4">
+              {data.benefits.map((benefit, index) => (
                 <div
-                  className={`w-16 h-16 rounded-xl overflow-hidden bg-gradient-to-r ${data.color}`}
+                  key={index}
+                  className="flex items-start gap-3 p-4 bg-white/5 rounded-lg border border-white/10"
                 >
-                  <Image
-                    src={`/Cars/${data.icon}`}
-                    alt={`${data.name} Key`}
-                    width={64}
-                    height={64}
-                    className="w-full h-full object-cover"
-                    unoptimized
-                  />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-white font-mono">
-                    {data.name}
-                  </h2>
-                  <div className="flex items-center gap-4 mt-2">
-                    <div className="flex items-center gap-1">
-                      <DollarSign className="w-4 h-4 text-green-400" />
-                      <span className="text-green-400 font-mono font-bold">
-                        {data.price}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Users className="w-4 h-4 text-blue-400" />
-                      <span className="text-blue-400 font-mono">
-                        {data.supply}
-                      </span>
-                    </div>
+                  <div className="shrink-0 mt-1">
+                    {index === 0 && keyType !== "steel" ? (
+                      <Crown className="w-5 h-5 text-yellow-500" />
+                    ) : (
+                      <Star className="w-5 h-5 text-yellow-500" />
+                    )}
                   </div>
+                  <p className="text-gray-300 font-mono text-sm leading-relaxed">{benefit}</p>
                 </div>
-              </div>
+              ))}
             </div>
 
-            {/* Benefits Section */}
-            <div className="p-6">
-              <div className="flex items-center gap-2 mb-6">
-                <Gift className="w-6 h-6 text-yellow-500" />
-                <h3 className="text-xl font-bold text-white font-mono">
-                  Member Benefits
-                </h3>
-              </div>
-
-              <div className="space-y-4">
-                {data.benefits.map((benefit, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start gap-3 p-4 bg-gray-800/50 rounded-lg border border-gray-700"
-                  >
-                    <div className="flex-shrink-0 mt-1">
-                      {index === 0 && keyType !== "steel" ? (
-                        <Crown className="w-5 h-5 text-yellow-500" />
-                      ) : (
-                        <Star className="w-5 h-5 text-yellow-500" />
-                      )}
-                    </div>
-                    <p className="text-gray-300 font-mono text-sm leading-relaxed">
-                      {benefit}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Footer */}
-              <div className="mt-8 pt-6 border-t border-gray-700">
-                <div className="flex items-center justify-center gap-2 text-sm text-gray-400 font-mono">
-                  <Zap className="w-4 h-4" />
-                  <span>
-                    Limited Supply • Exclusive Access • Premium Benefits
-                  </span>
-                </div>
+            {/* Footer */}
+            <div className="mt-8 pt-6 border-t border-white/10">
+              <div className="flex items-center justify-center gap-2 text-sm text-gray-400 font-mono">
+                <Zap className="w-4 h-4" />
+                <span>Limited Supply • Exclusive Access • Premium Benefits</span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

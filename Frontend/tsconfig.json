@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["node"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -24,6 +25,7 @@
   },
   "include": [
     "next-env.d.ts",
+    "minikit.config.ts",
     "app/**/*.ts",
     "app/**/*.tsx",
     "lib/**/*.ts",

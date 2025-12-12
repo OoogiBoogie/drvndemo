@@ -61,13 +61,9 @@ export const DRVN_TOKENS: Record<string, Token> = {
  * Get dynamic token data from OnChainKit API
  * This function fetches the latest official token data for supported assets
  */
-export async function getDynamicTokenData(): Promise<
-  Record<string, Partial<OnChainKitToken>>
-> {
+export async function getDynamicTokenData(): Promise<Record<string, Partial<OnChainKitToken>>> {
   // Import the utility function
-  const { getOnChainKitTokens, FALLBACK_TOKENS } = await import(
-    "../../../lib/coinbase-assets"
-  );
+  const { getOnChainKitTokens, FALLBACK_TOKENS } = await import("../../../lib/coinbase-assets");
 
   // Define which tokens to fetch from OnChainKit
   const onchainTokens = ["ETH", "USDC", "CBBTC", "DBRO"];

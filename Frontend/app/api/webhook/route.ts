@@ -1,7 +1,4 @@
-import {
-  setUserNotificationDetails,
-  deleteUserNotificationDetails,
-} from "@/lib/notification";
+import { setUserNotificationDetails, deleteUserNotificationDetails } from "@/lib/notification";
 import { sendFrameNotification } from "@/lib/notification-client";
 import { http } from "viem";
 import { createPublicClient } from "viem";
@@ -71,19 +68,12 @@ export async function POST(request: Request) {
   const valid = await verifyFidOwnership(fid, key);
 
   if (!valid) {
-    return Response.json(
-      { success: false, error: "Invalid FID ownership" },
-      { status: 401 },
-    );
+    return Response.json({ success: false, error: "Invalid FID ownership" }, { status: 401 });
   }
 
   switch (event.event) {
     case "frame_added":
-      console.log(
-        "frame_added",
-        "event.notificationDetails",
-        event.notificationDetails,
-      );
+      console.log("frame_added", "event.notificationDetails", event.notificationDetails);
       if (event.notificationDetails) {
         await setUserNotificationDetails(fid, event.notificationDetails);
         await sendFrameNotification({

@@ -66,7 +66,7 @@ export function useOptimizedOnboarding() {
 
       return true; // Action can proceed
     },
-    [isConnected, context?.user?.fid],
+    [isConnected, context?.user?.fid]
   );
 
   // Mark action as completed
@@ -101,8 +101,7 @@ export function useOptimizedOnboarding() {
     return {
       isPersonalized: false,
       userName: null,
-      welcomeMessage:
-        "Welcome to DRVN VHCLS! Explore our exclusive car collections.",
+      welcomeMessage: "Welcome to DRVN VHCLS! Explore our exclusive car collections.",
     };
   }, [context?.user?.fid]);
 
@@ -121,7 +120,7 @@ export function useOptimizedOnboarding() {
           return true; // Public features
       }
     },
-    [isConnected, context?.user?.fid, isAuthenticated],
+    [isConnected, context?.user?.fid, isAuthenticated]
   );
 
   // Check if we're in a mini app and context is loading

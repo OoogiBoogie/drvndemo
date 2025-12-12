@@ -7,25 +7,27 @@ interface ETHPriceDisplayProps {
   className?: string;
 }
 
-export default function ETHPriceDisplay({
-  ethAmount,
-  className = "",
-}: ETHPriceDisplayProps) {
+export default function ETHPriceDisplay({ ethAmount, className = "" }: ETHPriceDisplayProps) {
   const [usdPrice, setUsdPrice] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchEthPrice = async () => {
       try {
         const response = await fetch("/api/eth-price");
+
+        if (!response.ok) {
+          // Silently fail - don't log errors for rate limits or network issues
+          return;
+        }
+
         const data = await response.json();
 
         if (data.price) {
           setUsdPrice(data.price * parseFloat(ethAmount));
-        } else {
-          console.error("Failed to fetch ETH price:", data.error);
         }
+        // Silently handle missing price data
       } catch (error) {
-        console.error("Failed to fetch ETH price:", error);
+        // Silently fail - network errors are expected and shouldn't spam console
       }
     };
 

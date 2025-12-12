@@ -8,13 +8,9 @@ export function useFarcasterSDK() {
     const initializeFarcaster = async () => {
       try {
         await sdk.actions.ready();
-        console.log(
-          "✅ Farcaster SDK ready() called - splash screen dismissed",
-        );
+        console.log("✅ Farcaster SDK ready() called - splash screen dismissed");
       } catch (error) {
-        console.log(
-          "ℹ️ Not running in Farcaster environment or SDK not available",
-        );
+        console.log("ℹ️ Not running in Farcaster environment or SDK not available");
       }
     };
 

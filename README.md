@@ -3,7 +3,7 @@
 <div align="center">
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Next.js](https://img.shields.io/badge/Next.js-15.3.3-black)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5.7-black)](https://nextjs.org/)
 [![Base](https://img.shields.io/badge/Built%20on-Base-0052FF)](https://base.org/)
 [![Hardhat](https://img.shields.io/badge/Hardhat-2.19.4-yellow)](https://hardhat.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
@@ -89,7 +89,7 @@ DRVN VHCLS is a next-generation automotive platform that **tokenizes real-world 
 
 ```
 DRVN-MINI-APP/
-├── Frontend/              # Next.js 15 frontend application
+├── Frontend/              # Next.js 15.5.7 frontend application
 │   ├── app/               # Next.js App Router pages and components
 │   ├── hooks/              # Custom React hooks
 │   ├── lib/                # Utility libraries and services
@@ -111,12 +111,14 @@ DRVN-MINI-APP/
 
 | Component | Technology | Version |
 |-----------|-----------|---------|
-| Framework | Next.js | 15.3.3 |
-| Styling | Tailwind CSS | Latest |
-| Web3 | OnchainKit | Latest |
+| Framework | Next.js | 15.5.7 |
+| React | React | 19.2.1 |
+| Styling | Tailwind CSS | 4.1.17 |
+| Web3 | OnchainKit | 1.0.3 |
 | Blockchain | Base Network | Mainnet/Testnet |
 | Authentication | Wallet-based + MongoDB | - |
-| State Management | TanStack Query | Latest |
+| State Management | TanStack Query | 5.x |
+| Web3 Library | Wagmi | 2.16.0 |
 | UI Components | Radix UI | Latest |
 | Language | TypeScript | Latest |
 

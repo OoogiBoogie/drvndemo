@@ -9,8 +9,7 @@ export async function POST(request: NextRequest) {
 
     // Get request body
     const body = await request.json();
-    const { walletAddress, username, profileImage, firstName, lastName, bio } =
-      body;
+    const { walletAddress, username, profileImage, firstName, lastName, bio } = body;
 
     console.log("Update user request:", {
       walletAddress,
@@ -25,7 +24,7 @@ export async function POST(request: NextRequest) {
     if (!walletAddress || !username) {
       return NextResponse.json(
         { error: "Wallet address and username are required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -36,14 +35,14 @@ export async function POST(request: NextRequest) {
         {
           error: "Username can only contain letters, numbers, and underscores",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     if (username.length < 3 || username.length > 20) {
       return NextResponse.json(
         { error: "Username must be between 3 and 20 characters" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -54,10 +53,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (existingUserWithUsername) {
-      return NextResponse.json(
-        { error: "Username already taken" },
-        { status: 409 },
-      );
+      return NextResponse.json({ error: "Username already taken" }, { status: 409 });
     }
 
     // Update user - use updateOne with $set to ensure bio field is saved
@@ -76,15 +72,12 @@ export async function POST(request: NextRequest) {
     // First update the main fields
     const updatedUser = await User.updateOne(
       { walletAddress: walletAddress.toLowerCase() },
-      { $set: updateData },
+      { $set: updateData }
     );
 
     if (!updatedUser.modifiedCount) {
       console.log("No documents were modified in first update");
-      return NextResponse.json(
-        { error: "Failed to update user" },
-        { status: 500 },
-      );
+      return NextResponse.json({ error: "Failed to update user" }, { status: 500 });
     }
 
     console.log("First update result:", updatedUser);
@@ -93,7 +86,7 @@ export async function POST(request: NextRequest) {
     console.log("Attempting to update bio field specifically...");
     const bioUpdate = await User.updateOne(
       { walletAddress: walletAddress.toLowerCase() },
-      { $set: { bio: bio || "" } },
+      { $set: { bio: bio || "" } }
     );
 
     console.log("Bio update result:", bioUpdate);
@@ -102,14 +95,11 @@ export async function POST(request: NextRequest) {
     const finalUser = await User.findOne({
       walletAddress: walletAddress.toLowerCase(),
     }).select(
-      "firstName lastName username email xHandle profileImage walletAddress bio createdAt updatedAt",
+      "firstName lastName username email xHandle profileImage walletAddress bio createdAt updatedAt"
     );
 
     if (!finalUser) {
-      return NextResponse.json(
-        { error: "Failed to fetch updated user" },
-        { status: 500 },
-      );
+      return NextResponse.json({ error: "Failed to fetch updated user" }, { status: 500 });
     }
 
     console.log("Final updated user in database:", finalUser);
@@ -135,13 +125,10 @@ export async function POST(request: NextRequest) {
           createdAt: finalUser.createdAt,
         },
       },
-      { status: 200 },
+      { status: 200 }
     );
   } catch (error) {
     console.error("User update error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

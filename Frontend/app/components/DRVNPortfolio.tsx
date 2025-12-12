@@ -4,7 +4,6 @@
 import { useAccount, useBalance, useReadContract } from "wagmi";
 import { TokenChip, formatAmount } from "@coinbase/onchainkit/token";
 import { DRVN_TOKENS } from "../swap/types/swap-types";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Car, Vault } from "lucide-react";
 import { formatUnits } from "viem";
 import deployedContracts from "../../contracts/deployedContracts";
@@ -33,11 +32,21 @@ interface User {
  * Props interface for the DRVNPortfolio component
  * @param currentUser - The currently authenticated user's data
  * @param isAuthenticated - Boolean indicating if user is authenticated
+ * @param onNavigate - Optional navigation handler
+ * @param miniAppUser - Mini app user data (Farcaster/Base)
+ * @param isInMiniApp - Boolean indicating if user is in mini app
+ * @param getProfileImage - Function to get profile image URL
+ * @param getDisplayUsername - Function to get display username
+ * @param getDisplayName - Function to get display name
  */
 interface DRVNPortfolioProps {
   currentUser: User | null;
   isAuthenticated: boolean;
   onNavigate?: (page: string) => void;
+  isInMiniApp?: boolean;
+  getProfileImage?: () => string;
+  getDisplayUsername?: () => string;
+  getDisplayName?: () => string | null;
 }
 
 /**
@@ -65,6 +74,10 @@ export function DRVNPortfolio({
   currentUser,
   isAuthenticated,
   onNavigate,
+  isInMiniApp,
+  getProfileImage,
+  getDisplayUsername,
+  getDisplayName,
 }: DRVNPortfolioProps) {
   // Wagmi hook to get connected wallet information
   const { address, isConnected } = useAccount();
@@ -105,12 +118,8 @@ export function DRVNPortfolio({
   }
 
   // Calculate vault values
-  const usdcBalance = usdcBalanceData
-    ? formatUnits(usdcBalanceData as unknown as bigint, 6)
-    : "0";
-  const ethBalance = ethBalanceData
-    ? formatUnits(ethBalanceData.value, 18)
-    : "0";
+  const usdcBalance = usdcBalanceData ? formatUnits(usdcBalanceData as unknown as bigint, 6) : "0";
+  const ethBalance = ethBalanceData ? formatUnits(ethBalanceData.value, 18) : "0";
 
   // For demo purposes, assuming 1 ETH = $3000 (you can integrate with a price API later)
   const ethPrice = 3000;
@@ -140,134 +149,131 @@ export function DRVNPortfolio({
     });
   };
 
-  return (
-    <Card className="bg-none backdrop-blur-sm border-none">
-      <CardHeader className="pb-4">
-        {/* Portfolio Title with Animated Indicator */}
-        <CardTitle className="text-white font-mono text-lg flex items-center gap-2 uppercase">
-          <div className="w-2 h-2 bg-[#00daa2] rounded-full animate-pulse"></div>
-          Portfolio
-        </CardTitle>
-
-        {/* Wallet Address Display - Truncated for security */}
-        {/* <p className="text-gray-400 text-sm font-sans">
-          Wallet: {address?.slice(0, 6)}...{address?.slice(-5)}
-        </p> */}
-      </CardHeader>
-
-      <CardContent>
-        {/* Token Balance Grid - Responsive 3-column layout */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* BSTR Balance Card - DRVN ecosystem token (9 decimals) */}
-          <div
-            className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/50 cursor-pointer hover:bg-gray-800/70 hover:border-gray-600/50 transition-all duration-200"
-            onClick={() => onNavigate?.("buster-club")}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <TokenChip token={DRVN_TOKENS.BSTR} />
-              <span className="text-gray-400 text-xs font-sans">Balance</span>
+  // Portfolio stats data - matching the example structure
+  const portfolioStats = [
+    {
+      name: "BSTR",
+      value: formatBalance(bstrBalance, DRVN_TOKENS.BSTR.decimals),
+      onClick: () => onNavigate?.("buster-club"),
+      icon: <TokenChip token={DRVN_TOKENS.BSTR} />,
+    },
+    {
+      name: "Car Collection",
+      value: "0",
+      onClick: () => onNavigate?.("garage"),
+      icon: (
+        <div className="w-6 h-6 bg-gray-950 rounded-lg flex items-center justify-center">
+          <Car className="w-4 h-4 text-white" />
+        </div>
+      ),
+    },
+    {
+      name: "Vault Balance",
+      value: `$${parseFloat(totalVaultValue).toLocaleString()}`,
+      onClick: () => onNavigate?.("garage"),
+      icon: (
+        <div className="w-6 h-6 bg-gray-950 rounded-lg flex items-center justify-center">
+          <Vault className="w-4 h-4 text-white" />
+        </div>
+      ),
+      breakdown: (
+        <div className="mt-2 space-y-1">
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-1">
+              <Image
+                src="/Cars/usdc.png"
+                alt="USDC"
+                width={12}
+                height={12}
+                className="w-3 h-3 rounded-full"
+              />
+              <span className="text-gray-400">USDC</span>
             </div>
-            {/* Main balance display - Uses BSTR's 9 decimals with formatAmount */}
-            <div className="text-2xl font-bold text-white font-mono">
-              {formatBalance(bstrBalance, DRVN_TOKENS.BSTR.decimals)}
-            </div>
+            <span className="text-gray-300 font-mono">
+              ${parseFloat(usdcBalance).toLocaleString()}
+            </span>
           </div>
-
-          {/* Car Collection Card - Placeholder for future implementation */}
-          <div
-            className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/50 cursor-pointer hover:bg-gray-800/70 hover:border-gray-600/50 transition-all duration-200"
-            onClick={() => onNavigate?.("garage")}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-gray-950 rounded-lg flex items-center justify-center">
-                  <Car className="w-4 h-4 text-white" />
-                </div>
-                <span className="text-white font-medium">Car Collection</span>
-              </div>
-              <span className="text-gray-400 text-xs font-sans">Balance</span>
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-1">
+              <Image
+                src="/Cars/base-logo.png"
+                alt="Base ETH"
+                width={12}
+                height={12}
+                className="w-3 h-3 rounded-full"
+              />
+              <span className="text-gray-400">ETH</span>
             </div>
-            {/* Placeholder balance - will be updated when car collection data is available */}
-            <div className="text-2xl font-bold text-white font-mono">0</div>
-          </div>
-
-          {/* Vault Balance Card - Real-time vault values */}
-          <div
-            className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/50 cursor-pointer hover:bg-gray-800/70 hover:border-gray-600/50 transition-all duration-200"
-            onClick={() => onNavigate?.("garage")}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-gray-950 rounded-lg flex items-center justify-center">
-                  <Vault className="w-4 h-4 text-white" />
-                </div>
-                <span className="text-white font-medium">Vault Balance</span>
-              </div>
-              <span className="text-gray-400 text-xs font-sans">
-                Total Value
-              </span>
-            </div>
-            {/* Real-time vault balance - USDC + ETH value */}
-            <div className="text-2xl font-bold text-white font-mono">
-              ${parseFloat(totalVaultValue).toLocaleString()}
-            </div>
-            {/* Asset breakdown */}
-            <div className="mt-2 space-y-1">
-              <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1">
-                  <Image
-                    src="/Cars/usdc.png"
-                    alt="USDC"
-                    width={12}
-                    height={12}
-                    className="w-3 h-3 rounded-full"
-                  />
-                  <span className="text-gray-400">USDC</span>
-                </div>
-                <span className="text-gray-300 font-mono">
-                  ${parseFloat(usdcBalance).toLocaleString()}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1">
-                  <Image
-                    src="/Cars/base-logo.png"
-                    alt="Base ETH"
-                    width={12}
-                    height={12}
-                    className="w-3 h-3 rounded-full"
-                  />
-                  <span className="text-gray-400">ETH</span>
-                </div>
-                <div className="text-right">
-                  <div className="text-gray-300 font-mono">
-                    {parseFloat(ethBalance).toFixed(4)}
-                  </div>
-                  {parseFloat(ethBalance) > 0 && (
-                    <ETHPriceDisplay
-                      ethAmount={ethBalance}
-                      className="text-xs text-green-400 font-mono"
-                    />
-                  )}
-                </div>
-              </div>
+            <div className="text-right">
+              <div className="text-gray-300 font-mono">{parseFloat(ethBalance).toFixed(4)}</div>
+              {parseFloat(ethBalance) > 0 && (
+                <ETHPriceDisplay
+                  ethAmount={ethBalance}
+                  className="text-xs text-green-400 font-mono"
+                />
+              )}
             </div>
           </div>
         </div>
+      ),
+    },
+  ];
 
-        {/* Portfolio Summary Section - User identification */}
-        {/* <div className="mt-2 border border-gray-700/50 p-2 rounded-md">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-400 font-sans text-sm">
-              Connected Account:
-            </span>
-            <span className="text-[#00daa2] font-mono font-semibold">
-              {currentUser.username ||
-                `${currentUser.firstName} ${currentUser.lastName}`}
-            </span>
+  return (
+    <div className="space-y-4">
+      {/* Portfolio Title with Animated Indicator */}
+      <div className="text-white font-mono text-lg flex items-center justify-between gap-4 uppercase">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-[#00daa2] rounded-full animate-pulse"></div>
+          Portfolio
+        </div>
+        {/* User Profile Info - Only show on mini apps */}
+        {isInMiniApp && getProfileImage && getDisplayUsername && getDisplayName && (
+          <div className="flex items-center gap-3">
+            <div className="size-8 rounded-full bg-gray-50 outline -outline-offset-1 outline-black/5 dark:bg-gray-800 dark:outline-white/10 overflow-hidden">
+              <Image
+                src={getProfileImage()}
+                alt="Profile"
+                width={32}
+                height={32}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <div className="text-sm font-semibold text-white truncate font-mono">
+                @{getDisplayUsername()}
+              </div>
+              {getDisplayName() && (
+                <div className="text-xs text-gray-400 truncate font-sans">{getDisplayName()}</div>
+              )}
+            </div>
           </div>
-        </div> */}
-      </CardContent>
-    </Card>
+        )}
+      </div>
+
+      {/* Portfolio Stats Grid - Matching Tailwind UI example style exactly */}
+      <dl className="mx-auto max-w-8xl grid grid-cols-1 gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-3 rounded-lg overflow-hidden border border-white/20">
+        {portfolioStats.map((stat) => (
+          <div
+            key={stat.name}
+            onClick={stat.onClick}
+            className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-gray-950 px-2 py-2 sm:px-6 xl:px-8 cursor-pointer hover:bg-gray-900 transition-all duration-200"
+          >
+            <dt className="text-sm/6 font-medium text-gray-400 flex items-center gap-2">
+              {stat.icon}
+              {stat.name}
+            </dt>
+            <dd className="w-full flex-none text-3xl/10 font-medium tracking-tight text-white font-mono">
+              {stat.value}
+            </dd>
+            {stat.breakdown && (
+              <div className="w-full mt-2 rounded-md bg-gray-950/50 p-2 border border-white/20">
+                {stat.breakdown}
+              </div>
+            )}
+          </div>
+        ))}
+      </dl>
+    </div>
   );
 }

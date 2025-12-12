@@ -10,13 +10,7 @@ interface ProgressiveActionButtonProps {
   actionType: "buy" | "post" | "personalize" | "trade" | "explore";
   feature: "marketplace" | "garage" | "trading" | "social" | "public";
   className?: string;
-  variant?:
-    | "default"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "link"
-    | "destructive";
+  variant?: "default" | "outline" | "secondary" | "ghost" | "link" | "destructive";
   size?: "default" | "sm" | "lg" | "icon";
   disabled?: boolean;
 }
@@ -90,17 +84,10 @@ export function ProgressiveActionButton({
         <div className="text-center">
           <p className="text-sm text-gray-400 mb-2">
             Sign in to{" "}
-            {actionType === "personalize"
-              ? "personalize your experience"
-              : "access this feature"}
+            {actionType === "personalize" ? "personalize your experience" : "access this feature"}
           </p>
           <div className="flex gap-2 justify-center">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={dismissAuthPrompt}
-              className="text-xs"
-            >
+            <Button variant="outline" size="sm" onClick={dismissAuthPrompt} className="text-xs">
               Maybe Later
             </Button>
             <Button
@@ -121,10 +108,7 @@ export function ProgressiveActionButton({
     );
   }
 
-  if (
-    showWalletPrompt &&
-    (feature === "marketplace" || feature === "trading")
-  ) {
+  if (showWalletPrompt && (feature === "marketplace" || feature === "trading")) {
     return (
       <div className="space-y-3">
         <Button
@@ -138,16 +122,10 @@ export function ProgressiveActionButton({
         </Button>
         <div className="text-center">
           <p className="text-sm text-gray-400 mb-2">
-            Connect your wallet to{" "}
-            {actionType === "buy" ? "make purchases" : "trade tokens"}
+            Connect your wallet to {actionType === "buy" ? "make purchases" : "trade tokens"}
           </p>
           <div className="flex gap-2 justify-center">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={dismissWalletPrompt}
-              className="text-xs"
-            >
+            <Button variant="outline" size="sm" onClick={dismissWalletPrompt} className="text-xs">
               Browse Only
             </Button>
             <Button

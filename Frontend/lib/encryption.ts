@@ -28,9 +28,7 @@ const TAG_LENGTH = 16; // 128 bits
  * Falls back to a default key for development (should be changed in production)
  */
 function getEncryptionKey(): Buffer {
-  const keyString =
-    process.env.ENCRYPTION_KEY ||
-    "default-dev-key-change-in-production-32chars";
+  const keyString = process.env.ENCRYPTION_KEY || "default-dev-key-change-in-production-32chars";
 
   if (keyString.length < 32) {
     throw new Error("ENCRYPTION_KEY must be at least 32 characters long");
@@ -115,9 +113,7 @@ export function decrypt(encryptedText: string): string {
   } catch (error) {
     console.error("Decryption error:", error);
     // If decryption fails, return the original text (might be unencrypted)
-    console.warn(
-      "Decryption failed, returning original text (might be unencrypted)",
-    );
+    console.warn("Decryption failed, returning original text (might be unencrypted)");
     return encryptedText;
   }
 }
@@ -200,7 +196,7 @@ export function decryptUserData(user: User): User {
           // If decryption fails, it might be unencrypted data (for migration)
           console.warn(
             `Failed to decrypt field ${field}, keeping original value:`,
-            error instanceof Error ? error.message : String(error),
+            error instanceof Error ? error.message : String(error)
           );
         }
       }
@@ -270,7 +266,7 @@ export function createEditableUserResponse(user: User): User {
           // If decryption fails, keep original value (might be unencrypted)
           console.warn(
             `Failed to decrypt field ${field} for editing, keeping original value:`,
-            error instanceof Error ? error.message : String(error),
+            error instanceof Error ? error.message : String(error)
           );
         }
       }

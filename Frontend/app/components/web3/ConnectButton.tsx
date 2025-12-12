@@ -8,7 +8,13 @@ import { useClientMounted } from "../../../hooks/useClientMount";
 import { useAccount, useDisconnect } from "wagmi";
 import Image from "next/image";
 
-export const ConnectButton = () => {
+interface ConnectButtonProps {
+  variant?: "default" | "modal" | "sidebar";
+}
+
+export const ConnectButton = (
+  { variant = "default" }: ConnectButtonProps = { variant: "default" }
+) => {
   const { address, chain } = useAccount();
   const { disconnect } = useDisconnect();
   const mounted = useClientMounted();
@@ -16,15 +22,14 @@ export const ConnectButton = () => {
   const [isCopied, setIsCopied] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const isModalVariant = variant === "modal";
+  const isSidebarVariant = variant === "sidebar";
 
   // We'll use OnchainKit Identity component with controlled styling
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setShowDetails(false);
       }
     };
@@ -86,168 +91,158 @@ export const ConnectButton = () => {
       {!address ? (
         // Show ConnectWallet when not connected
         <Wallet className="z-10 w-full">
-          <ConnectWallet className="drvn-wallet-btn relative flex items-center justify-center w-full h-12 rounded-md border border-[#00daa2] bg-transparent hover:bg-transparent font-mono">
-            <span className="text-white text-sm font-sans">Connect Wallet</span>
-          </ConnectWallet>
+          {isModalVariant ? (
+            // Modal variant - Unique pill-shaped style with shimmer effect
+            <div className="connect-wallet-modal-btn w-full relative group">
+              <div className="relative bg-linear-to-r from-gray-900 via-gray-800 to-gray-900 rounded-full border-2 border-white/20 group-hover:border-white/40 transition-all duration-300 overflow-hidden">
+                <ConnectWallet
+                  className="relative flex items-center justify-center w-full h-12 font-mono overflow-hidden"
+                  disconnectedLabel={
+                    <span className="text-white text-sm font-sans font-semibold uppercase tracking-wider relative z-10 flex items-center gap-2">
+                      <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                      Connect Wallet
+                    </span>
+                  }
+                />
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-linear-to-r from-transparent via-white/20 to-transparent"></div>
+              </div>
+            </div>
+          ) : (
+            <ConnectWallet
+              className={`drvn-wallet-btn relative flex items-center justify-center w-full h-12 rounded-md border border-[#00daa2] bg-transparent hover:bg-transparent font-mono ${
+                isSidebarVariant ? "sidebar-connect-btn" : ""
+              }`}
+              disconnectedLabel={
+                <span className={`text-sm font-sans ${isSidebarVariant ? "text-[#00daa2]" : "text-white"}`}>
+                  Connect Wallet
+                </span>
+              }
+            />
+          )}
         </Wallet>
       ) : (
-        // Show custom connected state when connected
+        // Show custom connected state when connected - Sleek with angled borders
         <div className="flex justify-center items-center w-full">
           <button
             onClick={() => setShowDetails(true)}
-            className="drvn-wallet-btn flex items-center space-x-2 px-4 py-2 rounded-lg border-2 border-[#00daa2] bg-gray-950 hover:scale-105 transition-all duration-200 w-full"
+            className={`connected-wallet-btn w-full relative flex items-center justify-center px-3 py-2 border border-white/20 font-sans text-sm overflow-hidden group hover:border-white/30 transition-all duration-300 cursor-pointer ${
+              isSidebarVariant ? "text-[#00daa2]" : "text-white"
+            }`}
           >
-            {/* Show identity name (Base/Coinbase), ENS name, or shortened address */}
-            <div className="text-white font-sans text-sm">
-              <Identity className="text-white font-sans text-sm bg-transparent">
-                <Name className="text-white font-sans text-sm bg-transparent" />
+            {/* Shimmer Effect */}
+            <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-linear-to-r from-transparent via-white/10 to-transparent"></div>
+
+            {/* Button Content */}
+            <div className="relative z-10 flex-1 min-w-0 text-center">
+              <Identity className={`font-sans text-sm bg-transparent truncate ${
+                isSidebarVariant ? "text-[#00daa2]" : "text-white"
+              }`}>
+                <Name className={`font-sans text-sm bg-transparent truncate ${
+                  isSidebarVariant ? "text-[#00daa2]" : "text-white"
+                }`} />
               </Identity>
             </div>
           </button>
         </div>
       )}
 
-      {/* Custom DRVN Disconnect Modal */}
+      {/* Custom DRVN Disconnect Modal - Sleek Professional Design */}
       {showDetails && (
         <div
           className="fixed inset-0 z-[70] flex items-center justify-center p-4"
-          style={{
-            minHeight: "100vh",
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 70,
-            width: "100vw",
-            height: "100vh",
-            maxWidth: "100vw",
-            maxHeight: "100vh",
-          }}
+          onClick={() => setShowDetails(false)}
         >
-          {/* Backdrop with car theme */}
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-md"></div>
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
 
-          {/* Car background overlay */}
-          <div className="absolute inset-0 opacity-20">
-            <div
-              className="w-full h-full bg-cover bg-center bg-no-repeat"
-              style={{
-                backgroundImage: "url('/Cars/GarageV12.jpg')",
-                filter: "blur(2px) brightness(0.3)",
-              }}
-            ></div>
-          </div>
-
-          {/* Modal Content - Car-Themed Tech Design */}
+          {/* Modal Content - Professional Car Group Style */}
           <div
-            className="relative w-full max-w-md md:max-w-lg bg-gray-950 rounded-xl border border-white/50 overflow-hidden"
+            className="relative w-full max-w-md bg-gray-950 rounded-lg border border-white/10 overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
-            style={{
-              maxHeight: "90vh",
-              overflowY: "auto",
-            }}
           >
-            {/* Header - Enhanced Car Theme */}
-            <div className="relative p-6 border-b border-[#00daa2]/20">
-              {/* Tech accent lines with car theme */}
-              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#00daa2] to-transparent opacity-60"></div>
-              <div className="absolute top-2 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#00daa2]/40 to-transparent opacity-30"></div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    {/* Connection status indicator with car styling */}
-                    {/* <div className="w-12 h-12 bg-gradient-to-br from-[#00daa2]/20 to-[#00daa2]/5 rounded-full flex items-center justify-center border border-[#00daa2]/30 shadow-lg shadow-[#00daa2]/20">
-                          <div className="w-6 h-6 bg-[#00daa2] rounded-full animate-pulse"></div>
-                        </div> */}
-                  </div>
-                  <div>
-                    <h3 className="text-[#00daa2] font-mono text-xl font-bold">
-                      DRVN/VHCLS Wallet
-                    </h3>
-                    <div className="flex items-center gap-1 mt-1">
-                      <span className="text-white/80 text-xs font-sans font-medium tracking-wide">
-                        VIN:
-                      </span>
-                      <Identity className="text-white/80 text-xs font-sans font-medium tracking-wide bg-transparent inline">
-                        <Name className="text-white/80 text-xs font-sans font-medium tracking-wide bg-transparent" />
-                      </Identity>
-                      <button
-                        onClick={copyAddress}
-                        className="text-[#00daa2] hover:text-[#00daa2]/80 transition-colors bg-transparent border-none p-1 rounded hover:bg-[#00daa2]/10"
-                      >
-                        <FaCopy
-                          className={`text-sm ${isCopied ? "animate-bounce" : ""}`}
-                        />
-                      </button>
-                    </div>
+            {/* Header */}
+            <div className="p-6 border-b border-white/10">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-white font-mono text-lg font-semibold tracking-wide">
+                    Wallet Connection
+                  </h3>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-gray-400 text-xs font-sans">Address:</span>
+                    <Identity className="text-gray-300 text-xs font-mono bg-transparent inline">
+                      <Name className="text-gray-300 text-xs font-mono bg-transparent" />
+                    </Identity>
+                    <button
+                      onClick={copyAddress}
+                      className="text-gray-400 hover:text-white transition-colors p-1 rounded hover:bg-white/5"
+                      title="Copy address"
+                    >
+                      <FaCopy className={`text-xs ${isCopied ? "text-white" : ""}`} />
+                    </button>
                   </div>
                 </div>
                 <button
                   onClick={() => setShowDetails(false)}
-                  className="text-white/60 hover:text-white p-2 rounded-full hover:bg-white/10 hover:scale-110 transition-transform"
+                  className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
                 >
-                  <FaTimes className="text-lg" />
+                  <FaTimes className="text-sm" />
                 </button>
               </div>
 
-              {/* Network Status - Enhanced Car Theme */}
-              <div className="mt-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FaNetworkWired className="text-[#00daa2] text-sm" />
-                  <span className="text-white/80 font-sans text-xs font-medium tracking-wide">
-                    NETWORK
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 px-3 py-1.5">
+              {/* Network Status */}
+              <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                <span className="text-gray-400 text-xs font-sans uppercase tracking-wide">
+                  Network
+                </span>
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-md border border-white/10">
                   {getNetworkIcon(chain?.id)}
-                  <span className="text-white font-mono text-md font-bold">
+                  <span className="text-white font-mono text-sm font-medium">
                     {getNetworkName(chain?.id)}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Content - Enhanced Car Theme */}
+            {/* Content */}
             <div className="p-6 space-y-4">
-              {/* System Status - Enhanced Car Grid */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-[#00daa2] rounded-full animate-pulse"></div>
-                  <span className="text-[#00daa2] font-sans text-sm font-bold tracking-wide">
-                    SYSTEM STATUS
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="system-status-grid rounded-lg p-3 border border-[#00daa2]/20 text-center engine-status hover:bg-gray-800/40 hover:border-[#00daa2]/40 transition-all duration-300">
-                    <div className="text-[#00daa2] font-mono text-xs font-semibold tracking-wide mb-1">
-                      ENGINE
-                    </div>
-                    <div className="text-white font-sans text-sm font-bold">
-                      RUNNING
-                    </div>
+              {/* Status Indicators */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-colors">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                    <span className="text-gray-400 text-xs font-mono uppercase tracking-wide">
+                      Status
+                    </span>
                   </div>
-                  <div className="system-status-grid rounded-lg p-3 border border-[#00daa2]/20 text-center transmission-status hover:bg-gray-800/40 hover:border-[#00daa2]/40 transition-all duration-300">
-                    <div className="text-[#00daa2] font-mono text-xs font-semibold tracking-wide mb-1">
-                      TRANSMISSION
-                    </div>
-                    <div className="text-white font-sans text-sm font-bold">
-                      CONNECTED
-                    </div>
+                  <div className="text-white font-sans text-sm font-medium">Connected</div>
+                </div>
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-colors">
+                  <div className="flex items-center gap-2 mb-2">
+                    <FaNetworkWired className="text-gray-400 text-xs" />
+                    <span className="text-gray-400 text-xs font-mono uppercase tracking-wide">
+                      Chain
+                    </span>
+                  </div>
+                  <div className="text-white font-sans text-sm font-medium">
+                    {getNetworkName(chain?.id)}
                   </div>
                 </div>
               </div>
 
-              {/* Disconnect Button - Enhanced Car Theme */}
+              {/* Disconnect Button - Sleek with Angled Borders and Shimmer */}
               <button
                 onClick={handleDisconnect}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-gradient-to-r from-red-500/20 to-red-600/10 border-red-500/30 text-white font-sans font-bold"
+                className="disconnect-btn w-full relative flex items-center justify-center gap-2 py-3.5 px-4 bg-linear-to-r from-gray-900 via-gray-800 to-gray-900 border border-white/20 text-white font-sans font-semibold text-sm uppercase tracking-wide overflow-hidden group hover:border-white/30 transition-all duration-300 cursor-pointer"
               >
-                <div className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-                  <FaTimes className="text-white text-xs" />
+                {/* Shimmer Effect */}
+                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-linear-to-r from-transparent via-white/10 to-transparent"></div>
+
+                {/* Button Content */}
+                <div className="relative flex items-center gap-2 z-10">
+                  <FaTimes className="text-sm" />
+                  <span>Disconnect Wallet</span>
                 </div>
-                <span className="tracking-wide text-sm">DISCONNECT</span>
               </button>
             </div>
           </div>
@@ -260,6 +255,12 @@ export const ConnectButton = () => {
                 }
                 .drvn-wallet-btn:hover {
                     box-shadow: 0 0 20px rgba(0, 218, 162, 0.4);
+                }
+
+                /* Disconnect Button - Angled Borders (Left in, Right out) */
+                .disconnect-btn {
+                    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+                    position: relative;
                 }
 
                 /* Override OnchainKit Identity styling to match our design */
@@ -329,7 +330,16 @@ export const ConnectButton = () => {
                     box-shadow: none !important;
                 }
 
-
+                /* Sidebar variant - Green text color */
+                .sidebar-connect-btn .ock-text-foreground,
+                .sidebar-connect-btn .ock-text-inverse,
+                .sidebar-connect-btn [data-testid*="ock"],
+                .sidebar-connect-btn .ock-identity,
+                .sidebar-connect-btn .ock-name,
+                .sidebar-connect-btn .mini-app-identity,
+                .sidebar-connect-btn .mini-app-name {
+                    color: #00daa2 !important;
+                }
             `}</style>
     </div>
   );
