@@ -32,9 +32,9 @@
     "mongodb": "^6.18.0",
     "mongoose": "^8.17.0",
     "next": "15.5.7",
-    "react": "^19.2.1",
+    "react": "^19.0.0",
     "react-confetti": "^6.4.0",
-    "react-dom": "^19.2.1",
+    "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
     "tailwind-merge": "^3.3.1",
     "viem": "^2.27.2",
@@ -45,10 +45,7 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-<<<<<<< HEAD
-=======
     "autoprefixer": "^10.4.22",
->>>>>>> d0770357705424a382434d261585e69d66c8512c
     "eslint": "^8",
     "eslint-config-next": "15.5.7",
     "eslint-config-prettier": "^10.1.1",
@@ -58,10 +55,7 @@
     "postcss": "^8.5.6",
     "prettier": "^3.5.3",
     "tailwindcss": "^4.1.17",
-<<<<<<< HEAD
-=======
     "tsx": "^4.19.2",
->>>>>>> d0770357705424a382434d261585e69d66c8512c
     "typescript": "^5"
   },
   "resolutions": {
