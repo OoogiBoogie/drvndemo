@@ -53,7 +53,7 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@chainlink/contracts": "^1.2.0",
+    "@chainlink/contracts": "^1.5.0",
     "@openzeppelin/contracts": "^4.9.0",
     "@uniswap/v2-core": "^1.0.1",
     "@uniswap/v2-periphery": "^1.1.0-beta.0",
